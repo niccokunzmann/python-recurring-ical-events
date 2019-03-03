@@ -33,6 +33,6 @@ def test_include_events_if_the_time_zone_differs(todo):
     (2, (2019, 3, 5)),
     (1, (2019, 3, 8)),
 ])
-def test_events_occur_after_and_before_span_end(calendars, count, start):
+def test_events_occur_after_and_before_span_start(calendars, count, start):
     events = calendars.three_events.between(start, (2100, 1, 1))
     assert len(events) == count
