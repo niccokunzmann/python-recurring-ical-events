@@ -50,6 +50,11 @@ class UnfoldableCalendar:
         """Convert date inputs of various sorts into a datetime object."""
         if isinstance(date, tuple):
             return datetime.datetime(*date, tzinfo=pytz.utc)
+        elif isinstance(date, str):
+            # see https://docs.python.org/2/library/datetime.html#strftime-strptime-behavior
+            if len(date) == 8:
+                return datetime.datetime.strptime(date, "%Y%m%d").replace(tzinfo=pytz.utc)
+            return datetime.datetime.strptime(date, "%Y%m%dT%H%M%SZ").replace(tzinfo=pytz.utc)
         return date
 
     def all(self):

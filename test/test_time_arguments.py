@@ -11,6 +11,8 @@ from pytz import utc
     ((2000, 12, 2, 4, 44), datetime(2000, 12, 2, 4, 44, tzinfo=utc)),
     ((2000, 12, 2, 4, 44, 55), datetime(2000, 12, 2, 4, 44, 55, tzinfo=utc)),
     (datetime(2001, 3, 12, tzinfo=utc), datetime(2001, 3, 12, tzinfo=utc)),
+    ("20140511T000000Z", datetime(2014, 5, 11, tzinfo=utc)),
+    ("20150521", datetime(2015, 5, 21, tzinfo=utc)),
 ])
 def test_conversion(input, output):
     assert UnfoldableCalendar.to_datetime(input) == output
