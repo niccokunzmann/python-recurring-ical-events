@@ -30,6 +30,11 @@ import pytest
     (0, 5, -1, 2, True, False, True, "event overlaps start 3"),
     (0, 5, -1, 2, False, False, False, "event overlaps start 4"),
 
+    (0, 5, -1, 7, True, True, True, "event overlaps start and end 1"),
+    (0, 5, -1, 7, False, True, False, "event overlaps start and end 2"),
+    (0, 5, -1, 7, True, False, False, "event overlaps start and end 3"),
+    (0, 5, -1, 7, False, False, False, "event overlaps start and end 4"),
+
     (0, 5, 0, 4, True, True, True, "event begins at start 1"),
     (0, 5, 0, 4, False, True, True, "event begins at start 2"),
     (0, 5, 0, 4, True, False, True, "event begins at start 3"),
