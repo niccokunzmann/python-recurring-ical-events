@@ -7,10 +7,12 @@ def is_event(component):
 class UnfoldableCalendar:
 
     def __init__(self, calendar):
+        """Create an unfoldable calendar from a given calendar."""
         assert calendar.get("CALSCALE", "GREGORIAN") == "GREGORIAN", "Only Gregorian calendars are supported." # https://www.kanzaki.com/docs/ical/calscale.html
         self.calendar = calendar
 
     def between(self, start, end):
+        """Return events at a time between start (inclusive) and end (exclusive)"""
         events = []
         for event in self.calendar.walk():
             if not is_event(event):

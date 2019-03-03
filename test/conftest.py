@@ -25,3 +25,8 @@ for calendar_file in os.listdir(CALENDARS_FOLDER):
 @pytest.fixture()
 def calendars():
     return Calendars()
+
+@pytest.fixture()
+def todo():
+    """Skip a test because it needs to be written first."""
+    pytest.skip("This test is not yet implemented.")
