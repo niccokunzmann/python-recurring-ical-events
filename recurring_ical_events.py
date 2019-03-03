@@ -99,7 +99,7 @@ class UnfoldableCalendar:
                     if time_span_contains_event(span_start, span_stop, revent_start, revent_stop):
                         revent = event.copy()
                         revent["DTSTART"] = vDatetime(revent_start)
-                        # TODO: test end
+                        revent["DTEND"] = vDatetime(revent_stop)
                         add_event(revent)
         return events
 
