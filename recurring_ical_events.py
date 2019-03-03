@@ -36,6 +36,10 @@ class UnfoldableCalendar:
         """Convert date inputs of various sorts into a datetime object."""
         return datetime.datetime(*date, tzinfo=pytz.utc)
 
+    def all(self):
+        """Returns all events."""
+        return self.between((1000, 1, 1), (3000, 1, 1))
+
     def between(self, start, stop): # TODO: add parameters from time_span_contains_event
         """Return events at a time between start (inclusive) and end (inclusive)"""
         span_start = self._convert_date(start)
@@ -58,6 +62,10 @@ class UnfoldableCalendar:
                 print(event_start, "<", span_start, "==", event_start < span_start)
                 if event_start < span_start:
                     rule.exrule(rrule(DAILY, dtstart=event_start, until=span_start)) # TODO: test overlap with -event_duration
+                exdates = event.get("EXDATE", [])
+                for exdates in ([exdates] if not isinstance(exdates, list) else exdates):
+                    for exdate in exdates.dts:
+                        rule.exdate(exdate.dt)
                 for revent_start in rule:
                     print(revent_start, ">", span_stop, "==", revent_start > span_stop)
                     if revent_start > span_stop:

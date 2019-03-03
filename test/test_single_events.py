@@ -20,3 +20,7 @@ def test_event_is_not_included_if_it_is_later(calendars):
 def test_event_is_not_included_if_it_is_earlier(calendars):
     events = calendars.one_event.between((2099, 1, 1), (2100,1,1))
     assert not events
+
+def test_all_events(calendars):
+    assert len(calendars.one_event.all()) == 1
+    assert len(calendars.no_events.all()) == 0
