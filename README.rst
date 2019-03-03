@@ -72,6 +72,11 @@ Development
 
         pytest
 
+Releasing new versions:
+.. code-block:: shell
+
+    python3 setup.py tag_and_deploy
+
 
 Research
 --------
