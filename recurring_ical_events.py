@@ -2,6 +2,8 @@ import icalendar
 import datetime
 import pytz
 from dateutil.rrule import rrulestr, rruleset, rrule, DAILY
+from collections import defaultdict
+from icalendar.prop import vDatetime
 
 def is_event(component):
     """Return whether a component is a calendar event."""
@@ -45,6 +47,17 @@ class UnfoldableCalendar:
         span_start = self._convert_date(start)
         span_stop = self._convert_date(stop)
         events = []
+        events_by_id = defaultdict(dict) # UID (str) : RECURRENCE-ID(datetime) : event (Event)
+        def add_event(event):
+            """Add an event and check if it was edited."""
+            same_events = events_by_id[event["UID"]] # TODO: test what comes first
+            start = event["DTSTART"].dt
+            other = same_events.get(start, None)
+            if other:
+                events.remove(other)
+            same_events[start] = event
+            events.append(event)
+
         for event in self.calendar.walk():
             if not is_event(event):
                 continue
@@ -54,7 +67,7 @@ class UnfoldableCalendar:
             event_duration = event_end - event_start
             if event_rrule is None:
                 if time_span_contains_event(span_start, span_stop, event_start, event_end):
-                    events.append(event)
+                    add_event(event)
             else:
                 rule_string = event_rrule.to_ical().decode()
                 rule = rruleset()
@@ -72,8 +85,11 @@ class UnfoldableCalendar:
                         break
                     revent_stop = revent_start + event_duration
                     if time_span_contains_event(span_start, span_stop, revent_start, revent_stop):
-                        #revent = event.copy()
-                        events.append(event)
+                        revent = event.copy()
+                        print(revent["DTSTART"])
+                        revent["DTSTART"] = vDatetime(revent_start)
+                        # TODO: test end
+                        add_event(revent)
         return events
 
 

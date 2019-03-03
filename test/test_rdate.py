@@ -45,5 +45,14 @@ Property Name:  RDATE
       Duplicate instances are ignored.
 """
 
-def test_rdate(todo):
+def test_rdate_is_included(todo):
+    pass
+
+def test_rdate_is_does_not_double_rrule_entry(todo):
+    pass
+
+def test_rdate_can_be_excluded_by_exdate(todo):
+    pass
+
+def test_rdate_and_rrule_can_be_excluded_by_exdate(todo):
     pass

@@ -1,4 +1,4 @@
-"""This file tests the overlap of events.
+"""This file tests the overlap of events with the queried span.
 
 It might be that events overlap the start and end of the time span.
 This must test
