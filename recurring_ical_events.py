@@ -46,9 +46,11 @@ class UnfoldableCalendar:
         self.calendar = calendar
 
     @staticmethod
-    def _convert_date(date):
+    def to_datetime(date):
         """Convert date inputs of various sorts into a datetime object."""
-        return datetime.datetime(*date, tzinfo=pytz.utc)
+        if isinstance(date, tuple):
+            return datetime.datetime(*date, tzinfo=pytz.utc)
+        return date
 
     def all(self):
         """Returns all events."""
@@ -56,8 +58,8 @@ class UnfoldableCalendar:
 
     def between(self, start, stop): # TODO: add parameters from time_span_contains_event
         """Return events at a time between start (inclusive) and end (inclusive)"""
-        span_start = self._convert_date(start)
-        span_stop = self._convert_date(stop)
+        span_start = self.to_datetime(start)
+        span_stop = self.to_datetime(stop)
         events = []
         events_by_id = defaultdict(dict) # UID (str) : RECURRENCE-ID(datetime) : event (Event)
         def add_event(event):

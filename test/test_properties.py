@@ -22,3 +22,10 @@ def test_duration_stays_the_same(calendars, index):
 
 def test_duration_is_edited(todo):
     """Test that the duration of an event can be edited."""
+
+def test_attributes_are_not_copied(todo):
+    """Some attributes should not be copied because they create a wrong meaning
+    - rrule
+    - exdate
+    - rdate
+    """
