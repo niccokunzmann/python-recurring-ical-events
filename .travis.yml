@@ -2,6 +2,38 @@ language: python
 python:
   - "3.6"
 install:
-  - pip install -r requirements.txt -r test-requirements.txt
+  # install the package
+  - PACKAGE_VERSION=`python setup.py --version`
+  - TAG_NAME=v$PACKAGE_VERSION
+  # install from the zip file to see if files were forgotten
+  - python setup.py sdist --dist-dir=dist --formats=zip
+  - pip install wheel
+  - ( cd dist ; pip install recurring_ical_events-${PACKAGE_VERSION}.zip )
+  #  - pip install -r requirements.txt -r test-requirements.txt
+before_script:
+  # remove the build folder because it creates problems for py.test
+  - rm -rf build
+  # show the versions
+  - python setup.py --version
+  - pytest --version
+  - echo "Package version $PACKAGE_VERSION with possible tag name $TAG_NAME"
 script:
   - pytest
+  # test that the tag represents the version
+  # https://docs.travis-ci.com/user/environment-variables/#Default-Environment-Variables
+  - ( if [ -n "$TRAVIS_TAG" ]; then if [ $TAG_NAME != $TRAVIS_TAG ]; then echo "This tag is for the wrong version. Got \"$TRAVIS_TAG\" expected \"$TAG_NAME\"."; exit 1; fi; fi; )
+before_deploy:
+  # create the documentation
+  - python setup.py sdist bdist_wheel
+deploy:
+  # created with travis command line tool
+  # https://docs.travis-ci.com/user/deployment/pypi
+  # $ travis setup pypi
+  provider: pypi
+  user: niccokunzmann2
+  password:
+    secure: pEM3dshSbjGx7A+t3JisuzIhkGva0mPlZZYbZ1boNBU3Y2YiNYhhtkt8ilkGWxblmmZAq9r0UGLDY2fPlX73o6kwxIcQiwiLFFvZK+KcO7cOck35tnwWVepmMdi7x0qyjO13m1FbY1FnR9jNG7so+Pcmn1aey2XR/3Aroyx5PTDFx3SKsN8xwTtYs18Z8Huc99M7vUH9loOOsHXI0UZ5dUOk1XswDj+Zxm0stJeBqLAhMk2euh5ADBK8jNB+ZiNap8hxvKeYigB8jCP7c4YOev4nOYKAIsY15gOjBC7MSoH6668J7uiH1kgNDQyrtGHz46jKJRFke45tksefW4+gAOs8FdPVfTZR3GpnzfKxnu1yZdRktD1FOWcGZwzPpuXW9w2oGpcVt5Lh0rP7HhnK0ILnTPx7jD9c86gQiy5EhGKpgkbOsQTDIidzoVcrxDJdfS2oRyXPiHsobUNpzMTbGbnuwUKvisdHjPzhXt2/Rd/kB0Yd8KD+cdwyM6kX8ab4aevTCXWyp3hbFs+acxp0r3BZgF9T6fEWsv61ihxWV/eeWiQXmKJy1pOXEDaa/scmWDHRrxaJtXF5ASXcAIDw1pQWsqs66tcYcQC2GMsIRNpEH/TgaQ+Ozr/REWgJXNxA4NCOw7XPiDGN8pg4qjeC0zgauC8tjAaO6zQ8x85L/xU=
+  on:
+    tags: true
+    distributions: sdist bdist_wheel
+    repo: niccokunzmann/python-recurring-ical-events

@@ -2,7 +2,17 @@ Recurring ICal events for Python
 ================================
 
 .. image:: https://travis-ci.org/niccokunzmann/python-recurring-ical-events.svg?branch=master
-    :target: https://travis-ci.org/niccokunzmann/python-recurring-ical-events
+   :target: https://travis-ci.org/niccokunzmann/python-recurring-ical-events
+   :alt: Travis Build and Tests Status
+
+.. image:: https://badge.fury.io/py/crc8.svg
+   :target: https://pypi.python.org/pypi/crc8
+   :alt: Python Package Version on Pypi
+
+.. image:: https://img.shields.io/pypi/dm/crc8.svg
+   :target: https://pypi.python.org/pypi/crc8#downloads
+   :alt: Downloads from Pypi
+
 
 ICal has some complexity to it:
 Events can be repeated, removed from the feed and edited later on.
@@ -38,6 +48,12 @@ Let's put our expertise together and build a tool that can solve this!
     for event in recurring_ical_events.of(calendar).between(today, one_year_ahead):
         print(event["DTSTART"])
 
+Installation
+------------
+
+.. code:: shell
+
+    pip install python-recurring-ical-events
 
 Development
 -----------
