@@ -11,7 +11,7 @@ PACKAGE_NAME = "recurring_ical_events"
 HERE = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, HERE)  # for package import
 
-__version__ = "0.0.1a"
+__version__ = "0.0.2a"
 __author__ = 'Nicco Kunzmann'
 
 
@@ -97,7 +97,7 @@ class TagAndDeployCommand(Command):
             exit(1)
         tags_output = subprocess.check_output(["git", "tag"])
         tags = [tag.strip().decode() for tag in tags_output.splitlines()]
-        tag = "v" + __version__
+        tag = "v" + METADATA["version"]
         if tag in tags:
             print("Warning: \n\tTag {} already exists.".format(tag))
             print("\tEdit the version information in {}".format(
