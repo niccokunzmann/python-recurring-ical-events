@@ -20,6 +20,19 @@ def read_file_named(file_name):
     with open(file_path) as file:
         return file.read()
 
+def read_requirements_file(file_name):
+    content = read_file_named(file_name)
+    lines = []
+    for line in content.splitlines():
+        comment_index = line.find("#")
+        if comment_index >= 0:
+            line = line[:comment_index]
+        line = line.strip()
+        if not line:
+            continue
+        lines.append(line)
+    return lines
+
 # The base package metadata to be used by both distutils and setuptools
 METADATA = dict(
     name=PACKAGE_NAME,
@@ -96,10 +109,15 @@ class TagAndDeployCommand(Command):
         print("Pushing tag \"{}\" to remote \"{}\".".format(tag, self.remote))
         subprocess.check_call(["git", "push", self.remote, tag])
 
+# Extra package metadata to be used only if setuptools is installed
+
+required_packages = read_requirements_file("requirements.txt")
+required_test_packages = read_requirements_file("test-requirements.txt")
+
 
 SETUPTOOLS_METADATA = dict(
-    install_requires=[],
-    tests_require=[],
+    install_requires=required_packages,
+    tests_require=required_test_packages,
     include_package_data=False,
     classifiers=[  # https://pypi.python.org/pypi?%3Aaction=list_classifiers
         'Intended Audience :: Developers',
