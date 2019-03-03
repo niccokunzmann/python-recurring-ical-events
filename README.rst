@@ -5,12 +5,12 @@ Recurring ICal events for Python
    :target: https://travis-ci.org/niccokunzmann/python-recurring-ical-events
    :alt: Travis Build and Tests Status
 
-.. image:: https://badge.fury.io/py/crc8.svg
-   :target: https://pypi.python.org/pypi/crc8
+.. image:: https://badge.fury.io/py/recurring-ical-events.svg
+   :target: https://pypi.python.org/pypi/recurring-ical-events
    :alt: Python Package Version on Pypi
 
-.. image:: https://img.shields.io/pypi/dm/crc8.svg
-   :target: https://pypi.python.org/pypi/crc8#downloads
+.. image:: https://img.shields.io/pypi/dm/recurring-ical-events.svg
+   :target: https://pypi.python.org/pypi/recurring-ical-events#downloads
    :alt: Downloads from Pypi
 
 
