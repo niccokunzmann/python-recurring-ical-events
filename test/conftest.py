@@ -5,6 +5,8 @@ import sys
 
 sys.path.append(".")
 
+from recurring_ical_events import of
+
 HERE = os.path.dirname(__name__) or "test"
 CALENDARS_FOLDER = os.path.join(HERE, "calendars")
 
@@ -18,7 +20,7 @@ for calendar_file in os.listdir(CALENDARS_FOLDER):
         content = file.read()
     @property
     def get_calendar(self, content=content):
-        return icalendar.Calendar.from_ical(content)
+        return of(icalendar.Calendar.from_ical(content))
     attribute_name = name.replace("-", "_")
     setattr(Calendars, attribute_name, get_calendar)
 
@@ -30,4 +32,3 @@ def calendars():
 def todo():
     """Skip a test because it needs to be written first."""
     pytest.skip("This test is not yet implemented.")
-    

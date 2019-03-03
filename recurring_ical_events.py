@@ -1,6 +1,7 @@
 import icalendar
 import datetime
 import pytz
+from dateutil.rrule import rrulestr, rruleset, rrule, DAILY
 
 def is_event(component):
     """Return whether a component is a calendar event."""
@@ -25,13 +26,30 @@ class UnfoldableCalendar:
         for event in self.calendar.walk():
             if not is_event(event):
                 continue
+            event_rrule = event.get("RRULE", None)
             event_start = event["DTSTART"].dt
-            if event_start < span_start:
-                continue
             event_end = event["DTEND"].dt
-            if event_end > span_end:
-                continue
-            events.append(event)
+            event_duration = event_end - event_start
+            if event_rrule is None:
+                if event_start < span_start:
+                    continue
+                if event_end > span_end:
+                    continue
+                events.append(event)
+            else:
+                rule_string = event_rrule.to_ical().decode()
+                rule = rruleset()
+                rule.rrule(rrulestr(rule_string, dtstart=event_start))
+                print(event_start, "<", span_start, "==", event_start < span_start)
+                if event_start < span_start:
+                    rule.exrule(rrule(DAILY, dtstart=event_start, until=span_start))
+                for revent_start in rule:
+                    print(revent_start, ">", span_end, "==", revent_start > span_end)
+                    if revent_start > span_end:
+                        break
+                    #revent_end = revent_start + event_duration
+                    #revent = event.copy()
+                    events.append(event)
         return events
 
 
