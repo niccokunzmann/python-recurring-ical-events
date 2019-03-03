@@ -1,5 +1,7 @@
 # Recurring ICal events for Python
 
+[![Build Status](https://travis-ci.org/niccokunzmann/python-recurring-ical-events.svg?branch=master)](https://travis-ci.org/niccokunzmann/python-recurring-ical-events)
+
 ICal has some complexity to it:
 Events can be repeated, removed from the feed and edited later on.
 This tool takes care of these circumstances.
