@@ -36,10 +36,10 @@ class UnfoldableCalendar:
         """Convert date inputs of various sorts into a datetime object."""
         return datetime.datetime(*date, tzinfo=pytz.utc)
 
-    def between(self, start, end):
+    def between(self, start, stop):
         """Return events at a time between start (inclusive) and end (exclusive)"""
         span_start = self._convert_date(start)
-        span_end = self._convert_date(end)
+        span_stop = self._convert_date(stop)
         events = []
         for event in self.calendar.walk():
             if not is_event(event):
@@ -49,25 +49,23 @@ class UnfoldableCalendar:
             event_end = event["DTEND"].dt
             event_duration = event_end - event_start
             if event_rrule is None:
-                if event_start < span_start:
-                    continue
-                if event_end > span_end:
-                    continue
-                events.append(event)
+                if time_span_contains_event(span_start, span_stop, event_start, event_end):
+                    events.append(event)
             else:
                 rule_string = event_rrule.to_ical().decode()
                 rule = rruleset()
                 rule.rrule(rrulestr(rule_string, dtstart=event_start))
                 print(event_start, "<", span_start, "==", event_start < span_start)
                 if event_start < span_start:
-                    rule.exrule(rrule(DAILY, dtstart=event_start, until=span_start))
+                    rule.exrule(rrule(DAILY, dtstart=event_start, until=span_start)) # TODO: test overlap with -event_duration
                 for revent_start in rule:
-                    print(revent_start, ">", span_end, "==", revent_start > span_end)
-                    if revent_start > span_end:
+                    print(revent_start, ">", span_stop, "==", revent_start > span_stop)
+                    if revent_start > span_stop:
                         break
-                    #revent_end = revent_start + event_duration
-                    #revent = event.copy()
-                    events.append(event)
+                    revent_stop = revent_start + event_duration
+                    if time_span_contains_event(span_start, span_stop, revent_start, revent_stop):
+                        #revent = event.copy()
+                        events.append(event)
         return events
 
 
