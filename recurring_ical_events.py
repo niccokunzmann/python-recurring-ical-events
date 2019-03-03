@@ -16,6 +16,7 @@ class UnfoldableCalendar:
 
     @staticmethod
     def _convert_date(date):
+        """Convert date inputs of various sorts into a datetime object."""
         return datetime.datetime(*date, tzinfo=pytz.utc)
 
     def between(self, start, end):
