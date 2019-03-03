@@ -19,3 +19,6 @@ def test_duration_stays_the_same(calendars, index):
     duration1 = events[0]["DTEND"].dt - events[0]["DTSTART"].dt
     duration2 = events[index]["DTEND"].dt - events[index]["DTSTART"].dt
     assert duration1 == duration2
+
+def test_duration_is_edited(todo):
+    """Test that the duration of an event can be edited."""
