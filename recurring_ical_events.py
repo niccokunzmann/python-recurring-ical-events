@@ -36,8 +36,8 @@ class UnfoldableCalendar:
         """Convert date inputs of various sorts into a datetime object."""
         return datetime.datetime(*date, tzinfo=pytz.utc)
 
-    def between(self, start, stop):
-        """Return events at a time between start (inclusive) and end (exclusive)"""
+    def between(self, start, stop): # TODO: add parameters from time_span_contains_event
+        """Return events at a time between start (inclusive) and end (inclusive)"""
         span_start = self._convert_date(start)
         span_stop = self._convert_date(stop)
         events = []
