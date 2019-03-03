@@ -7,6 +7,23 @@ def is_event(component):
     """Return whether a component is a calendar event."""
     return isinstance(component, icalendar.cal.Event)
 
+def time_span_contains_event(span_start, span_stop, event_start, event_stop,
+        include_start=True, include_stop=True):
+    """Return whether an event should is included within a time span.
+
+    - span_start and span_stop define the time span
+    - event_start and event_stop define the event time
+    - include_start defines whether events overlapping the start of the
+        time span should be included
+    - include_stop defines whether events overlapping the stop of the
+        time span should be included
+    """
+    assert event_start <= event_stop, "the event must start before it ends"
+    assert span_start <= span_stop, "the time span must start before it ends"
+    return (include_start or span_start <= event_start) and \
+        (include_stop or event_stop <= span_stop) and \
+        (event_start <= span_stop and span_start <= event_stop)
+
 class UnfoldableCalendar:
 
     def __init__(self, calendar):
