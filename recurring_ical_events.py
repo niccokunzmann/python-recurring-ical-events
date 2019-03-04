@@ -134,7 +134,6 @@ class UnfoldableCalendar:
                 rule_string = event_rrule.to_ical().decode()
                 rule = rruleset()
                 rule.rrule(rrulestr(rule_string, dtstart=event_start))
-                print(event_start, "<", span_start, "==", compare_greater(span_start, event_start))
                 if compare_greater(span_start, event_start):
                     c_event_start, c_span_start = make_comparable((event_start, span_start))
                     rule.exrule(rrule(DAILY, dtstart=c_event_start, until=c_span_start)) # TODO: test overlap with -event_duration
@@ -145,7 +144,6 @@ class UnfoldableCalendar:
                 for revent_start in rule:
                     if revent_start.tzinfo is not None:
                         revent_start = revent_start.tzinfo.localize(revent_start.replace(tzinfo=None))
-                    print(revent_start, ">", span_stop, "==", compare_greater(revent_start, span_stop))
                     if compare_greater(revent_start, span_stop):
                         break
                     revent_stop = revent_start + event_duration
