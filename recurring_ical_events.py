@@ -21,6 +21,19 @@ def is_event(component):
     """Return whether a component is a calendar event."""
     return isinstance(component, icalendar.cal.Event)
 
+def convert_to_datetime(date, tzinfo):
+    """converts a date to a datetime"""
+    if isinstance(date, datetime.datetime):
+        if date.tzinfo is None:
+            if tzinfo is not None:
+                return tzinfo.localize(date)
+        else:
+            assert tzinfo is not None, "Error in algorithm: tzinfo expected to be known."
+        return date
+    elif isinstance(date, datetime.date):
+        return datetime.datetime(date.year, date.month, date.day, tzinfo=tzinfo)
+    return date
+
 def time_span_contains_event(span_start, span_stop, event_start, event_stop,
         include_start=True, include_stop=True):
     """Return whether an event should is included within a time span.
@@ -32,6 +45,14 @@ def time_span_contains_event(span_start, span_stop, event_start, event_stop,
     - include_stop defines whether events overlapping the stop of the
         time span should be included
     """
+    tzinfo = getattr(span_start, "tzinfo", None) or \
+        getattr(span_stop, "tzinfo", None) or \
+        getattr(event_start, "tzinfo", None) or \
+        getattr(event_stop, "tzinfo", None)
+    span_start = convert_to_datetime(span_start, tzinfo)
+    span_stop = convert_to_datetime(span_stop, tzinfo)
+    event_start = convert_to_datetime(event_start, tzinfo)
+    event_stop = convert_to_datetime(event_stop, tzinfo)
     assert event_start <= event_stop, "the event must start before it ends"
     assert span_start <= span_stop, "the time span must start before it ends"
     return (include_start or span_start <= event_start) and \

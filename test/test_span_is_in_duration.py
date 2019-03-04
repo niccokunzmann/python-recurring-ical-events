@@ -1,5 +1,9 @@
 from recurring_ical_events import time_span_contains_event
 import pytest
+from datetime import datetime, date
+from pytz import timezone, utc
+
+berlin = timezone("Europe/Berlin")
 
 @pytest.mark.parametrize(
     "span_start,span_stop,event_start,event_stop,"
@@ -44,6 +48,34 @@ import pytest
     (0, 5, 1, 5, False, True, True, "event ends at end 2"),
     (0, 5, 1, 5, True, False, True, "event ends at end 3"),
     (0, 5, 1, 5, False, False, True, "event ends at end 4"),
+
+    (datetime(2019, 1, 1, 1), datetime(2019, 1, 4, 1), date(2019, 1, 2), date(2019, 1, 3), True, True, True, "date is in datetime span 1"),
+    (datetime(2019, 1, 1, 1), datetime(2019, 1, 4, 1), date(2019, 1, 2), date(2019, 1, 3), False, True, True, "date is in datetime span 2"),
+    (datetime(2019, 1, 1, 1), datetime(2019, 1, 4, 1), date(2019, 1, 2), date(2019, 1, 3), True, False, True, "date is in datetime span 3"),
+    (datetime(2019, 1, 1, 1), datetime(2019, 1, 4, 1), date(2019, 1, 2), date(2019, 1, 3), False, False, True, "date is in datetime span 4"),
+
+    (date(2019, 1, 3), date(2019, 1, 4), date(2019, 1, 2), date(2019, 1, 3), True, True, True, "date is in span 1"),
+    (date(2019, 1, 3), date(2019, 1, 4), date(2019, 1, 2), date(2019, 1, 3), False, True, False, "date is in span 2"),
+    (date(2019, 1, 3), date(2019, 1, 4), date(2019, 1, 2), date(2019, 1, 3), True, False, True, "date is in span 3"),
+    (date(2019, 1, 3), date(2019, 1, 4), date(2019, 1, 2), date(2019, 1, 3), False, False, False, "date is in span 4"),
+
+    (date(2019, 1, 4), date(2019, 1, 4), datetime(2019, 1, 2, 1), datetime(2019, 1, 4), True, True, True, "datetime is in date span start 1"),
+    (date(2019, 1, 4), date(2019, 1, 4), datetime(2019, 1, 2, 1), datetime(2019, 1, 4), False, True, False, "datetime is in date span start 2"),
+    (date(2019, 1, 4), date(2019, 1, 4), datetime(2019, 1, 2, 1), datetime(2019, 1, 4), True, False, True, "datetime is in date span start 3"),
+    (date(2019, 1, 4), date(2019, 1, 4), datetime(2019, 1, 2, 1), datetime(2019, 1, 4), False, False, False, "datetime is in date span start 4"),
+
+    (date(2019, 1, 4), date(2019, 1, 5), datetime(2019, 1, 4, 1), datetime(2019, 1, 4, 2), True, True, True, "datetime is in date span end 1"),
+    (date(2019, 1, 4), date(2019, 1, 5), datetime(2019, 1, 4, 1), datetime(2019, 1, 4, 2), False, True, True, "datetime is in date span end 2"),
+    (date(2019, 1, 4), date(2019, 1, 5), datetime(2019, 1, 4, 1), datetime(2019, 1, 4, 2), True, False, True, "datetime is in date span end 3"),
+    (date(2019, 1, 4), date(2019, 1, 5), datetime(2019, 1, 4, 1), datetime(2019, 1, 4, 2), False, False, True, "datetime is in date span end 4"),
+
+    (datetime(2019, 1, 1, 1, tzinfo=berlin), datetime(2019, 1, 4, 2, tzinfo=berlin), datetime(2019, 1, 4, 1, 10), datetime(2019, 1, 4, 1, 20), True, True, True, "without time zone is put into time zone 1"),
+    (datetime(2019, 1, 1, 1, tzinfo=berlin), datetime(2019, 1, 4, 2, tzinfo=berlin), datetime(2019, 1, 4, 3, 10), datetime(2019, 1, 4, 3, 20), True, True, False, "without time zone is put into time zone 2"),
+    (datetime(2019, 1, 1, 1), datetime(2019, 1, 4, 2), datetime(2019, 1, 4, 1, 10, tzinfo=berlin), datetime(2019, 1, 4, 1, 20, tzinfo=berlin), True, True, True, "without time zone is put into time zone 3"),
+    (datetime(2019, 1, 1, 1), datetime(2019, 1, 4, 2), datetime(2019, 1, 4, 3, 10, tzinfo=berlin), datetime(2019, 1, 4, 3, 20, tzinfo=berlin), True, True, False, "without time zone is put into time zone 4"),
+
+    (datetime(2019, 1, 1, 1, tzinfo=berlin), datetime(2019, 1, 1, 2, tzinfo=berlin), datetime(2019, 1, 1, 0, tzinfo=utc), datetime(2019, 1, 1, 1, tzinfo=utc), True, True, True, "comparing times from different time zones 1"),
+    (datetime(2019, 1, 1, 4, tzinfo=berlin), datetime(2019, 1, 1, 5, tzinfo=berlin), datetime(2019, 1, 1, 0, tzinfo=utc), datetime(2019, 1, 1, 1, tzinfo=utc), True, True, False, "comparing times from different time zones 2"),
 ])
 def test_time_span_inclusion(
     span_start, span_stop, event_start, event_stop, include_start, include_stop,
