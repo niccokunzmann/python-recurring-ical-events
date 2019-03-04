@@ -99,6 +99,11 @@ class UnfoldableCalendar:
         """Returns all events."""
         return self.between((1000, 1, 1), (3000, 1, 1))
 
+    def at(self, day):
+        """Return all events within the next 24 hours of starting at the given day."""
+        day = self.to_datetime(day)
+        return self.between(day, day + datetime.timedelta(1))
+
     def between(self, start, stop): # TODO: add parameters from time_span_contains_event
         """Return events at a time between start (inclusive) and end (inclusive)"""
         span_start = self.to_datetime(start)
@@ -138,6 +143,8 @@ class UnfoldableCalendar:
                     for exdate in exdates.dts:
                         rule.exdate(exdate.dt)
                 for revent_start in rule:
+                    if revent_start.tzinfo is not None:
+                        revent_start = revent_start.tzinfo.localize(revent_start.replace(tzinfo=None))
                     print(revent_start, ">", span_stop, "==", compare_greater(revent_start, span_stop))
                     if compare_greater(revent_start, span_stop):
                         break

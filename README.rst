@@ -20,7 +20,7 @@ This tool takes care of these circumstances.
 
 Let's put our expertise together and build a tool that can solve this!
 
-* day light saving time
+* day light saving time (DONE)
 * recurring events (DONE)
 * recurring events with edits (DONE)
 * recurring events where events are omitted (DONE)
