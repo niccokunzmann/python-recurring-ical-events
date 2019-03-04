@@ -1,0 +1,997 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//85.13.163.15//NONSGML kigkonsult.se iCalcreator 2.24.2//
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-FROM-URL:http://blog.fablab-cottbus.de
+X-WR-TIMEZONE:Europe/Berlin
+BEGIN:VTIMEZONE
+TZID:Europe/Berlin
+X-LIC-LOCATION:Europe/Berlin
+BEGIN:STANDARD
+DTSTART:20181028T030000
+TZOFFSETFROM:+0200
+TZOFFSETTO:+0100
+RDATE:20191027T030000
+TZNAME:CET
+END:STANDARD
+BEGIN:DAYLIGHT
+DTSTART:20190331T020000
+TZOFFSETFROM:+0100
+TZOFFSETTO:+0200
+RDATE:20200329T020000
+TZNAME:CEST
+END:DAYLIGHT
+END:VTIMEZONE
+BEGIN:VEVENT
+UID:ai1ec-1862@blog.fablab-cottbus.de
+DTSTAMP:20190304T162103Z
+CATEGORIES:
+CONTACT:
+DESCRIPTION:Wir sind auf dem Karlstraßenfest – kommt uns besuchen: https://
+ www.facebook.com/events/297637247437414/\nDie Werkstatt bleibt am Samstag 
+ deswegen geschlossen.
+DTSTART;VALUE=DATE:20180609
+DTEND;VALUE=DATE:20180610
+LOCATION:Karlstraßenfest
+SEQUENCE:0
+SUMMARY:Lab geschlossen: Wir sind auf dem Karlstraßenfest
+URL:http://blog.fablab-cottbus.de/Veranstaltung/wir-sind-auf-dem-karlstrass
+ enfest-lab-geschlossen/
+X-COST-TYPE:free
+X-ALT-DESC;FMTTYPE=text/html:<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 3.2//E
+ N'>\\n<HTML>\\n<HEAD>\\n<TITLE></TITLE>\\n</HEAD>\\n<BODY><p>Wir sind auf 
+ dem Karlstraßenfest – kommt uns besuchen: https://www.facebook.com/events/
+ 297637247437414/<br />\nDie Werkstatt bleibt am Samstag deswegen geschloss
+ en. </p>\n</BODY></HTML>
+END:VEVENT
+BEGIN:VEVENT
+UID:ai1ec-1441@blog.fablab-cottbus.de
+DTSTAMP:20190304T162103Z
+CATEGORIES:
+CONTACT:Maximilian Voigt\; maximilian-voigt@fablab-cottbus.de
+DESCRIPTION:Es ist schon wieder Dezember! Wir können es auch kaum glauben… 
+ Deswegen möchten wir das Repair Café zu diesem Anlass ein bisschen umgesta
+ lten: Zum Kaffee und Kuchen gibt’s Glühwein und statt nur kaputtes kommen 
+ noch schöne Weihnachtsbasteleien auf den Tisch. Lasst Euch überraschen ode
+ r überrascht uns\, indem ihr ein paar schöne Ideen mitbringt! Wir freun un
+ s auf Euch!\n„Ein Repair Café ist eine Selbsthilfewerkstatt zur Reparatur 
+ defekter Gegenstände. Freiwillige helfen mit Wissen\, Werkzeug und Kaffee 
+ sowie Rat und Tat gegen einen Unkostenbeitrag. Repair Cafés finden in fest
+  oder temporär zur Verfügung gestellten Räumen wie Technikräumen an Schule
+ n oder Vereinsgebäuden statt. Die Idee kommt aus den Niederlanden und hat 
+ zahlreiche Nachahmer.“ Wikipedia\nHier geht’s zur entsprechenden Wiki-Seit
+ e. Dort gibt’s ein paar mehr Infos und Eindrücke.
+DTSTART;TZID=Europe/Berlin:20161203T140000
+DTEND;TZID=Europe/Berlin:20161203T190000
+LOCATION:FabLab Cottbus @ Walther-Pauer-Straße 5\, 03044 Cottbus
+SEQUENCE:0
+SUMMARY:Weihnachts Repair-Café
+URL:http://blog.fablab-cottbus.de/Veranstaltung/weihnachts-repair-cafe/
+X-COST-TYPE:free
+X-ALT-DESC;FMTTYPE=text/html:<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 3.2//E
+ N'>\\n<HTML>\\n<HEAD>\\n<TITLE></TITLE>\\n</HEAD>\\n<BODY><p>Es ist schon 
+ wieder Dezember! Wir können es auch kaum glauben… Deswegen möchten wir das
+  Repair Café zu diesem Anlass ein bisschen umgestalten: Zum Kaffee und Kuc
+ hen gibt’s Glühwein und statt nur kaputtes kommen noch schöne Weihnachtsba
+ steleien auf den Tisch. Lasst Euch überraschen oder überrascht uns\, indem
+  ihr ein paar schöne Ideen mitbringt! Wir freun uns auf Euch!</p>\n<p>„Ein
+  Repair Café ist eine Selbsthilfewerkstatt zur Reparatur defekter Gegenstä
+ nde. Freiwillige helfen mit Wissen\, Werkzeug und Kaffee sowie Rat und Tat
+  gegen einen Unkostenbeitrag. Repair Cafés finden in fest oder temporär zu
+ r Verfügung gestellten Räumen wie Technikräumen an Schulen oder Vereinsgeb
+ äuden statt. Die Idee kommt aus den Niederlanden und hat zahlreiche Nachah
+ mer.“ Wikipedia</p>\n<p>Hier geht’s zur entsprechenden <a href='http://fab
+ lab-cottbus.de/index.php/Repair-Cafe' target='_blank'>Wiki-Seite</a>. Dort
+  gibt’s ein paar mehr Infos und Eindrücke.</p>\n</BODY></HTML>
+END:VEVENT
+BEGIN:VEVENT
+UID:ai1ec-1621@blog.fablab-cottbus.de
+DTSTAMP:20190304T162103Z
+CATEGORIES:
+CONTACT:Nanu Frechen\; nanu@fablab-cottbus.de
+DESCRIPTION:Die bisherigen Tagesordnungspunkte:\nTOP 1: Änderung des Mitgli
+ edsbeitrages\n    wie sieht die Fördermitgliedschaft aus?\n    kann man si
+ ch einen Teil des Mitgliedsbeitrages durch allgemeinnützige Arbeiten zurüc
+ kerarbeiten?\nTOP 2: Fensteröffner/RFID Zugang\n    letzte Festlegungen zu
+ m Kartenpfand\nTOP 3: Anpassungen in der Satzung\, der Werkstattordnung un
+ d unserer Geschäftsordnung\n    ausländerfeindliche Äußerungen über unsere
+  öffentliche Kanäle satzungsmäßig ausschließen\n    Anpassung der Werkstat
+ tordnung an die neuen Maschinen und Gegebenheiten\n    Geschäftsordnung: z
+ .B. Mitgliedsbeitrag eintragen\, Sepa verfahren etc.\nTOP 4: Wo wollen wir
+  uns mit unserem Verein hin entwickeln?\n    Wollen wir uns professionalis
+ ieren?\n    Wie können wir mehr Angebote für mehr Leute anbieten?\n    Wie
+  schaffen wir mehr Engagement?\n    Wie können wir mehr gemeinsame Projekt
+ e und generell mehr Zusammenarbeit und Geselligkeit im fablab fördern?\n  
+   Wollen wir mehr mit Firmen\, Institutionen\, der Uni zusammen arbeiten?
+ \n    Oder wollen wir lieber der kleine Bastelkeller bleiben\, wo jeder vo
+ r sich hin arbeitet?
+DTSTART;TZID=Europe/Berlin:20170311T170000
+DTEND;TZID=Europe/Berlin:20170311T210000
+LOCATION:FabLab Cottbus @ Walther-Pauer-Straße 5\, 03044 Cottbus
+SEQUENCE:0
+SUMMARY:Vereinssitzung
+URL:http://blog.fablab-cottbus.de/Veranstaltung/vereinssitzung/
+X-COST-TYPE:free
+X-ALT-DESC;FMTTYPE=text/html:<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 3.2//E
+ N'>\\n<HTML>\\n<HEAD>\\n<TITLE></TITLE>\\n</HEAD>\\n<BODY><p>Die bisherige
+ n Tagesordnungspunkte:</p>\n<p>TOP 1: Änderung des Mitgliedsbeitrages</p>
+ \n<p>    wie sieht die Fördermitgliedschaft aus?<br />\n    kann man sich 
+ einen Teil des Mitgliedsbeitrages durch allgemeinnützige Arbeiten zurücker
+ arbeiten?</p>\n<p>TOP 2: Fensteröffner/RFID Zugang</p>\n<p>    letzte Fest
+ legungen zum Kartenpfand</p>\n<p>TOP 3: Anpassungen in der Satzung\, der W
+ erkstattordnung und unserer Geschäftsordnung</p>\n<p>    ausländerfeindlic
+ he Äußerungen über unsere öffentliche Kanäle satzungsmäßig ausschließen<br
+  />\n    Anpassung der Werkstattordnung an die neuen Maschinen und Gegeben
+ heiten<br />\n    Geschäftsordnung: z.B. Mitgliedsbeitrag eintragen\, Sepa
+  verfahren etc.</p>\n<p>TOP 4: Wo wollen wir uns mit unserem Verein hin en
+ twickeln?</p>\n<p>    Wollen wir uns professionalisieren?<br />\n    Wie k
+ önnen wir mehr Angebote für mehr Leute anbieten?<br />\n    Wie schaffen w
+ ir mehr Engagement?<br />\n    Wie können wir mehr gemeinsame Projekte und
+  generell mehr Zusammenarbeit und Geselligkeit im fablab fördern?<br />\n 
+    Wollen wir mehr mit Firmen\, Institutionen\, der Uni zusammen arbeiten?
+ <br />\n    Oder wollen wir lieber der kleine Bastelkeller bleiben\, wo je
+ der vor sich hin arbeitet?</p>\n</BODY></HTML>
+END:VEVENT
+BEGIN:VEVENT
+UID:ai1ec-1648@blog.fablab-cottbus.de
+DTSTAMP:20190304T162103Z
+CATEGORIES:
+CONTACT:Nanu Frechen\; nanu@fablab-cottbus.de
+DESCRIPTION:Wir unterstützen das Repair Café der Stadt Cottbus. Seid auch i
+ hr dabei und repariert mit uns\, bis der Kaffee zur Neige geht!\nHier geht
+  es zur Website der Veranstaltung.
+DTSTART;TZID=Europe/Berlin:20170610T100000
+DTEND;TZID=Europe/Berlin:20170610T160000
+LOCATION:Spreegallerie Cottbus @ Karl-Marx-Straße\, 03046 Cottbus
+SEQUENCE:0
+SUMMARY:Repair und Recycling Café
+URL:http://blog.fablab-cottbus.de/Veranstaltung/repair-und-recycling-cafe/
+X-COST-TYPE:free
+X-ALT-DESC;FMTTYPE=text/html:<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 3.2//E
+ N'>\\n<HTML>\\n<HEAD>\\n<TITLE></TITLE>\\n</HEAD>\\n<BODY><p>Wir unterstüt
+ zen das Repair Café der Stadt Cottbus. Seid auch ihr dabei und repariert m
+ it uns\, bis der Kaffee zur Neige geht!</p>\n<p><a href='https://www.cottb
+ us.de/abfrage/events/event.pl?key=kultur&zeit=25473683'>Hier geht es zur W
+ ebsite der Veranstaltung.</a></p>\n</BODY></HTML>
+END:VEVENT
+BEGIN:VEVENT
+UID:ai1ec-1647@blog.fablab-cottbus.de
+DTSTAMP:20190304T162103Z
+CATEGORIES:
+CONTACT:Maximilian Voigt\; m.voigt@fablab-cottbus.de
+DESCRIPTION:„In Brandenburg ist wieder jemand gegen einen Baum gegurkt\, wa
+ s soll man auch machen mit 17\, 18 in Brandenburg?“ Dass um Berlin mehr pa
+ ssiert\, als es Rainald Grebe hier ironisch zuspitzt\, wissen die Brandenb
+ urger Maker. Aber wir könnten sichtbarer werden. Aus diesem Grund möchten 
+ wir ein Treffen aller Besucher*innen von Hack-\, Maker- und Fab-Spaces in 
+ Brandenburg organisieren\, uns vernetzen und folgende Themen besprechen:\n
+ \n\nRaus aus dem MakerSpace – Erfahrungen in der Zusammenarbeit mit andere
+ n Akteuren.\nÜberregionale Hardwareprojekte – wie sind eure Erfahrungen? W
+ orauf habt ihr Lust?\n\nZum Event auf maker-faire.de
+DTSTART;TZID=Europe/Berlin:20170611T163000
+DTEND;TZID=Europe/Berlin:20170611T173000
+LOCATION:Maker Faire Berlin @ Luckenwalder Str. 4–6\, 10963 Berlin
+SEQUENCE:0
+SUMMARY:Brandenburger Maker-Treffen
+URL:http://blog.fablab-cottbus.de/Veranstaltung/brandenburger-maker-treffen
+ /
+X-COST-TYPE:free
+X-ALT-DESC;FMTTYPE=text/html:<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 3.2//E
+ N'>\\n<HTML>\\n<HEAD>\\n<TITLE></TITLE>\\n</HEAD>\\n<BODY><p>„In Brandenbu
+ rg ist wieder jemand gegen einen Baum gegurkt\, was soll man auch machen m
+ it 17\, 18 in Brandenburg?“ Dass um Berlin mehr passiert\, als es Rainald 
+ Grebe hier ironisch zuspitzt\, wissen die Brandenburger Maker. Aber wir kö
+ nnten sichtbarer werden. Aus diesem Grund möchten wir ein Treffen aller Be
+ sucher*innen von Hack-\, Maker- und Fab-Spaces in Brandenburg organisieren
+ \, uns vernetzen und folgende Themen besprechen:</p>\n<div>\n<ul>\n<li>Rau
+ s aus dem MakerSpace – Erfahrungen in der Zusammenarbeit mit anderen Akteu
+ ren.</li>\n<li>Überregionale Hardwareprojekte – wie sind eure Erfahrungen?
+  Worauf habt ihr Lust?</li>\n</ul>\n<p><a href='https://maker-faire.de/wor
+ kshop/berlin/2017/brandenburger-maker-meetup/'>Zum Event auf maker-faire.d
+ e</a></p>\n</div>\n</BODY></HTML>
+END:VEVENT
+BEGIN:VEVENT
+UID:ai1ec-1504@blog.fablab-cottbus.de
+DTSTAMP:20190304T162103Z
+CATEGORIES:
+CONTACT:
+DESCRIPTION:***ACHTUNG: Der Computer-Treff FÄLLT AM 5.07. AUS!***
+DTSTART;TZID=Europe/Berlin:20170705T174500
+DTEND;TZID=Europe/Berlin:20170705T194500
+SEQUENCE:0
+SUMMARY:Der Computer-Treff fällt aus
+URL:http://blog.fablab-cottbus.de/Veranstaltung/der-3d-donnerstag-faellt-au
+ s/
+X-COST-TYPE:free
+X-ALT-DESC;FMTTYPE=text/html:<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 3.2//E
+ N'>\\n<HTML>\\n<HEAD>\\n<TITLE></TITLE>\\n</HEAD>\\n<BODY><p><strong>***AC
+ HTUNG: Der Computer-Treff FÄLLT AM 5.07. AUS!***</strong></p>\n</BODY></HT
+ ML>
+END:VEVENT
+BEGIN:VEVENT
+UID:ai1ec-1671@blog.fablab-cottbus.de
+DTSTAMP:20190304T162103Z
+CATEGORIES:
+CONTACT:Maximilian Voigt\; m.voigt@fablab-cottbus.de
+DESCRIPTION:Es ist Zeit für Sonne und Bier! Dazu gibt’s einen heißen Grill\
+ , gute Musik und natürlich eine offene Werkstatt. Für alle\, die diese ger
+ ne erkunden möchten\, gibt es kleine Bauaktionen. Zum Beispiel könnt ihr e
+ uer erstes 3D-Modell drucken\, aus eurem alten Handy eine Bluetooth-Musikb
+ ox bauen oder euch an mitgebrachten Ideen und Projekten versuchen. \n\n\n 
+ \n\n\nWir freuen uns auf einen sonnigen Tag!
+DTSTART;TZID=Europe/Berlin:20170729T140000
+DTEND;TZID=Europe/Berlin:20170729T220000
+LOCATION:FabLab Cottbus
+SEQUENCE:0
+SUMMARY:Sommerfest
+URL:http://blog.fablab-cottbus.de/Veranstaltung/sommerfest/
+X-COST-TYPE:free
+X-ALT-DESC;FMTTYPE=text/html:<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 3.2//E
+ N'>\\n<HTML>\\n<HEAD>\\n<TITLE></TITLE>\\n</HEAD>\\n<BODY><div class='' da
+ ta-block='true' data-editor='38q22' data-offset-key='5mbcb-0-0'>\n<div cla
+ ss='_1mf _1mj' data-offset-key='5mbcb-0-0'><span data-offset-key='5mbcb-0-
+ 0'><strong>Es ist Zeit für Sonne und Bier!</strong> Dazu gibt’s einen heiß
+ en Grill\, gute Musik und natürlich eine offene Werkstatt. Für alle\, die 
+ diese gerne erkunden möchten\, gibt es kleine Bauaktionen. Zum Beispiel kö
+ nnt ihr euer erstes 3D-Modell drucken\, aus eurem alten Handy eine Bluetoo
+ th-Musikbox bauen oder euch an mitgebrachten Ideen und Projekten versuchen
+ . </span></div>\n</div>\n<div class='' data-block='true' data-editor='38q2
+ 2' data-offset-key='5ssq7-0-0'>\n<div class='_1mf _1mj' data-offset-key='5
+ ssq7-0-0'><span data-offset-key='5ssq7-0-0'> </span></div>\n</div>\n<div c
+ lass='' data-block='true' data-editor='38q22' data-offset-key='7440e-0-0'>
+ \n<div class='_1mf _1mj' data-offset-key='7440e-0-0'><span data-offset-key
+ ='7440e-0-0'>Wir freuen uns auf einen sonnigen Tag!</span></div>\n</div>\n
+ </BODY></HTML>
+END:VEVENT
+BEGIN:VEVENT
+UID:ai1ec-1706@blog.fablab-cottbus.de
+DTSTAMP:20190304T162103Z
+CATEGORIES:
+CONTACT:Nanu Frechen\; nanu@fablab-cottbus.de
+DESCRIPTION:OpenSCAD ist eine Programmiersprache\, mit der 3D-Modelle konst
+ ruiert werden können. Wir werden verrückte mathematische Formeln ausprobie
+ ren\, mit denen sich faszinierende 3D-Objekte erstellen lassen. Hier geht 
+ es zu mehr Informationen und zur Anmeldung
+DTSTART;TZID=Europe/Berlin:20171019T160000
+DTEND;TZID=Europe/Berlin:20171019T200000
+LOCATION:FabLab Cottbus @ Walther-Pauer-Straße 5 03044 Cottbus
+SEQUENCE:0
+SUMMARY:3D-Modelle programmieren mit OpenSCAD
+URL:http://blog.fablab-cottbus.de/Veranstaltung/3d-modelle-programmieren-mi
+ t-openscad/
+X-COST-TYPE:free
+X-ALT-DESC;FMTTYPE=text/html:<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 3.2//E
+ N'>\\n<HTML>\\n<HEAD>\\n<TITLE></TITLE>\\n</HEAD>\\n<BODY><p>OpenSCAD ist 
+ eine Programmiersprache\, mit der 3D-Modelle konstruiert werden können. Wi
+ r werden verrückte mathematische Formeln ausprobieren\, mit denen sich fas
+ zinierende 3D-Objekte erstellen lassen. <a href='https://meet-and-code.org
+ /event/details/279' rel='noopener' target='_blank'>Hier geht es zu mehr In
+ formationen und zur Anmeldung</a></p>\n</BODY></HTML>
+END:VEVENT
+BEGIN:VEVENT
+UID:ai1ec-1705@blog.fablab-cottbus.de
+DTSTAMP:20190304T162103Z
+CATEGORIES:
+CONTACT:Nanu Fechen\; nanu@fablab-cottbus.de
+DESCRIPTION:Was sind Cryptowährungen wie Bitcoin und wie funktionieren sie?
+  Und welche Bedeutung werden sie in Zukunft haben? Lerne mit uns\, was man
+  alles mit der Blockchain-Technologie machen kann. Hier geht es zu mehr In
+ formationen und zur Anmeldung
+DTSTART;TZID=Europe/Berlin:20171020T160000
+DTEND;TZID=Europe/Berlin:20171020T200000
+LOCATION:FabLab Cottbus @ Walther-Pauer-Straße 5 03044 Cottbus
+SEQUENCE:0
+SUMMARY:Programmier dir deine eigene Crypto-Währung
+URL:http://blog.fablab-cottbus.de/Veranstaltung/programmier-dir-deine-eigen
+ e-crypto-waehrung/
+X-COST-TYPE:free
+X-ALT-DESC;FMTTYPE=text/html:<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 3.2//E
+ N'>\\n<HTML>\\n<HEAD>\\n<TITLE></TITLE>\\n</HEAD>\\n<BODY><p>Was sind Cryp
+ towährungen wie Bitcoin und wie funktionieren sie? Und welche Bedeutung we
+ rden sie in Zukunft haben? Lerne mit uns\, was man alles mit der Blockchai
+ n-Technologie machen kann. <a href='https://meet-and-code.org/event/detail
+ s/278' rel='noopener' target='_blank'>Hier geht es zu mehr Informationen u
+ nd zur Anmeldung</a></p>\n</BODY></HTML>
+END:VEVENT
+BEGIN:VEVENT
+UID:ai1ec-1703@blog.fablab-cottbus.de
+DTSTAMP:20190304T162103Z
+CATEGORIES:
+CONTACT:Maximilian Voigt\; m.voigt@fablab-cottbus.de
+DESCRIPTION:Wir stecken uns gemeinsam ein Arduino-Board zusammen und schrei
+ ben erste Programme. Am Ende hat jeder und jede eine Wetterstation für’s H
+ eimklima und kann Sensordaten selbst erfassen und auswerten. Hier geht es 
+ zu mehr Informationen und zur Anmeldung
+DTSTART;TZID=Europe/Berlin:20171021T130000
+DTEND;TZID=Europe/Berlin:20171021T180000
+LOCATION:FabLab Cottbus @ Walther-Pauer-Straße 5 03044 Cottbus
+SEQUENCE:0
+SUMMARY:Programmiere deine eigene Wetterstation
+URL:http://blog.fablab-cottbus.de/Veranstaltung/programmiere-deine-eigene-w
+ etterstation/
+X-COST-TYPE:free
+X-ALT-DESC;FMTTYPE=text/html:<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 3.2//E
+ N'>\\n<HTML>\\n<HEAD>\\n<TITLE></TITLE>\\n</HEAD>\\n<BODY><p>Wir stecken u
+ ns gemeinsam ein Arduino-Board zusammen und schreiben erste Programme. Am 
+ Ende hat jeder und jede eine Wetterstation für’s Heimklima und kann Sensor
+ daten selbst erfassen und auswerten. <a href='https://meet-and-code.org/ev
+ ent/details/275' rel='noopener' target='_blank'>Hier geht es zu mehr Infor
+ mationen und zur Anmeldung</a></p>\n</BODY></HTML>
+END:VEVENT
+BEGIN:VEVENT
+UID:ai1ec-1704@blog.fablab-cottbus.de
+DTSTAMP:20190304T162103Z
+CATEGORIES:
+CONTACT:Marcus Heide\; marcus@fablab-cottbus.de
+DESCRIPTION:Wie sauber ist die Luft\, die ich atme? Während dieses Workshop
+ s baust du dir dein eigenes Sensorsystem\, das du zur Messung der Feinstau
+ bbelastung\, Temperatur und Luftfeuchtigkeit nutzen kannst. Hier geht es z
+ u mehr Informationen und zur Anmeldung
+DTSTART;TZID=Europe/Berlin:20171022T130000
+DTEND;TZID=Europe/Berlin:20171022T180000
+LOCATION:FabLab Cottbus @ Walther-Pauer-Straße 5 03044 Cottbus
+SEQUENCE:0
+SUMMARY:Luftqualität: Ein Workshop zum selber messen (Einsteiger)
+URL:http://blog.fablab-cottbus.de/Veranstaltung/luftqualitaet-ein-workshop-
+ zum-selber-messen-einsteiger/
+X-COST-TYPE:free
+X-ALT-DESC;FMTTYPE=text/html:<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 3.2//E
+ N'>\\n<HTML>\\n<HEAD>\\n<TITLE></TITLE>\\n</HEAD>\\n<BODY><p>Wie sauber is
+ t die Luft\, die ich atme? Während dieses Workshops baust du dir dein eige
+ nes Sensorsystem\, das du zur Messung der Feinstaubbelastung\, Temperatur 
+ und Luftfeuchtigkeit nutzen kannst. <a href='https://meet-and-code.org/eve
+ nt/details/276' rel='noopener' target='_blank'>Hier geht es zu mehr Inform
+ ationen und zur Anmeldung</a></p>\n</BODY></HTML>
+END:VEVENT
+BEGIN:VEVENT
+UID:ai1ec-1707@blog.fablab-cottbus.de
+DTSTAMP:20190304T162103Z
+CATEGORIES:
+CONTACT:Dominik Reyke \; domryk@live.de
+DESCRIPTION:Bau dir deine eigene Website. Designe deine HTML Website mit CS
+ S und binde eine erste SQL Tabelle via PHP ein. Hier geht es zu mehr Infor
+ mationen und zur Anmeldung
+DTSTART;TZID=Europe/Berlin:20171022T130000
+DTEND;TZID=Europe/Berlin:20171022T180000
+LOCATION:FabLab Cottbus @ Walther-Pauer-Straße 5 03044 Cottbus
+SEQUENCE:0
+SUMMARY:Websites selbst programmieren
+URL:http://blog.fablab-cottbus.de/Veranstaltung/websites-selbst-programmier
+ en/
+X-COST-TYPE:free
+X-ALT-DESC;FMTTYPE=text/html:<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 3.2//E
+ N'>\\n<HTML>\\n<HEAD>\\n<TITLE></TITLE>\\n</HEAD>\\n<BODY><p>Bau dir deine
+  eigene Website. Designe deine HTML Website mit CSS und binde eine erste S
+ QL Tabelle via PHP ein. <a href='https://meet-and-code.org/event/details/2
+ 80' rel='noopener' target='_blank'>Hier geht es zu mehr Informationen und 
+ zur Anmeldung</a></p>\n</BODY></HTML>
+END:VEVENT
+BEGIN:VEVENT
+UID:ai1ec-1669@blog.fablab-cottbus.de
+DTSTAMP:20190304T162103Z
+CATEGORIES:
+CONTACT:
+DESCRIPTION:***ACHTUNG: Der 3D-Donnerstag FÄLLT AM 6.07. AUS!***
+DTSTART;TZID=Europe/Berlin:20180104T174500
+DTEND;TZID=Europe/Berlin:20180104T194500
+SEQUENCE:0
+SUMMARY:Der 3D-Donnerstag fällt aus
+URL:http://blog.fablab-cottbus.de/Veranstaltung/der-3d-donnerstag-faellt-au
+ s-2/
+X-COST-TYPE:free
+X-ALT-DESC;FMTTYPE=text/html:<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 3.2//E
+ N'>\\n<HTML>\\n<HEAD>\\n<TITLE></TITLE>\\n</HEAD>\\n<BODY><p><strong>***AC
+ HTUNG: Der 3D-Donnerstag FÄLLT AM 6.07. AUS!***</strong></p>\n</BODY></HTM
+ L>
+END:VEVENT
+BEGIN:VEVENT
+UID:ai1ec-1887@blog.fablab-cottbus.de
+DTSTAMP:20190304T162103Z
+CATEGORIES:
+CONTACT:Maximilian Voigt\; maximilian-voigt@fablab-cottbus.de
+DESCRIPTION:Dein Handy ist kaputt\, der Staubsauger streikt oder du brauchs
+ t Hilfe beim Flicken deiner Hose? Dann komm ins Fablab Cottbus! Seit dem 1
+ . November 2014 hilft das Fablab beim Selbermachen. Bring einfach mit\, wa
+ s kaputt ist und wir versuchen es gemeinsam zu reparieren – egal ob Elektr
+ onik\, Holzmöbel oder Textilien\, an dem Tag ist für jedes Problem jemand 
+ fachkundiges in der Werkstatt.\n„Ein Repair Café ist eine Selbsthilfewerks
+ tatt zur Reparatur defekter Gegenstände. Freiwillige helfen mit Wissen\, W
+ erkzeug und Kaffee sowie Rat und Tat gegen einen Unkostenbeitrag. Repair C
+ afés finden in fest oder temporär zur Verfügung gestellten Räumen wie Tech
+ nikräumen an Schulen oder Vereinsgebäuden statt. Die Idee kommt aus den Ni
+ ederlanden und hat zahlreiche Nachahmer.“ Wikipedia\nHier geht’s zur entsp
+ rechenden Wiki-Seite. Dort gibt’s mehr Informationen und Eindrücke.
+DTSTART;TZID=Europe/Berlin:20180106T140000
+DTEND;TZID=Europe/Berlin:20180106T170000
+GEO:+51.76882;+14.32321
+LOCATION:FabLab Cottbus @ Walther-Pauer-Straße 5\, 03044 Cottbus\, Deutschl
+ and
+RRULE:FREQ=MONTHLY;BYDAY=1SA
+SEQUENCE:0
+SUMMARY:Repair Café
+URL:http://blog.fablab-cottbus.de/Veranstaltung/repair-cafe-2/
+X-COST-TYPE:free
+X-ALT-DESC;FMTTYPE=text/html:<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 3.2//E
+ N'>\\n<HTML>\\n<HEAD>\\n<TITLE></TITLE>\\n</HEAD>\\n<BODY><p style='text-a
+ lign: justify\;'>Dein Handy ist kaputt\, der Staubsauger streikt oder du b
+ rauchst Hilfe beim Flicken deiner Hose? Dann komm ins Fablab Cottbus! Seit
+  dem 1. November 2014 hilft das Fablab beim Selbermachen. Bring einfach mi
+ t\, was kaputt ist und wir versuchen es gemeinsam zu reparieren – egal ob 
+ Elektronik\, Holzmöbel oder Textilien\, an dem Tag ist für jedes Problem j
+ emand fachkundiges in der Werkstatt.</p>\n<p style='text-align: justify\;'
+ >„Ein Repair Café ist eine Selbsthilfewerkstatt zur Reparatur defekter Geg
+ enstände. Freiwillige helfen mit Wissen\, Werkzeug und Kaffee sowie Rat un
+ d Tat gegen einen Unkostenbeitrag. Repair Cafés finden in fest oder tempor
+ är zur Verfügung gestellten Räumen wie Technikräumen an Schulen oder Verei
+ nsgebäuden statt. Die Idee kommt aus den Niederlanden und hat zahlreiche N
+ achahmer.“ Wikipedia</p>\n<p>Hier geht’s zur entsprechenden <a href='http:
+ //fablab-cottbus.de/index.php/Repair-Cafe' target='_blank' rel='noopener n
+ oreferrer'>Wiki-Seite</a>. Dort gibt’s mehr Informationen und Eindrücke.</
+ p>\n</BODY></HTML>
+END:VEVENT
+BEGIN:VEVENT
+UID:ai1ec-1781@blog.fablab-cottbus.de
+DTSTAMP:20190304T162103Z
+CATEGORIES:
+CONTACT:Maximilian Voigt\; maximilian-voigt@fablab-cottbus.de
+DESCRIPTION:Im Workshop werden Grundkenntnisse des CNC-Fräsens vermittelt. 
+ Außerdem wird in die BZT-CNC-Fräse unserer Werkstatt eingeführt. Der Works
+ hop ist Voraussetzung\, wenn ihr die Fräse einsetzen möchtet.\nBitte bring
+ t unbedingt euren Laptop mit!
+DTSTART;TZID=Europe/Berlin:20180120T150000
+DTEND;TZID=Europe/Berlin:20180120T163000
+GEO:+51.76882;+14.32321
+LOCATION:FabLab Cottbus @ Walther-Pauer-Straße 5\, 03044 Cottbus\, Deutschl
+ and
+SEQUENCE:0
+SUMMARY:Workshop: Einführung CNC-Fräsen
+URL:http://blog.fablab-cottbus.de/Veranstaltung/workshop-einfuehrung-cnc-fr
+ aesen/
+X-COST-TYPE:free
+X-WP-IMAGES-URL:thumbnail\;http://blog.fablab-cottbus.de/wp-content/uploads
+ /2016/11/DSC_1363-300x199.jpg\;300\;199\,medium\;http://blog.fablab-cottbu
+ s.de/wp-content/uploads/2016/11/DSC_1363-300x199.jpg\;300\;199\,large\;htt
+ p://blog.fablab-cottbus.de/wp-content/uploads/2016/11/DSC_1363-300x199.jpg
+ \;300\;199\,full\;http://blog.fablab-cottbus.de/wp-content/uploads/2016/11
+ /DSC_1363-300x199.jpg\;300\;199
+X-ALT-DESC;FMTTYPE=text/html:<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 3.2//E
+ N'>\\n<HTML>\\n<HEAD>\\n<TITLE></TITLE>\\n</HEAD>\\n<BODY><p><img src='htt
+ p://blog.fablab-cottbus.de/wp-content/uploads/2016/11/DSC_1363-300x199.jpg
+ ' alt='' width='300' height='199' class='alignnone size-medium wp-image-16
+ 19' srcset='http://blog.fablab-cottbus.de/wp-content/uploads/2016/11/DSC_1
+ 363-300x199.jpg 300w\, http://blog.fablab-cottbus.de/wp-content/uploads/20
+ 16/11/DSC_1363-768x508.jpg 768w\, http://blog.fablab-cottbus.de/wp-content
+ /uploads/2016/11/DSC_1363.jpg 1000w' sizes='(max-width: 300px) 100vw\, 300
+ px' /><br />\nIm Workshop werden Grundkenntnisse des CNC-Fräsens vermittel
+ t. Außerdem wird in die BZT-CNC-Fräse unserer Werkstatt eingeführt. Der Wo
+ rkshop ist Voraussetzung\, wenn ihr die Fräse einsetzen möchtet.<br />\n<s
+ trong>Bitte bringt unbedingt euren Laptop mit!</strong></p>\n</BODY></HTML
+ >
+END:VEVENT
+BEGIN:VEVENT
+UID:ai1ec-1736@blog.fablab-cottbus.de
+DTSTAMP:20190304T162103Z
+CATEGORIES:
+CONTACT:Maximilian Voigt\; m.voigt@fablab-cottbus.de
+DESCRIPTION:Bei der Vereinssitzung besprechen wir aktuelle Ereignisse und e
+ ntscheiden über das zukünftige Vorgehen\, wie über Investitionen\, Veranst
+ altungen oder Vereinsregeln. Jeder und jede ist willkommen und kann der Si
+ tzung beiwohnen. Mitbestimmen können allerdings nur Mitglieder des Vereins
+ .
+DTSTART;TZID=Europe/Berlin:20180331T170000
+DTEND;TZID=Europe/Berlin:20180331T190000
+LOCATION:FabLab Cottbus @ Walther-Pauer-Straße 5 03044 Cottbus
+SEQUENCE:0
+SUMMARY:Vereinssitzung
+URL:http://blog.fablab-cottbus.de/Veranstaltung/vereinssitzung-2/
+X-COST-TYPE:free
+X-ALT-DESC;FMTTYPE=text/html:<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 3.2//E
+ N'>\\n<HTML>\\n<HEAD>\\n<TITLE></TITLE>\\n</HEAD>\\n<BODY><p>Bei der Verei
+ nssitzung besprechen wir aktuelle Ereignisse und entscheiden über das zukü
+ nftige Vorgehen\, wie über Investitionen\, Veranstaltungen oder Vereinsreg
+ eln. Jeder und jede ist willkommen und kann der Sitzung beiwohnen. Mitbest
+ immen können allerdings nur Mitglieder des Vereins. </p>\n</BODY></HTML>
+END:VEVENT
+BEGIN:VEVENT
+UID:ai1ec-1844@blog.fablab-cottbus.de
+DTSTAMP:20190304T162103Z
+CATEGORIES:
+CONTACT:Nanu Frechen\; nanu@fablab-cottbus.de
+DESCRIPTION:Computerspiele sind voll 2017 – Brettspiele sind wieder angesag
+ t! \nDie zwei Cottbuser Tüftler Jörg Kiefer und Michael Linke haben sich e
+ in pfiffiges neues Spiel ausgedacht. Vor einem Jahr saßen sie noch bei uns
+  im fablab und haben am 3D-Druck ihrer Spielfiguren gefeilt. Nun steht das
+  Spiel verkaufsbereit im Online-Shop! \nBei „Kompass\, das Spiel“ geht es 
+ um Kaufen und Verkaufen\, Investieren und Rendite machen. Doch anders als 
+ bei Monopoly gewinnt nicht der mit den dicksten Immobilien\, denn bei Komp
+ ass ist der Markt unberechenbar! So wie im wahren Leben bewegt sich im Spi
+ el der Markt durch Boom\, Rezession\, Depression und Expansion. Man muss a
+ lso genau wissen\, was in den verschiedenen Konjunkturphasen gerade angesa
+ gt ist und seine Strategie darauf einstellen. So muss man sich z.B. überle
+ gen ob man eher auf Sicherheit geht oder das Risiko zu nutzen weiß!\n\nAm 
+ Mittwoch den 18.4. um 18 Uhr ist daher im FabLab Spieleabend angesagt! Wir
+  drehen gemeinsam mit den Kompass-Entwicklern eine Runde durch den Konjunk
+ turzyklus. \nWer Spaß am Spielen hat und die Kreation der beiden Cottbuser
+  Entwickler kennen lernen möchte ist herzlich eingeladen!
+DTSTART;TZID=Europe/Berlin:20180418T180000
+DTEND;TZID=Europe/Berlin:20180418T200000
+LOCATION:FabLab Cottbus @ Walther-Pauer-Straße 5 03044 Cottbus
+SEQUENCE:0
+SUMMARY:Let’s play: Kompass
+URL:http://blog.fablab-cottbus.de/Veranstaltung/lets-play-kompass/
+X-COST-TYPE:free
+X-WP-IMAGES-URL:thumbnail\;http://blog.fablab-cottbus.de/wp-content/uploads
+ /2018/04/spielbrett-1024x1024-150x150.jpeg\;150\;150\;1\,medium\;http://bl
+ og.fablab-cottbus.de/wp-content/uploads/2018/04/spielbrett-1024x1024-300x3
+ 00.jpeg\;300\;300\;1\,large\;http://blog.fablab-cottbus.de/wp-content/uplo
+ ads/2018/04/spielbrett-1024x1024.jpeg\;480\;480\;
+X-ALT-DESC;FMTTYPE=text/html:<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 3.2//E
+ N'>\\n<HTML>\\n<HEAD>\\n<TITLE></TITLE>\\n</HEAD>\\n<BODY><div class='ai1e
+ c-event-avatar alignleft timely'><img src='http://blog.fablab-cottbus.de/w
+ p-content/uploads/2018/04/spielbrett-1024x1024-300x300.jpeg' width='300' h
+ eight='300' /></div><p>Computerspiele sind voll 2017 – Brettspiele sind wi
+ eder angesagt! </p>\n<p>Die zwei Cottbuser Tüftler Jörg Kiefer und Michael
+  Linke haben sich ein pfiffiges neues Spiel ausgedacht. Vor einem Jahr saß
+ en sie noch bei uns im fablab und haben am 3D-Druck ihrer Spielfiguren gef
+ eilt. Nun steht das Spiel verkaufsbereit im Online-Shop! </p>\n<p>Bei „<a 
+ href='https://kompass-spiel.de/' rel='noopener' target='_blank'>Kompass\, 
+ das Spiel</a>“ geht es um Kaufen und Verkaufen\, Investieren und Rendite m
+ achen. Doch anders als bei Monopoly gewinnt nicht der mit den dicksten Imm
+ obilien\, denn bei Kompass ist der Markt unberechenbar! So wie im wahren L
+ eben bewegt sich im Spiel der Markt durch Boom\, Rezession\, Depression un
+ d Expansion. Man muss also genau wissen\, was in den verschiedenen Konjunk
+ turphasen gerade angesagt ist und seine Strategie darauf einstellen. So mu
+ ss man sich z.B. überlegen ob man eher auf Sicherheit geht oder das Risiko
+  zu nutzen weiß!</p>\n<p><iframe width='560' height='315' src='https://www
+ .youtube.com/embed/lNHY2N2AqQk' frameborder='0' allow='autoplay\; encrypte
+ d-media' allowfullscreen></iframe></p>\n<p>Am Mittwoch den <strong>18.4. u
+ m 18 Uhr</strong> ist daher im FabLab Spieleabend angesagt! Wir drehen gem
+ einsam mit den Kompass-Entwicklern eine Runde durch den Konjunkturzyklus. 
+ </p>\n<p>Wer Spaß am Spielen hat und die Kreation der beiden Cottbuser Ent
+ wickler kennen lernen möchte ist herzlich eingeladen!</p>\n</BODY></HTML>
+END:VEVENT
+BEGIN:VEVENT
+UID:ai1ec-1853@blog.fablab-cottbus.de
+DTSTAMP:20190304T162103Z
+CATEGORIES:
+CONTACT:Maximilian Voigt\; m.voigt@fablab-cottbus.de
+DESCRIPTION:Gemeinsam mit dem Verbund Brandenburger Maker sind wir dieses J
+ ahr auf der Maker Faire Berlin. Kommt uns besuchen\, entdeckt spannende Pr
+ ojekte\, lasst euch inspirieren und nehmt an den zahlreichen Workshops tei
+ l.
+DTSTART;TZID=Europe/Berlin:20180525T090000
+DTEND;TZID=Europe/Berlin:20180527T180000
+LOCATION:FEZ-Berlin - Wuhlheide
+SEQUENCE:0
+SUMMARY:Das fablabcb auf der Maker Faire
+URL:http://blog.fablab-cottbus.de/Veranstaltung/das-fablabcb-auf-der-maker-
+ faire/
+X-COST-TYPE:free
+X-ALT-DESC;FMTTYPE=text/html:<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 3.2//E
+ N'>\\n<HTML>\\n<HEAD>\\n<TITLE></TITLE>\\n</HEAD>\\n<BODY><p>Gemeinsam mit
+  dem <a href='https://brandenburger-maker.github.io/' rel='noopener' targe
+ t='_blank'>Verbund Brandenburger Maker</a> sind wir dieses Jahr auf der Ma
+ ker Faire Berlin. Kommt uns besuchen\, entdeckt spannende Projekte\, lasst
+  euch inspirieren und nehmt an den zahlreichen Workshops teil. </p>\n</BOD
+ Y></HTML>
+END:VEVENT
+BEGIN:VEVENT
+UID:ai1ec-1438@blog.fablab-cottbus.de
+DTSTAMP:20190304T162103Z
+CATEGORIES:
+CONTACT:Nanu Frechen\; nanu@fablab-cottbus.de
+DESCRIPTION:Das Repair Café finde nicht am Samstag (1.9.) sondern am Sonnta
+ g (2.9.) statt. Wir freuen uns auf euch! Die Öffnungszeit fällt am Samstag
+  ebenfalls aus.
+DTSTART;TZID=Europe/Berlin:20180901T180000
+DTEND;TZID=Europe/Berlin:20180901T200000
+LOCATION:FabLab Cottbus @ Walther-Pauer-Straße 5\, 03044 Cottbus
+SEQUENCE:0
+SUMMARY:Achtung\, verschoben: Repair Café
+URL:http://blog.fablab-cottbus.de/Veranstaltung/3d-donnerstag/
+X-COST-TYPE:free
+X-ALT-DESC;FMTTYPE=text/html:<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 3.2//E
+ N'>\\n<HTML>\\n<HEAD>\\n<TITLE></TITLE>\\n</HEAD>\\n<BODY><p>Das Repair Ca
+ fé finde nicht am Samstag (1.9.) sondern am Sonntag (2.9.) statt. Wir freu
+ en uns auf euch! Die Öffnungszeit fällt am Samstag ebenfalls aus.</p>\n</B
+ ODY></HTML>
+END:VEVENT
+BEGIN:VEVENT
+UID:ai1ec-1211@blog.fablab-cottbus.de
+DTSTAMP:20190304T162103Z
+CATEGORIES:
+CONTACT:Maximilian Voigt\; maximilian-voigt@fablab-cottbus.de
+DESCRIPTION:Dein Handy ist kaputt\, der Staubsauger streikt oder du brauchs
+ t Hilfe beim Flicken deiner Hose? Dann komm ins Fablab Cottbus! Seit dem 1
+ . November 2014 hilft das Fablab beim Selbermachen. Bring einfach mit\, wa
+ s kaputt ist und wir versuchen es gemeinsam zu reparieren – egal ob Elektr
+ onik\, Holzmöbel oder Textilien\, an dem Tag ist für jedes Problem jemand 
+ fachkundiges in der Werkstatt.\n„Ein Repair Café ist eine Selbsthilfewerks
+ tatt zur Reparatur defekter Gegenstände. Freiwillige helfen mit Wissen\, W
+ erkzeug und Kaffee sowie Rat und Tat gegen einen Unkostenbeitrag. Repair C
+ afés finden in fest oder temporär zur Verfügung gestellten Räumen wie Tech
+ nikräumen an Schulen oder Vereinsgebäuden statt. Die Idee kommt aus den Ni
+ ederlanden und hat zahlreiche Nachahmer.“ Wikipedia\nHier geht’s zur entsp
+ rechenden Wiki-Seite. Dort gibt’s mehr Informationen und Eindrücke.
+DTSTART;TZID=Europe/Berlin:20180902T140000
+DTEND;TZID=Europe/Berlin:20180902T170000
+GEO:+51.76882;+14.32321
+LOCATION:FabLab Cottbus @ Walther-Pauer-Straße 5\, 03044 Cottbus\, Deutschl
+ and
+SEQUENCE:0
+SUMMARY:Repair Café
+URL:http://blog.fablab-cottbus.de/Veranstaltung/repair-cafe/
+X-COST-TYPE:free
+X-ALT-DESC;FMTTYPE=text/html:<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 3.2//E
+ N'>\\n<HTML>\\n<HEAD>\\n<TITLE></TITLE>\\n</HEAD>\\n<BODY><p style='text-a
+ lign: justify\;'>Dein Handy ist kaputt\, der Staubsauger streikt oder du b
+ rauchst Hilfe beim Flicken deiner Hose? Dann komm ins Fablab Cottbus! Seit
+  dem 1. November 2014 hilft das Fablab beim Selbermachen. Bring einfach mi
+ t\, was kaputt ist und wir versuchen es gemeinsam zu reparieren – egal ob 
+ Elektronik\, Holzmöbel oder Textilien\, an dem Tag ist für jedes Problem j
+ emand fachkundiges in der Werkstatt.</p>\n<p style='text-align: justify\;'
+ >„Ein Repair Café ist eine Selbsthilfewerkstatt zur Reparatur defekter Geg
+ enstände. Freiwillige helfen mit Wissen\, Werkzeug und Kaffee sowie Rat un
+ d Tat gegen einen Unkostenbeitrag. Repair Cafés finden in fest oder tempor
+ är zur Verfügung gestellten Räumen wie Technikräumen an Schulen oder Verei
+ nsgebäuden statt. Die Idee kommt aus den Niederlanden und hat zahlreiche N
+ achahmer.“ Wikipedia</p>\n<p>Hier geht’s zur entsprechenden <a href='http:
+ //fablab-cottbus.de/index.php/Repair-Cafe' target='_blank' rel='noopener n
+ oreferrer'>Wiki-Seite</a>. Dort gibt’s mehr Informationen und Eindrücke.</
+ p>\n</BODY></HTML>
+END:VEVENT
+BEGIN:VEVENT
+UID:ai1ec-1903@blog.fablab-cottbus.de
+DTSTAMP:20190304T162103Z
+CATEGORIES:
+CONTACT:Dominik Ryk\; domryk@live.de
+DESCRIPTION:Du hast ein Projekt\, für das du eine eigene Internetseite baue
+ n möchtest? Oder dich interessiert einfach wie moderne Webauftritte aufgeb
+ aut sind? Beim Workshop wirst du beides lernen. Wir behandeln einfache HTM
+ L-Programmierung und wie du mithilfe von CSS individuelle Designs verwirkl
+ ichen kannst. \nDer Workshop ist kostenlos und für Einsteigende geeignet. 
+ Bitte bringt einen Laptop mit!\nJetzt anmelden
+DTSTART;TZID=Europe/Berlin:20181008T180000
+DTEND;TZID=Europe/Berlin:20181008T220000
+LOCATION:FabLabCB @ Walther-Pauer-Straße 5\, 03044 Cottbus
+SEQUENCE:0
+SUMMARY:Websites selbst programmieren
+URL:http://blog.fablab-cottbus.de/Veranstaltung/websites-selbst-programmier
+ en-2/
+X-COST-TYPE:free
+X-WP-IMAGES-URL:thumbnail\;http://blog.fablab-cottbus.de/wp-content/uploads
+ /2018/09/29cab82cd490c77f9fa66f165007e6be27dec9e3-150x150.jpeg\;150\;150\;
+ 1\,medium\;http://blog.fablab-cottbus.de/wp-content/uploads/2018/09/29cab8
+ 2cd490c77f9fa66f165007e6be27dec9e3-300x200.jpeg\;300\;200\;1\,large\;http:
+ //blog.fablab-cottbus.de/wp-content/uploads/2018/09/29cab82cd490c77f9fa66f
+ 165007e6be27dec9e3.jpeg\;500\;334\;
+X-ALT-DESC;FMTTYPE=text/html:<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 3.2//E
+ N'>\\n<HTML>\\n<HEAD>\\n<TITLE></TITLE>\\n</HEAD>\\n<BODY><div class='ai1e
+ c-event-avatar alignleft timely'><img src='http://blog.fablab-cottbus.de/w
+ p-content/uploads/2018/09/29cab82cd490c77f9fa66f165007e6be27dec9e3-300x200
+ .jpeg' width='300' height='200' /></div><p>Du hast ein Projekt\, für das d
+ u eine eigene Internetseite bauen möchtest? Oder dich interessiert einfach
+  wie moderne Webauftritte aufgebaut sind? Beim Workshop wirst du beides le
+ rnen. Wir behandeln einfache HTML-Programmierung und wie du mithilfe von C
+ SS individuelle Designs verwirklichen kannst. </p>\n<p>Der Workshop ist ko
+ stenlos und für Einsteigende geeignet. <strong>Bitte bringt einen Laptop m
+ it!</strong></p>\n<p><a href='https://www.meet-and-code.org/de/de/event-sh
+ ow/1092' rel='noopener' target='_blank'><button name='button'>Jetzt anmeld
+ en</button></a></p>\n</BODY></HTML>
+END:VEVENT
+BEGIN:VEVENT
+UID:ai1ec-1900@blog.fablab-cottbus.de
+DTSTAMP:20190304T162103Z
+CATEGORIES:
+CONTACT:Nanu Frechen\; nanu@fablab-cottbus.de
+DESCRIPTION:OpenSCAD ist eine Programmiersprache\, mit der 3D-Modelle konst
+ ruiert werden können. Wir werden verrückte mathematische Formeln ausprobie
+ ren\, mit denen sich faszinierende 3D-Objekte erstellen lassen. Wir zeigen
+  dir\, wie du Mathematik wirklich anwenden kannst – und keine Sorge: Du mu
+ sst kein Matheprofi sein! Wir helfen dir dabei die 3D-Modelle zu programmi
+ eren. Wenn noch Zeit ist\, darfst du sie auch über den 3D-Drucker testen. 
+ \nWir freuen uns auf einen spannenden Abend! \nDer Workshop ist kostenlos 
+ und für Einsteigende. Bitte bringt einen Laptop mit!\nJetzt anmelden
+DTSTART;TZID=Europe/Berlin:20181011T180000
+DTEND;TZID=Europe/Berlin:20181011T200000
+LOCATION:FabLabCB @ Walther-Pauer-Straße 5\, 03044 Cottbus
+SEQUENCE:0
+SUMMARY:3D-Modelle programmieren mit OpenSCAD
+URL:http://blog.fablab-cottbus.de/Veranstaltung/3d-modelle-programmieren-mi
+ t-openscad-2/
+X-COST-TYPE:free
+X-WP-IMAGES-URL:thumbnail\;http://blog.fablab-cottbus.de/wp-content/uploads
+ /2016/11/waage_3d-150x150.jpg\;150\;150\;1\,medium\;http://blog.fablab-cot
+ tbus.de/wp-content/uploads/2016/11/waage_3d-300x160.jpg\;300\;160\;1\,larg
+ e\;http://blog.fablab-cottbus.de/wp-content/uploads/2016/11/waage_3d.jpg\;
+ 993\;528\;
+X-ALT-DESC;FMTTYPE=text/html:<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 3.2//E
+ N'>\\n<HTML>\\n<HEAD>\\n<TITLE></TITLE>\\n</HEAD>\\n<BODY><div class='ai1e
+ c-event-avatar alignleft timely'><img src='http://blog.fablab-cottbus.de/w
+ p-content/uploads/2016/11/waage_3d-300x160.jpg' width='300' height='160' /
+ ></div><p>OpenSCAD ist eine Programmiersprache\, mit der 3D-Modelle konstr
+ uiert werden können. Wir werden verrückte mathematische Formeln ausprobier
+ en\, mit denen sich faszinierende 3D-Objekte erstellen lassen. Wir zeigen 
+ dir\, wie du Mathematik wirklich anwenden kannst – und keine Sorge: Du mus
+ st kein Matheprofi sein! Wir helfen dir dabei die 3D-Modelle zu programmie
+ ren. Wenn noch Zeit ist\, darfst du sie auch über den 3D-Drucker testen. <
+ /p>\n<p>Wir freuen uns auf einen spannenden Abend! </p>\n<p>Der Workshop i
+ st kostenlos und für Einsteigende. <strong>Bitte bringt einen Laptop mit!<
+ /strong></p>\n<p><a href='https://www.meet-and-code.org/de/de/event-show/1
+ 211' rel='noopener' target='_blank'><button name='button'>Jetzt anmelden</
+ button></a></p>\n</BODY></HTML>
+END:VEVENT
+BEGIN:VEVENT
+UID:ai1ec-1901@blog.fablab-cottbus.de
+DTSTAMP:20190304T162103Z
+CATEGORIES:
+CONTACT:Marcus Heide\; marcus.heide@outlook.com
+DESCRIPTION:Wie sauber ist die Luft\, die ich atme? Wie lassen sich eigene 
+ Messdaten erheben\, um dieser Frage auf den Grund zu gehen? Während dieses
+  Workshops baust du dir dein eigenes Sensorsystem\, das du zur Messung der
+  Feinstaubbelastung\, Temperatur und Luftfeuchtigkeit nutzen kannst. Werde
+  Teil des deutschlandweiten luftdaten.info-Netzwerkes und teile deine Date
+ n mit anderen. \nDer Workshop ist kostenlos und für Einsteigende geeignet.
+  Bitte bringt einen Laptop mit!\nJetzt anmelden
+DTSTART;TZID=Europe/Berlin:20181013T150000
+DTEND;TZID=Europe/Berlin:20181013T173000
+LOCATION:FabLabCB @ Walther-Pauer-Straße 5\, 03044 Cottbus
+SEQUENCE:0
+SUMMARY:Luftqualität: Ein Workshop zum selber messen
+URL:http://blog.fablab-cottbus.de/Veranstaltung/luftqualitaet-ein-workshop-
+ zum-selber-messen/
+X-COST-TYPE:free
+X-WP-IMAGES-URL:thumbnail\;http://blog.fablab-cottbus.de/wp-content/uploads
+ /2018/09/33947e55bab179ce8727f7b4385f8970df83b2dd-150x150.jpeg\;150\;150\;
+ 1\,medium\;http://blog.fablab-cottbus.de/wp-content/uploads/2018/09/33947e
+ 55bab179ce8727f7b4385f8970df83b2dd-300x212.jpeg\;300\;212\;1\,large\;http:
+ //blog.fablab-cottbus.de/wp-content/uploads/2018/09/33947e55bab179ce8727f7
+ b4385f8970df83b2dd.jpeg\;500\;353\;
+X-ALT-DESC;FMTTYPE=text/html:<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 3.2//E
+ N'>\\n<HTML>\\n<HEAD>\\n<TITLE></TITLE>\\n</HEAD>\\n<BODY><div class='ai1e
+ c-event-avatar alignleft timely'><img src='http://blog.fablab-cottbus.de/w
+ p-content/uploads/2018/09/33947e55bab179ce8727f7b4385f8970df83b2dd-300x212
+ .jpeg' width='300' height='212' /></div><p>Wie sauber ist die Luft\, die i
+ ch atme? Wie lassen sich eigene Messdaten erheben\, um dieser Frage auf de
+ n Grund zu gehen? Während dieses Workshops baust du dir dein eigenes Senso
+ rsystem\, das du zur Messung der Feinstaubbelastung\, Temperatur und Luftf
+ euchtigkeit nutzen kannst. Werde Teil des deutschlandweiten luftdaten.info
+ -Netzwerkes und teile deine Daten mit anderen. </p>\n<p>Der Workshop ist k
+ ostenlos und für Einsteigende geeignet. <strong>Bitte bringt einen Laptop 
+ mit!</strong></p>\n<p><a href='https://www.meet-and-code.org/de/de/event-s
+ how/1209' rel='noopener' target='_blank'><button name='button'>Jetzt anmel
+ den</button></a></p>\n</BODY></HTML>
+END:VEVENT
+BEGIN:VEVENT
+UID:ai1ec-1898@blog.fablab-cottbus.de
+DTSTAMP:20190304T162103Z
+CATEGORIES:
+CONTACT:Marcel Jongmanns\; mjongmanns@gmail.com
+DESCRIPTION:Es ist ein Einsteigerkurs für den Umgang mit Mikrocontrollern a
+ m Beispiel eines Arduino. Die Hardware und der Handhabung damit wird Stück
+  für Stück vorgestellt.\nAls Beispielanwendung wird ein Gießautomat für Pf
+ lanzen aufgebaut. Die Feuchtigkeit der Erde wird über einen Sensor erfasst
+ . Ist diese zu niedrig\, wird eine Pumpe eingeschaltet\, die Wasser in den
+  Blumentopf pumpt.\nZur Überwachung der Umgebung wird ein Sensor angeschlo
+ ssen\, der die Temperatur und Luftfeuchte aufnimmt. Die Daten lassen sich 
+ an einem PC anzeigen.\nMitbringen: Laptop mit installierter Arduino IDE. E
+ s werden weitere Libraries benötigt. \nDer Workshop ist kostenlos und für 
+ Einsteigende. Bitte bringt einen Laptop mit!\nJetzt anmelden
+DTSTART;TZID=Europe/Berlin:20181014T120000
+DTEND;TZID=Europe/Berlin:20181014T140000
+LOCATION:FabLabCB @ Walther-Pauer-Straße 5\, 03044 Cottbus Cottbus
+SEQUENCE:0
+SUMMARY:Pflanzenüberwachung mit Arduino
+URL:http://blog.fablab-cottbus.de/Veranstaltung/pflanzenueberwachung-mit-ar
+ duino/
+X-COST-TYPE:free
+X-WP-IMAGES-URL:thumbnail\;http://blog.fablab-cottbus.de/wp-content/uploads
+ /2018/09/86d14bcd26afa3a549a900db8de54d6e0a92a7a9-150x150.jpeg\;150\;150\;
+ 1\,medium\;http://blog.fablab-cottbus.de/wp-content/uploads/2018/09/86d14b
+ cd26afa3a549a900db8de54d6e0a92a7a9-300x202.jpeg\;300\;202\;1\,large\;http:
+ //blog.fablab-cottbus.de/wp-content/uploads/2018/09/86d14bcd26afa3a549a900
+ db8de54d6e0a92a7a9.jpeg\;500\;336\;
+X-ALT-DESC;FMTTYPE=text/html:<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 3.2//E
+ N'>\\n<HTML>\\n<HEAD>\\n<TITLE></TITLE>\\n</HEAD>\\n<BODY><div class='ai1e
+ c-event-avatar alignleft timely'><img src='http://blog.fablab-cottbus.de/w
+ p-content/uploads/2018/09/86d14bcd26afa3a549a900db8de54d6e0a92a7a9-300x202
+ .jpeg' width='300' height='202' /></div><p>Es ist ein Einsteigerkurs für d
+ en Umgang mit Mikrocontrollern am Beispiel eines Arduino. Die Hardware und
+  der Handhabung damit wird Stück für Stück vorgestellt.<br />\nAls Beispie
+ lanwendung wird ein Gießautomat für Pflanzen aufgebaut. Die Feuchtigkeit d
+ er Erde wird über einen Sensor erfasst. Ist diese zu niedrig\, wird eine P
+ umpe eingeschaltet\, die Wasser in den Blumentopf pumpt.<br />\nZur Überwa
+ chung der Umgebung wird ein Sensor angeschlossen\, der die Temperatur und 
+ Luftfeuchte aufnimmt. Die Daten lassen sich an einem PC anzeigen.<br />\nM
+ itbringen: Laptop mit installierter Arduino IDE. Es werden weitere Librari
+ es benötigt. </p>\n<p>Der Workshop ist kostenlos und für Einsteigende. <st
+ rong>Bitte bringt einen Laptop mit!</strong></p>\n<p><a href='https://www.
+ meet-and-code.org/de/de/event-show/1212' rel='noopener' target='_blank'><b
+ utton name='button'>Jetzt anmelden</button></a></p>\n</BODY></HTML>
+END:VEVENT
+BEGIN:VEVENT
+UID:ai1ec-1894@blog.fablab-cottbus.de
+DTSTAMP:20190304T162103Z
+CATEGORIES:
+CONTACT:Jannik Schilling\; jannik.schilling@gmail.com
+DESCRIPTION:LaTeX ist ein Compiler\, der es ermöglicht sehr ansehnliche Tex
+ tdokumente zu erstellen – ganz ohne Stress mit der Formatierung. Was benöt
+ igt wird\, sind nur ein paar Befehle. Die lernt ihr in diesem Einsteigerku
+ rs. Der ist folgendermaßen aufgebaut:\n* Einführung und Installation\n* Br
+ iefe mit Latex\n* Seminar-\, Bachelor- und andere Abschlussarbeiten\n* Prä
+ sentationen\n* Mathematische und chemische Formeln (optional)\n* Lebenslau
+ f (optional)\n* Poster (optional) \nDer Workshop ist kostenlos und für Ein
+ steigende gedacht. Bitte bringt einen Laptop mit.\nJetzt anmelden
+DTSTART;TZID=Europe/Berlin:20181018T150000
+DTEND;TZID=Europe/Berlin:20181018T180000
+LOCATION:FabLabCB @ Walther-Pauer-Straße 5\, 03044 Cottbus
+SEQUENCE:0
+SUMMARY:LaTeX für Einsteigende
+URL:http://blog.fablab-cottbus.de/Veranstaltung/latex-fuer-einsteigende/
+X-COST-TYPE:free
+X-WP-IMAGES-URL:thumbnail\;http://blog.fablab-cottbus.de/wp-content/uploads
+ /2018/09/ccbd3d10d23a14a4dcedaa7089527d384f78dd92-150x150.png\;150\;150\;1
+ \,medium\;http://blog.fablab-cottbus.de/wp-content/uploads/2018/09/ccbd3d1
+ 0d23a14a4dcedaa7089527d384f78dd92-261x300.png\;261\;300\;1\,large\;http://
+ blog.fablab-cottbus.de/wp-content/uploads/2018/09/ccbd3d10d23a14a4dcedaa70
+ 89527d384f78dd92.png\;500\;575\;
+X-ALT-DESC;FMTTYPE=text/html:<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 3.2//E
+ N'>\\n<HTML>\\n<HEAD>\\n<TITLE></TITLE>\\n</HEAD>\\n<BODY><div class='ai1e
+ c-event-avatar alignleft timely'><img src='http://blog.fablab-cottbus.de/w
+ p-content/uploads/2018/09/ccbd3d10d23a14a4dcedaa7089527d384f78dd92-261x300
+ .png' width='261' height='300' /></div><p>LaTeX ist ein Compiler\, der es 
+ ermöglicht sehr ansehnliche Textdokumente zu erstellen – ganz ohne Stress 
+ mit der Formatierung. Was benötigt wird\, sind nur ein paar Befehle. Die l
+ ernt ihr in diesem Einsteigerkurs. Der ist folgendermaßen aufgebaut:</p>\n
+ <p>* Einführung und Installation<br />\n* Briefe mit Latex<br />\n* Semina
+ r-\, Bachelor- und andere Abschlussarbeiten<br />\n* Präsentationen<br />
+ \n* Mathematische und chemische Formeln (optional)<br />\n* Lebenslauf (op
+ tional)<br />\n* Poster (optional) </p>\n<p>Der Workshop ist kostenlos und
+  für Einsteigende gedacht. <strong>Bitte bringt einen Laptop mit.</strong>
+ </p>\n<p><a href='https://www.meet-and-code.org/de/de/event-show/1221' rel
+ ='noopener' target='_blank'><button name='button'>Jetzt anmelden</button><
+ /a></p>\n</BODY></HTML>
+END:VEVENT
+BEGIN:VEVENT
+UID:ai1ec-1890@blog.fablab-cottbus.de
+DTSTAMP:20190304T162103Z
+CATEGORIES:
+CONTACT:Christian Hanisch\; christian.hanisch@fablab-cottbus.de
+DESCRIPTION:Wie kann ich mein Smartphone google-frei bekommen? Im Workshop 
+ lernst du verschiedene Alternativen kennen und wir helfen dir dabei dein e
+ igenes Gerät einzurichten.\nAblauf :\n-Welche Betriebssysteme für Smartpho
+ nes gibt es?\n-Wo liegen Vor-/Nachteile\n-Vorbereitung der Installation\n-
+ Praktische Anwendung \nDer Workshop ist kostenlos. Bitte bringt einen Lapt
+ op und ggf. ein funktionierendes Smartphone mit.\nJetzt anmelden
+DTSTART;TZID=Europe/Berlin:20181019T150000
+DTEND;TZID=Europe/Berlin:20181019T180000
+LOCATION:FabLabCB @ Walther-Pauer-Straße 5\, 03044 Cottbus
+SEQUENCE:0
+SUMMARY:Alternative Betriebssysteme für das Smartphone
+URL:http://blog.fablab-cottbus.de/Veranstaltung/alternative-betriebssysteme
+ -fuer-das-smartphone/
+X-COST-TYPE:free
+X-WP-IMAGES-URL:thumbnail\;http://blog.fablab-cottbus.de/wp-content/uploads
+ /2018/09/5d5a7747ad81bfbef98132c8ffb1f4a76df783d3-150x150.jpeg\;150\;150\;
+ 1\,medium\;http://blog.fablab-cottbus.de/wp-content/uploads/2018/09/5d5a77
+ 47ad81bfbef98132c8ffb1f4a76df783d3-300x200.jpeg\;300\;200\;1\,large\;http:
+ //blog.fablab-cottbus.de/wp-content/uploads/2018/09/5d5a7747ad81bfbef98132
+ c8ffb1f4a76df783d3.jpeg\;500\;333\;
+X-ALT-DESC;FMTTYPE=text/html:<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 3.2//E
+ N'>\\n<HTML>\\n<HEAD>\\n<TITLE></TITLE>\\n</HEAD>\\n<BODY><div class='ai1e
+ c-event-avatar alignleft timely'><img src='http://blog.fablab-cottbus.de/w
+ p-content/uploads/2018/09/5d5a7747ad81bfbef98132c8ffb1f4a76df783d3-300x200
+ .jpeg' width='300' height='200' /></div><p>Wie kann ich mein Smartphone go
+ ogle-frei bekommen? Im Workshop lernst du verschiedene Alternativen kennen
+  und wir helfen dir dabei dein eigenes Gerät einzurichten.</p>\n<p>Ablauf 
+ :</p>\n<p>-Welche Betriebssysteme für Smartphones gibt es?<br />\n-Wo lieg
+ en Vor-/Nachteile<br />\n-Vorbereitung der Installation<br />\n-Praktische
+  Anwendung </p>\n<p>Der Workshop ist kostenlos. <strong>Bitte bringt einen
+  Laptop und ggf. ein funktionierendes Smartphone mit.</strong></p>\n<p><a 
+ href='https://www.meet-and-code.org/de/de/event-show/1221' rel='noopener' 
+ target='_blank'><button name='button'>Jetzt anmelden</button></a></p>\n</B
+ ODY></HTML>
+END:VEVENT
+BEGIN:VEVENT
+UID:ai1ec-1892@blog.fablab-cottbus.de
+DTSTAMP:20190304T162103Z
+CATEGORIES:
+CONTACT:Maximilian Voigt\; m.voigt@fablab-cottbus.de
+DESCRIPTION:Täglich vermessen tausende technische Geräte mithilfe von Senso
+ ren unsere Umwelt\, reagieren anhand der Ergebnisse oder speichern sie in 
+ Datenbanken ab. Sind die Daten einmal erfasst\, wirken sie wie kleine Wahr
+ heiten\, mit denen wir z.B. die Wasser- oder Luftqualität erforschen. Auf 
+ dem Weg dahin kann aber vieles schiefgehen. Für unseren Alltag ist es also
+  gut zu wissen\, wie solche Daten entstehen\, um Fehler erkennen und inter
+ pretieren zu können. Thema dieses Workshops ist jener Weg\, vom natürliche
+ n Ereignis zum digitalen Zahlenwert.\nAm Beispiel eines Temperatursensors\
+ , eines sogenannten Heißleiters oder auch Thermistors\, werden wir gemeins
+ am mit Marie erforschen\, was beim Erfassen einer Temperatur passiert. \nD
+ er Workshop ist kostenlos und für Einsteigende gedacht. Bitte bringt eure 
+ Notebooks mit!\nJetzt anmelden
+DTSTART;TZID=Europe/Berlin:20181020T130000
+DTEND;TZID=Europe/Berlin:20181020T170000
+LOCATION:FabLabCB @ Walther-Pauer-Straße 5\, 03044 Cottbus
+SEQUENCE:0
+SUMMARY:Vom physikalische Ereignis zum Datensatz
+URL:http://blog.fablab-cottbus.de/Veranstaltung/vom-physikalische-ereignis-
+ zum-datensatz/
+X-COST-TYPE:free
+X-WP-IMAGES-URL:thumbnail\;http://blog.fablab-cottbus.de/wp-content/uploads
+ /2018/09/8923285b3413f9a82afd63ecf224afcddb6ede50-150x150.jpeg\;150\;150\;
+ 1\,medium\;http://blog.fablab-cottbus.de/wp-content/uploads/2018/09/892328
+ 5b3413f9a82afd63ecf224afcddb6ede50-300x99.jpeg\;300\;99\;1\,large\;http://
+ blog.fablab-cottbus.de/wp-content/uploads/2018/09/8923285b3413f9a82afd63ec
+ f224afcddb6ede50.jpeg\;500\;165\;
+X-ALT-DESC;FMTTYPE=text/html:<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 3.2//E
+ N'>\\n<HTML>\\n<HEAD>\\n<TITLE></TITLE>\\n</HEAD>\\n<BODY><div class='ai1e
+ c-event-avatar alignleft timely'><img src='http://blog.fablab-cottbus.de/w
+ p-content/uploads/2018/09/8923285b3413f9a82afd63ecf224afcddb6ede50-300x99.
+ jpeg' width='300' height='99' /></div><p>Täglich vermessen tausende techni
+ sche Geräte mithilfe von Sensoren unsere Umwelt\, reagieren anhand der Erg
+ ebnisse oder speichern sie in Datenbanken ab. Sind die Daten einmal erfass
+ t\, wirken sie wie kleine Wahrheiten\, mit denen wir z.B. die Wasser- oder
+  Luftqualität erforschen. Auf dem Weg dahin kann aber vieles schiefgehen. 
+ Für unseren Alltag ist es also gut zu wissen\, wie solche Daten entstehen\
+ , um Fehler erkennen und interpretieren zu können. Thema dieses Workshops 
+ ist jener Weg\, vom natürlichen Ereignis zum digitalen Zahlenwert.</p>\n<p
+ >Am Beispiel eines Temperatursensors\, eines sogenannten Heißleiters oder 
+ auch Thermistors\, werden wir gemeinsam mit Marie erforschen\, was beim Er
+ fassen einer Temperatur passiert. </p>\n<p>Der Workshop ist kostenlos und 
+ für Einsteigende gedacht. <strong>Bitte bringt eure Notebooks mit!</strong
+ ></p>\n<p><a href='https://www.meet-and-code.org/de/de/event-show/1216' re
+ l='noopener' target='_blank'><button name='button'>Jetzt anmelden</button>
+ </a></p>\n</BODY></HTML>
+END:VEVENT
+BEGIN:VEVENT
+UID:ai1ec-1896@blog.fablab-cottbus.de
+DTSTAMP:20190304T162103Z
+CATEGORIES:
+CONTACT:Marcel Jongmanns\; mjongmanns@gmail.com
+DESCRIPTION:Ein Mikrofon wird an den Arduino angeschlossen und das analoge 
+ Signal abgetastet. Die abgetasteten Daten werden mit einer Frequenzanalyse
+  (FFT) analysiert. Keine Angst! Die Mathematik dahinter ist kein Thema. Es
+  wird lediglich erklärt\, welche Daten benötigt werden und was die berechn
+ eten Zahlen bedeuten. Mit einfachen statistischen Mitteln ist es nun mögli
+ ch z.B. die Farbe einer RGB LED abhängig von der Frequenz und Amplitude de
+ s Signales zu modulieren.\nBitte mitbringen: Laptop mit installierter Ardu
+ ino IDE. Es werden weitere Libraries benötigt.\nVorraussetzung: Es sollte 
+ bereits Programmiererfahrung vorhanden sein (Analogeingang\, Timer\, Array
+ s\, Datentypen). Mathekenntnisse von Vorteil (Grundrechenarten\, Interpola
+ tion\, Mittelwert). \nDer Workshop ist kostenlos und für Fortgeschrittene.
+  Bitte bringt einen Laptop mit!\nJetzt anmelden
+DTSTART;TZID=Europe/Berlin:20181021T120000
+DTEND;TZID=Europe/Berlin:20181021T160000
+LOCATION:FabLabCB @ Walther-Pauer-Straße 5\, 03044 Cottbus
+SEQUENCE:0
+SUMMARY:Audiogesteuerte Lichter
+URL:http://blog.fablab-cottbus.de/Veranstaltung/audiogesteuerte-lichter/
+X-COST-TYPE:free
+X-WP-IMAGES-URL:thumbnail\;http://blog.fablab-cottbus.de/wp-content/uploads
+ /2018/09/7bc2e0373505d888e6d2c46266003f8a06238ef1-150x150.jpeg\;150\;150\;
+ 1\,medium\;http://blog.fablab-cottbus.de/wp-content/uploads/2018/09/7bc2e0
+ 373505d888e6d2c46266003f8a06238ef1-300x199.jpeg\;300\;199\;1\,large\;http:
+ //blog.fablab-cottbus.de/wp-content/uploads/2018/09/7bc2e0373505d888e6d2c4
+ 6266003f8a06238ef1.jpeg\;500\;331\;
+X-ALT-DESC;FMTTYPE=text/html:<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 3.2//E
+ N'>\\n<HTML>\\n<HEAD>\\n<TITLE></TITLE>\\n</HEAD>\\n<BODY><div class='ai1e
+ c-event-avatar alignleft timely'><img src='http://blog.fablab-cottbus.de/w
+ p-content/uploads/2018/09/7bc2e0373505d888e6d2c46266003f8a06238ef1-300x199
+ .jpeg' width='300' height='199' /></div><p>Ein Mikrofon wird an den Arduin
+ o angeschlossen und das analoge Signal abgetastet. Die abgetasteten Daten 
+ werden mit einer Frequenzanalyse (FFT) analysiert. Keine Angst! Die Mathem
+ atik dahinter ist kein Thema. Es wird lediglich erklärt\, welche Daten ben
+ ötigt werden und was die berechneten Zahlen bedeuten. Mit einfachen statis
+ tischen Mitteln ist es nun möglich z.B. die Farbe einer RGB LED abhängig v
+ on der Frequenz und Amplitude des Signales zu modulieren.<br />\nBitte mit
+ bringen: Laptop mit installierter Arduino IDE. Es werden weitere Libraries
+  benötigt.<br />\nVorraussetzung: Es sollte bereits Programmiererfahrung v
+ orhanden sein (Analogeingang\, Timer\, Arrays\, Datentypen). Mathekenntnis
+ se von Vorteil (Grundrechenarten\, Interpolation\, Mittelwert). </p>\n<p>D
+ er Workshop ist kostenlos und für Fortgeschrittene. <strong>Bitte bringt e
+ inen Laptop mit!</strong></p>\n<p><a href='https://www.meet-and-code.org/d
+ e/de/event-show/1213' rel='noopener' target='_blank'><button name='button'
+ >Jetzt anmelden</button></a></p>\n</BODY></HTML>
+END:VEVENT
+END:VCALENDAR

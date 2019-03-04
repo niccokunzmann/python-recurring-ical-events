@@ -35,7 +35,7 @@ def convert_to_datetime(date, tzinfo):
     return date
 
 def time_span_contains_event(span_start, span_stop, event_start, event_stop,
-        include_start=True, include_stop=True):
+        include_start=True, include_stop=True, comparable=False):
     """Return whether an event should is included within a time span.
 
     - span_start and span_stop define the time span
@@ -44,20 +44,37 @@ def time_span_contains_event(span_start, span_stop, event_start, event_stop,
         time span should be included
     - include_stop defines whether events overlapping the stop of the
         time span should be included
+    - comparable indicates whether the dates can be compared.
+        You can set it to True if you are sure you have timezones and
+        date/datetime correctly or used make_comparable() before.
     """
-    tzinfo = getattr(span_start, "tzinfo", None) or \
-        getattr(span_stop, "tzinfo", None) or \
-        getattr(event_start, "tzinfo", None) or \
-        getattr(event_stop, "tzinfo", None)
-    span_start = convert_to_datetime(span_start, tzinfo)
-    span_stop = convert_to_datetime(span_stop, tzinfo)
-    event_start = convert_to_datetime(event_start, tzinfo)
-    event_stop = convert_to_datetime(event_stop, tzinfo)
+    if not comparable:
+        span_start, span_stop, event_start, event_stop = make_comparable((
+            span_start, span_stop, event_start, event_stop
+        ))
     assert event_start <= event_stop, "the event must start before it ends"
     assert span_start <= span_stop, "the time span must start before it ends"
     return (include_start or span_start <= event_start) and \
         (include_stop or event_stop <= span_stop) and \
         (event_start <= span_stop and span_start <= event_stop)
+
+
+def make_comparable(dates):
+    """Make an list or tuple of dates comparable.
+
+    Returns an list.
+    """
+    tzinfo = None
+    for date in dates:
+        tzinfo = getattr(date, "tzinfo", None)
+        if tzinfo is not None:
+            break
+    return [convert_to_datetime(date, tzinfo) for date in dates]
+
+def compare_greater(date1, date2):
+    """Compare two dates if date1 > date2 and make them comparable before."""
+    date1, date2 = make_comparable((date1, date2))
+    return date1 > date2
 
 class UnfoldableCalendar:
 
@@ -70,12 +87,12 @@ class UnfoldableCalendar:
     def to_datetime(date):
         """Convert date inputs of various sorts into a datetime object."""
         if isinstance(date, tuple):
-            return datetime.datetime(*date, tzinfo=pytz.utc)
+            return datetime.datetime(*date)
         elif isinstance(date, str):
             # see https://docs.python.org/2/library/datetime.html#strftime-strptime-behavior
             if len(date) == 8:
-                return datetime.datetime.strptime(date, "%Y%m%d").replace(tzinfo=pytz.utc)
-            return datetime.datetime.strptime(date, "%Y%m%dT%H%M%SZ").replace(tzinfo=pytz.utc)
+                return datetime.datetime.strptime(date, "%Y%m%d")
+            return datetime.datetime.strptime(date, "%Y%m%dT%H%M%SZ")
         return date
 
     def all(self):
@@ -112,16 +129,17 @@ class UnfoldableCalendar:
                 rule_string = event_rrule.to_ical().decode()
                 rule = rruleset()
                 rule.rrule(rrulestr(rule_string, dtstart=event_start))
-                print(event_start, "<", span_start, "==", event_start < span_start)
-                if event_start < span_start:
-                    rule.exrule(rrule(DAILY, dtstart=event_start, until=span_start)) # TODO: test overlap with -event_duration
+                print(event_start, "<", span_start, "==", compare_greater(span_start, event_start))
+                if compare_greater(span_start, event_start):
+                    c_event_start, c_span_start = make_comparable((event_start, span_start))
+                    rule.exrule(rrule(DAILY, dtstart=c_event_start, until=c_span_start)) # TODO: test overlap with -event_duration
                 exdates = event.get("EXDATE", [])
-                for exdates in ([exdates] if not isinstance(exdates, list) else exdates):
+                for exdates in ((exdates,) if not isinstance(exdates, list) else exdates):
                     for exdate in exdates.dts:
                         rule.exdate(exdate.dt)
                 for revent_start in rule:
-                    print(revent_start, ">", span_stop, "==", revent_start > span_stop)
-                    if revent_start > span_stop:
+                    print(revent_start, ">", span_stop, "==", compare_greater(revent_start, span_stop))
+                    if compare_greater(revent_start, span_stop):
                         break
                     revent_stop = revent_start + event_duration
                     if time_span_contains_event(span_start, span_stop, revent_start, revent_stop):
