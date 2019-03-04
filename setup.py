@@ -11,7 +11,7 @@ PACKAGE_NAME = "recurring_ical_events"
 HERE = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, HERE)  # for package import
 
-__version__ = "0.0.5a"
+__version__ = "0.0.6a"
 __author__ = 'Nicco Kunzmann'
 
 
