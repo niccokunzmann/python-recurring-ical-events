@@ -120,7 +120,7 @@ class UnfoldableCalendar:
                 continue
             event_rrule = event.get("RRULE", None)
             event_start = event["DTSTART"].dt
-            event_end = event["DTEND"].dt
+            event_end = event.get("DTEND", event["DTSTART"]).dt
             event_duration = event_end - event_start
             if event_rrule is None:
                 if time_span_contains_event(span_start, span_stop, event_start, event_end):
