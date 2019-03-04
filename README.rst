@@ -21,17 +21,20 @@ This tool takes care of these circumstances.
 Let's put our expertise together and build a tool that can solve this!
 
 * day light saving time
-* recurring events
-* recurring events with edits
-* recurring events where events are omitted
-* recurring events events where the edit took place later
-* normal events
-* recurrence of dates but not hours, minutes, and smaller
-* endless recurrence
-* ending recurrence
-* events with start date and no and date
-* events with start as date and start as datetime
-* RRULE, RDATE, EXDATE
+* recurring events (DONE)
+* recurring events with edits (DONE)
+* recurring events where events are omitted (DONE)
+* recurring events events where the edit took place later (DONE)
+* normal events (DONE)
+* recurrence of dates but not hours, minutes, and smaller (DONE)
+* endless recurrence (DONE)
+* ending recurrence (DONE)
+* events with start date and no end date (DONE)
+* events with start as date and start as datetime (DONE)
+* RRULE (DONE)
+* RDATE
+* EXRULE
+* EXDATE (DONE)
 
 .. code-block:: python
 
