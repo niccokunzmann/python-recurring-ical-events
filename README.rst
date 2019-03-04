@@ -72,7 +72,8 @@ Development
 
         pytest
 
-Releasing new versions:
+To release new versions, edit setup.py, the ``__version__`` variable and run
+
 
 .. code-block:: shell
 
