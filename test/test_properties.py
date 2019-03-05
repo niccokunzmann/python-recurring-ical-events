@@ -28,4 +28,5 @@ def test_attributes_are_not_copied(todo):
     - rrule
     - exdate
     - rdate
+    - dtend if not given
     """
