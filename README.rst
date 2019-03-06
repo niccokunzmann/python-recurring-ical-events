@@ -86,6 +86,7 @@ To release new versions, edit setup.py, the ``__version__`` variable and run
 Research
 --------
 
+- `RFC 5545 <https://tools.ietf.org/html/rfc5545>`_
 - `<https://stackoverflow.com/questions/30913824/ical-library-to-iterate-recurring-events-with-specific-instances>`_
 - `<https://github.com/oberron/annum>`_
   - `<https://stackoverflow.com/questions/28829261/python-ical-get-events-for-a-day-including-recurring-ones#28829401>`_

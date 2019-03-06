@@ -84,3 +84,16 @@ def test_time_span_inclusion(
         span_start, span_stop, event_start, event_stop,
         include_start, include_stop
         ) == result, message
+
+def test_end_time(todo):
+    """The end of the VEVENT is exclusive, see RFC5545
+
+    Note that the "DTEND" property is
+        set to July 9th, 2007, since the "DTEND" property specifies the
+        non-inclusive end of the event.
+
+    Tests:
+    - We should not include an event which ends at a requested start date.
+    - We should include an event which ends at an end date but is included
+      in the range.
+    """
