@@ -138,11 +138,13 @@ class UnfoldableCalendar:
         def add_event(event):
             """Add an event and check if it was edited."""
             same_events = events_by_id[event["UID"]] # TODO: test what comes first
-            start = event.get("RECURRENCE-ID", event["DTSTART"]).dt
-            other = same_events.get(start, None)
-            if other:
+            recurrence_id = event.get("RECURRENCE-ID", event["DTSTART"]).dt
+            other = same_events.get(recurrence_id, None)
+            if other: # TODO: test that this is independet of order
+                if event["SEQUENCE"] < other["SEQUENCE"]:
+                    return
                 events.remove(other)
-            same_events[start] = event
+            same_events[recurrence_id] = event
             events.append(event)
 
         for event in self.calendar.walk():
