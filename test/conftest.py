@@ -40,7 +40,7 @@ class ReversedCalendars(Calendars):
 
     def get_calendar(self, content):
         """Calendar traversing events in reversed order."""
-        calendar = super().get_calendar(content)
+        calendar = Calendars.get_calendar(self, content)
         _walk = calendar.walk
         def walk():
             """Return properties in reversed order."""
