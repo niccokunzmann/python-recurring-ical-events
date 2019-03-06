@@ -60,8 +60,9 @@ def test_events_are_scheduled(calendars, date):
     (2018, 9), (2018, 10), (2018, 11), (2018, 12),
     (2019, 1), (2019, 2), (2019, 3), (2019, 4), (2019, 5), (2019, 6), (2019, 7),
 ])
-def test_no_more_events_are_scheduled(calendars, month, todo):
+def test_no_more_events_are_scheduled(calendars, month):
     dates = [date for date in mbOnTourDates if date[:2] == month]
     number_of_dates = len(dates)
     events = calendars.machbar_16_feb_2019.at(month)
-    assert len(events) == number_of_dates
+    mb_events = [event for event in events if "mB-onTour" in event["SUMMARY"]]
+    assert len(mb_events) == number_of_dates
