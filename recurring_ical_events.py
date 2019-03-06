@@ -97,12 +97,37 @@ class UnfoldableCalendar:
 
     def all(self):
         """Returns all events."""
+        # TODO: test MAX and MIN values
         return self.between((1000, 1, 1), (3000, 1, 1))
 
-    def at(self, day):
-        """Return all events within the next 24 hours of starting at the given day."""
-        day = self.to_datetime(day)
-        return self.between(day, day + datetime.timedelta(1))
+    _DELTAS = [
+        datetime.timedelta(days=1),
+        datetime.timedelta(hours=1),
+        datetime.timedelta(minutes=1),
+        datetime.timedelta(seconds=1)
+    ]
+
+    def at(self, date):
+        """Return all events within the next 24 hours of starting at the given day.
+
+        - date can be a year like (2019,) or 2099
+        - a month like (2019, 1) for January of 2019
+        - a day like (2019, 1, 1) for the first of January 2019
+        - a day with hours, (2019, 1, 1, 1)
+        - a day with minutes, (2019, 1, 1, 1, 1)
+        - a day with seconds, (2019, 1, 1, 1, 1, 1)
+        """
+        if isinstance(date, int):
+            date = (date,)
+        if len(date) == 1:
+            return self.between((date[0], 1, 1), (date[0] + 1, 1, 1))
+        if len(date) == 2:
+            year, month = date
+            if month == 12:
+                return self.between((year, 12, 1), (year + 1, 1, 1))
+            return self.between((year, month, 1), (year, month + 1, 1))
+        datetime = self.to_datetime(date)
+        return self.between(datetime, datetime + self._DELTAS[len(date) - 3])
 
     def between(self, start, stop): # TODO: add parameters from time_span_contains_event
         """Return events at a time between start (inclusive) and end (inclusive)"""

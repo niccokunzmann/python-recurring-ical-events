@@ -1,4 +1,5 @@
 import datetime
+import pytest
 
 def test_fablab_cottbus(calendars):
     """This calendar threw an exception.
@@ -43,3 +44,24 @@ def test_date_events_are_in_the_date(calendars):
     event = events[0]
     assert event["SUMMARY"] == "Germany: Mother's Day [Not a public holiday]"
     assert isinstance(event["DTSTART"].dt, datetime.date)
+
+mbOnTourDates = [
+    (2018, 9, 22), (2018, 10, 20), (2018, 11, 17), (2018, 12, 8),
+    (2019, 1, 12), (2019, 1, 27), (2019, 2, 9), (2019, 2, 24),
+    (2019, 3, 23), (2019, 4, 27), (2019, 5, 25), (2019, 6, 22),
+]
+
+@pytest.mark.parametrize("date", mbOnTourDates)
+def test_events_are_scheduled(calendars, date):
+    events = calendars.machbar_16_feb_2019.at(date)
+    assert len(events) == 1
+
+@pytest.mark.parametrize("month", [
+    (2018, 9), (2018, 10), (2018, 11), (2018, 12),
+    (2019, 1), (2019, 2), (2019, 3), (2019, 4), (2019, 5), (2019, 6), (2019, 7),
+])
+def test_no_more_events_are_scheduled(calendars, month, todo):
+    dates = [date for date in mbOnTourDates if date[:2] == month]
+    number_of_dates = len(dates)
+    events = calendars.machbar_16_feb_2019.at(month)
+    assert len(events) == number_of_dates
