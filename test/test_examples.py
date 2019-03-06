@@ -65,6 +65,4 @@ def test_no_more_events_are_scheduled(calendars, month):
     number_of_dates = len(dates)
     events = calendars.machbar_16_feb_2019.at(month)
     mb_events = [event for event in events if "mB-onTour" in event["SUMMARY"]]
-    for event in mb_events:
-        print(event.to_ical().decode())
     assert len(mb_events) == number_of_dates
