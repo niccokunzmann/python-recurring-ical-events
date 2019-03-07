@@ -1,6 +1,6 @@
 """This tests the values of the event even when edited."""
 import pytest
-
+import datetime
 
 def test_two_events_have_the_same_values(calendars):
     events = calendars.three_events_one_edited.all()
@@ -35,3 +35,15 @@ def test_event_moved_in_time(calendars, date, hour):
     assert len(events) == 1
     event = events[0]
     assert event["DTSTART"].dt.hour == hour
+
+@pytest.mark.parametrize("date,duration", [
+    ((2019, 3, 7), datetime.timedelta(hours=1)),
+    ((2019, 3, 8), datetime.timedelta(hours=2)),
+    ((2019, 3, 9), datetime.timedelta(minutes=30)),
+    ((2019, 3, 10), datetime.timedelta(days=1)),
+])
+def test_event_moved_in_time(calendars, date, duration):
+    events = calendars.recurring_events_changed_duration.at(date)
+    assert len(events) == 1
+    event = events[0]
+    assert event["DTEND"].dt - event["DTSTART"].dt == duration

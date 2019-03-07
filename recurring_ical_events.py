@@ -56,7 +56,7 @@ def time_span_contains_event(span_start, span_stop, event_start, event_stop,
     assert span_start <= span_stop, "the time span must start before it ends"
     return (include_start or span_start <= event_start) and \
         (include_stop or event_stop <= span_stop) and \
-        (event_start <= span_stop and span_start <= event_stop)
+        (event_start < span_stop and span_start <= event_stop)
 
 
 def make_comparable(dates):

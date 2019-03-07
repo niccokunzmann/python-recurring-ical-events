@@ -39,7 +39,7 @@ def test_no_dtend(calendars):
 
 
 def test_date_events_are_in_the_date(calendars):
-    events = calendars.Germany.between("20140511T000000Z", "20140511T000000Z")
+    events = calendars.Germany.at((2014, 5, 11))
     assert len(events) == 1
     event = events[0]
     assert event["SUMMARY"] == "Germany: Mother's Day [Not a public holiday]"
