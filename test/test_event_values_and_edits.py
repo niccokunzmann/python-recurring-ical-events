@@ -1,4 +1,6 @@
 """This tests the values of the event even when edited."""
+import pytest
+
 
 def test_two_events_have_the_same_values(calendars):
     events = calendars.three_events_one_edited.all()
@@ -21,3 +23,15 @@ def test_edited_event_as_part_of_exdate(todo):
 
 def test_edited_event_as_part_of_exrule(todo):
     """What happens when an edited event is part of the exrule?"""
+
+@pytest.mark.parametrize("date,hour", [
+    ((2019, 3, 7), 2),
+    ((2019, 3, 8), 1),
+    ((2019, 3, 9), 3),
+    ((2019, 3, 10), 2),
+])
+def test_event_moved_in_time(calendars, date, hour):
+    events = calendars.recurring_events_moved.at(date)
+    assert len(events) == 1
+    event = events[0]
+    assert event["DTSTART"].dt.hour == hour
