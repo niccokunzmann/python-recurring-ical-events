@@ -42,7 +42,7 @@ METADATA = dict(
     author_email='niccokunzmann@rambler.ru',
     description='A module which unfolds ICalendar events.',
     license='LGPLv3+',
-    url='https://github.com/niccokunzmann/' + PACKAGE_NAME,
+    url='https://github.com/niccokunzmann/python-recurring-ical-events',
     keywords='icalendar',
 )
 
