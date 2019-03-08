@@ -47,7 +47,7 @@ Let's put our expertise together and build a tool that can solve this!
     end_date =   (2019, 4, 1)
     url = "http://tinyurl.com/y24m3r8f"
 
-    ical_string = urllib.request.urlopen(url).read() # https://stackoverflow.com/a/645318
+    ical_string = urllib.request.urlopen(url).read()
     calendar = icalendar.Calendar.from_ical(ical_string)
     events = recurring_ical_events.of(calendar).between(start_date, end_date)
     for event in events:
