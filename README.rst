@@ -36,6 +36,17 @@ Let's put our expertise together and build a tool that can solve this!
 * EXRULE
 * EXDATE (DONE)
 
+
+Installation
+------------
+
+.. code:: shell
+
+    pip install python-recurring-ical-events
+
+Example
+-------
+
 .. code-block:: python
 
     import icalendar
@@ -53,21 +64,19 @@ Let's put our expertise together and build a tool that can solve this!
         start = event["DTSTART"].dt
         duration = event["DTEND"].dt - event["DTSTART"].dt
         print("start {} duration {}".format(start, duration))
-    # start 2019-03-18 04:00:00+01:00 duration 1:00:00
-    # start 2019-03-20 04:00:00+01:00 duration 1:00:00
-    # start 2019-03-19 04:00:00+01:00 duration 1:00:00
-    # start 2019-03-07 02:00:00+01:00 duration 1:00:00
-    # start 2019-03-08 01:00:00+01:00 duration 2:00:00
-    # start 2019-03-09 03:00:00+01:00 duration 0:30:00
-    # start 2019-03-10 duration 1 day, 0:00:00
+
+Output:
+
+.. code-block::
+    start 2019-03-18 04:00:00+01:00 duration 1:00:00
+    start 2019-03-20 04:00:00+01:00 duration 1:00:00
+    start 2019-03-19 04:00:00+01:00 duration 1:00:00
+    start 2019-03-07 02:00:00+01:00 duration 1:00:00
+    start 2019-03-08 01:00:00+01:00 duration 2:00:00
+    start 2019-03-09 03:00:00+01:00 duration 0:30:00
+    start 2019-03-10 duration 1 day, 0:00:00
 
 
-Installation
-------------
-
-.. code:: shell
-
-    pip install python-recurring-ical-events
 
 Development
 -----------
@@ -98,7 +107,7 @@ Research
 --------
 
 - `RFC 5545 <https://tools.ietf.org/html/rfc5545>`_
-- `<https://stackoverflow.com/questions/30913824/ical-library-to-iterate-recurring-events-with-specific-instances>`_
+- `Stackoverflow question this is created for <https://stackoverflow.com/questions/30913824/ical-library-to-iterate-recurring-events-with-specific-instances>`_
 - `<https://github.com/oberron/annum>`_
   - `<https://stackoverflow.com/questions/28829261/python-ical-get-events-for-a-day-including-recurring-ones#28829401>`_
 - `<https://stackoverflow.com/questions/20268204/ical-get-date-from-recurring-event-by-rrule-and-dtstart>`_
