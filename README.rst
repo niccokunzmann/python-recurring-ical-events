@@ -88,7 +88,7 @@ Development
 2. Install the packages.
     .. code-block:: shell
 
-        pip install -r requirements.txt test-requirements.txt
+        pip install -r requirements.txt -r test-requirements.txt
 3. Run the tests
     .. code-block:: shell
 
