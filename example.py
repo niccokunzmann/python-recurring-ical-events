@@ -1,5 +1,4 @@
 import icalendar
-import datetime
 import recurring_ical_events
 import urllib.request
 

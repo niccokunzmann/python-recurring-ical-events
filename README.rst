@@ -39,7 +39,6 @@ Let's put our expertise together and build a tool that can solve this!
 .. code-block:: python
 
     import icalendar
-    import datetime
     import recurring_ical_events
     import urllib.request
 
