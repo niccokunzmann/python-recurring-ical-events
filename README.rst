@@ -68,6 +68,7 @@ Example
 Output:
 
 .. code-block::
+
     start 2019-03-18 04:00:00+01:00 duration 1:00:00
     start 2019-03-20 04:00:00+01:00 duration 1:00:00
     start 2019-03-19 04:00:00+01:00 duration 1:00:00
@@ -75,8 +76,6 @@ Output:
     start 2019-03-08 01:00:00+01:00 duration 2:00:00
     start 2019-03-09 03:00:00+01:00 duration 0:30:00
     start 2019-03-10 duration 1 day, 0:00:00
-
-
 
 Development
 -----------
