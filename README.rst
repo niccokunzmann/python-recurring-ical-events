@@ -33,8 +33,12 @@ Let's put our expertise together and build a tool that can solve this!
 * events with start as date and start as datetime (DONE)
 * RRULE (DONE)
 * RDATE
-* EXRULE
 * EXDATE (DONE)
+
+Not included:
+
+* EXRULE (deprecated), see `8.3.2.  Properties Registry
+    <https://tools.ietf.org/html/rfc5545#section-8.3.2>`_
 
 
 Installation
