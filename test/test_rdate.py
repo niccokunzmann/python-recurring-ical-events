@@ -48,7 +48,7 @@ Property Name:  RDATE
 def test_rdate_is_included(todo):
     pass
 
-def test_rdate_is_does_not_double_rrule_entry(todo):
+def test_rdate_does_not_double_rrule_entry(todo):
     pass
 
 def test_rdate_can_be_excluded_by_exdate(todo):
@@ -62,4 +62,16 @@ def test_period_as_rdate(todo):
 
     Value Type:  The default value type for this property is DATE-TIME.
        The value type can be set to DATE or PERIOD.
+    """
+
+def test_recurrence_length(todo):
+    """
+    When the combination of the "RRULE" and "RDATE" properties in a
+    recurring component produces multiple instances having the same
+    start DATE-TIME value, they should be collapsed to, and
+    considered as, a single instance.  If the "RDATE" property is
+    specified as a PERIOD value the duration of the recurrence
+    instance will be the one specified by the "RDATE" property, and
+    not the duration of the recurrence instance defined by the
+    "DTSTART" property.
     """
