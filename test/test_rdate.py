@@ -56,3 +56,10 @@ def test_rdate_can_be_excluded_by_exdate(todo):
 
 def test_rdate_and_rrule_can_be_excluded_by_exdate(todo):
     pass
+
+def test_period_as_rdate(todo):
+    """Test the PERIOD type.
+
+    Value Type:  The default value type for this property is DATE-TIME.
+       The value type can be set to DATE or PERIOD.
+    """
