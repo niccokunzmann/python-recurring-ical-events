@@ -38,7 +38,7 @@ Let's put our expertise together and build a tool that can solve this!
 Not included:
 
 * EXRULE (deprecated), see `8.3.2.  Properties Registry
-    <https://tools.ietf.org/html/rfc5545#section-8.3.2>`_
+  <https://tools.ietf.org/html/rfc5545#section-8.3.2>`_
 
 
 Installation
@@ -71,7 +71,7 @@ Example
 
 Output:
 
-.. code-block::
+.. code-block:: text
 
     start 2019-03-18 04:00:00+01:00 duration 1:00:00
     start 2019-03-20 04:00:00+01:00 duration 1:00:00
