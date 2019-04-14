@@ -105,6 +105,10 @@ To release new versions, edit setup.py, the ``__version__`` variable and run
 
     python3 setup.py tag_and_deploy
 
+Related Projects
+----------------
+
+- `icalevents <https://github.com/irgangla/icalevents>`_
 
 Research
 --------
