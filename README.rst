@@ -81,6 +81,67 @@ Output:
     start 2019-03-09 03:00:00+01:00 duration 0:30:00
     start 2019-03-10 duration 1 day, 0:00:00
 
+
+Usage
+-----
+
+The `icalendar <https://pypi.org/project/icalendar/>`_ module is responsible for parsing and converting calendars.
+The `recurring_ical_events <https://pypi.org/project/recurring-ical-events/>`_ module uses such a calendar and creates all repetitions of its events within a time span.
+
+To import this module, write 
+
+.. code:: Python
+
+    import recurring_ical_events
+
+There are several methods you can use to unfold repeating events, such as *at(a_time)* and *between(a_start, an_end)*.
+
+at(a_date)
+**********
+
+You can get all events which take place at *a_date*.
+A date can be a year, e.g. *2023*, a month of a year e.g. January in 2023 *(2023, 1)*, a day of a certain month e.g. *(2023, 1, 1)*, an hour e.g. *(2023, 1, 1, 0)*, a minute e.g. *(2023, 1, 1, 0, 0)*, or second as well as a `datetime.date <https://docs.python.org/3/library/datetime.html#datetime.date>`_ object and `datetime.datetime <https://docs.python.org/3/library/datetime.html#datetime.datetime>`_
+
+The start and end are inclusive. As an example: if an event is longer than one day it is still included if it takes place at *a_date*.
+
+.. code:: Python
+
+    a_date = 2023 # a year
+    a_date = (2023, 1) # January in 2023
+    a_date = (2023, 1, 1) # the 1st of January in 2023
+    a_date = (2023, 1, 1, 0) # the first hour of the year 2023
+    a_date = (2023, 1, 1, 0, 0) # the first minute in 2023
+    a_date = datetime.date(2023) # the first day in 2023
+    a_date = datetime.date(2023, 1, 1) # the first day in 2023
+    
+    events = recurring_ical_events.of(an_icalendar_object).at(a_date)
+
+The resulting *events* are in a list, see below.
+
+between(start, end)
+*******************
+
+*between(start, end)* returns all events happening between a start and an end time. Both arguments can be `datetime.datetime`_, `datetime.date`_, tuples of numbers passed as arguments to `datetime.datetime`_ or strings in the form of
+*%Y%m%d* (yyyymmdd) and *%Y%m%dT%H%M%SZ* (yyyymmddThhmmssZ).
+For examples, see *at(a_date)* above.
+
+.. code:: Python
+
+    events = recurring_ical_events.of(an_icalendar_object).between(start, end)
+
+The resulting *events* are in a list, see below.
+
+*events* as list
+****************
+
+The result of both *between(start, end)* and *at(a_date)* is a list of `icalendar`_ events.
+By default, all attributes of the event with repetitions are copied, like UID and SUMMARY.
+However, these attributes may differ from the source event:
+
+* DTSTART which is the start of the event instance.
+* DTEND which is the end of the event instance.
+* RDATE, EXDATE, RRULE are the rules to create event repetitions. If they are included is undefined. Future requirements may remove them. If you like to have them included, please write a test or `open an issue <https://github.com/niccokunzmann/python-recurring-ical-events/issues>`_.
+
 Development
 -----------
 
@@ -99,7 +160,6 @@ Development
         pytest
 
 To release new versions, edit setup.py, the ``__version__`` variable and run
-
 
 .. code-block:: shell
 
