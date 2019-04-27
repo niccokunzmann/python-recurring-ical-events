@@ -94,15 +94,15 @@ To import this module, write
 
     import recurring_ical_events
 
-There are several methods you can use to unfold repeating events, such as *at(a_time)* and *between(a_start, an_end)*.
+There are several methods you can use to unfold repeating events, such as ``at(a_time)`` and ``between(a_start, an_end)``.
 
-at(a_date)
-**********
+``at(a_date)``
+**************
 
-You can get all events which take place at *a_date*.
-A date can be a year, e.g. *2023*, a month of a year e.g. January in 2023 *(2023, 1)*, a day of a certain month e.g. *(2023, 1, 1)*, an hour e.g. *(2023, 1, 1, 0)*, a minute e.g. *(2023, 1, 1, 0, 0)*, or second as well as a `datetime.date <https://docs.python.org/3/library/datetime.html#datetime.date>`_ object and `datetime.datetime <https://docs.python.org/3/library/datetime.html#datetime.datetime>`_
+You can get all events which take place at ``a_date``.
+A date can be a year, e.g. ``2023``, a month of a year e.g. January in 2023 ``(2023, 1)``, a day of a certain month e.g. ``(2023, 1, 1)``, an hour e.g. ``(2023, 1, 1, 0)``, a minute e.g. ``(2023, 1, 1, 0, 0)``, or second as well as a `datetime.date <https://docs.python.org/3/library/datetime.html#datetime.date>`_ object and `datetime.datetime <https://docs.python.org/3/library/datetime.html#datetime.datetime>`_
 
-The start and end are inclusive. As an example: if an event is longer than one day it is still included if it takes place at *a_date*.
+The start and end are inclusive. As an example: if an event is longer than one day it is still included if it takes place at ``a_date``.
 
 .. code:: Python
 
@@ -116,25 +116,25 @@ The start and end are inclusive. As an example: if an event is longer than one d
     
     events = recurring_ical_events.of(an_icalendar_object).at(a_date)
 
-The resulting *events* are in a list, see below.
+The resulting ``events`` are a list or icalendar events, see below.
 
-between(start, end)
-*******************
+``between(start, end)``
+***********************
 
-*between(start, end)* returns all events happening between a start and an end time. Both arguments can be `datetime.datetime`_, `datetime.date`_, tuples of numbers passed as arguments to `datetime.datetime`_ or strings in the form of
-*%Y%m%d* (yyyymmdd) and *%Y%m%dT%H%M%SZ* (yyyymmddThhmmssZ).
-For examples, see *at(a_date)* above.
+``between(start, end)`` returns all events happening between a start and an end time. Both arguments can be `datetime.datetime`_, `datetime.date`_, tuples of numbers passed as arguments to `datetime.datetime`_ or strings in the form of
+``%Y%m%d`` (``yyyymmdd``) and ``%Y%m%dT%H%M%SZ`` (``yyyymmddThhmmssZ``).
+For examples, see ``at(a_date)`` above.
 
 .. code:: Python
 
     events = recurring_ical_events.of(an_icalendar_object).between(start, end)
 
-The resulting *events* are in a list, see below.
+The resulting ``events`` are in a list, see below.
 
-*events* as list
-****************
+``events`` as list
+******************
 
-The result of both *between(start, end)* and *at(a_date)* is a list of `icalendar`_ events.
+The result of both ``between(start, end)`` and ``at(a_date)`` is a list of `icalendar`_ events.
 By default, all attributes of the event with repetitions are copied, like UID and SUMMARY.
 However, these attributes may differ from the source event:
 
