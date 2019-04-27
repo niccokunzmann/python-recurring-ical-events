@@ -100,7 +100,7 @@ There are several methods you can use to unfold repeating events, such as ``at(a
 **************
 
 You can get all events which take place at ``a_date``.
-A date can be a year, e.g. ``2023``, a month of a year e.g. January in 2023 ``(2023, 1)``, a day of a certain month e.g. ``(2023, 1, 1)``, an hour e.g. ``(2023, 1, 1, 0)``, a minute e.g. ``(2023, 1, 1, 0, 0)``, or second as well as a `datetime.date <https://docs.python.org/3/library/datetime.html#datetime.date>`_ object and `datetime.datetime <https://docs.python.org/3/library/datetime.html#datetime.datetime>`_
+A date can be a year, e.g. ``2023``, a month of a year e.g. January in 2023 ``(2023, 1)``, a day of a certain month e.g. ``(2023, 1, 1)``, an hour e.g. ``(2023, 1, 1, 0)``, a minute e.g. ``(2023, 1, 1, 0, 0)``, or second as well as a `datetime.date <https://docs.python.org/3/library/datetime.html#datetime.date>`_ object and `datetime.datetime <https://docs.python.org/3/library/datetime.html#datetime.datetime>`_.
 
 The start and end are inclusive. As an example: if an event is longer than one day it is still included if it takes place at ``a_date``.
 
@@ -116,7 +116,7 @@ The start and end are inclusive. As an example: if an event is longer than one d
     
     events = recurring_ical_events.of(an_icalendar_object).at(a_date)
 
-The resulting ``events`` are a list or icalendar events, see below.
+The resulting ``events`` are a list of icalendar events, see below.
 
 ``between(start, end)``
 ***********************
