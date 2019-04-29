@@ -31,9 +31,10 @@ Let's put our expertise together and build a tool that can solve this!
 * ending recurrence (DONE)
 * events with start date and no end date (DONE)
 * events with start as date and start as datetime (DONE)
-* RRULE (DONE)
-* RDATE
-* EXDATE (DONE)
+* `RRULE <https://www.kanzaki.com/docs/ical/rrule.html>`_ (DONE)
+* `RDATE <https://www.kanzaki.com/docs/ical/rdate.html>`_
+* `DURATION <https://www.kanzaki.com/docs/ical/duration.html>`_
+* `EXDATE <https://www.kanzaki.com/docs/ical/exdate.html>`_ (DONE)
 
 Not included:
 
