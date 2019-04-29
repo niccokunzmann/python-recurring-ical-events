@@ -166,10 +166,24 @@ To release new versions, edit setup.py, the ``__version__`` variable and run
 
     python3 setup.py tag_and_deploy
 
+Testing
+*******
+
+This project's development is driven by tests.
+You can view the tests in the `test folder
+<https://github.com/niccokunzmann/python-recurring-ical-events/tree/master/test>`_
+If you have a calendar ICS file for which this library does not
+generate the desired output, you can add it to the ``test/calendars``
+folder and write tests for what you expect.
+If you like, `open an issue`_ first, e.g. to discuss the changes and
+how to go about it.
+
 Related Projects
 ----------------
 
-- `icalevents <https://github.com/irgangla/icalevents>`_
+- `icalevents <https://github.com/irgangla/icalevents>`_ - another library for roughly the same use-case
+- `icalendar`_ - the library used to parse ICS files
+- `Open Web Calendar <https://github.com/niccokunzmann/open-web-calendar>`_ - a web calendar to embed into websites which uses this library
 
 Research
 --------
