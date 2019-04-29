@@ -75,3 +75,16 @@ def test_recurrence_length(todo):
     not the duration of the recurrence instance defined by the
     "DTSTART" property.
     """
+
+def test_rdate_occurs_multiple_times(todo):
+    """An event can not only have an RDATE once but also many of them."""
+
+def test_rdate_is_datetime(todo):
+    pass
+
+def test_rdate_is_date(todo):
+    pass
+
+def test_rdate_is_period(todo):
+    pass
+
