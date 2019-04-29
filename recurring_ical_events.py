@@ -119,6 +119,9 @@ class UnfoldableCalendar:
         """
         if isinstance(date, int):
             date = (date,)
+        if isinstance(date, str):
+            assert len(date) == 8 and date.isdigit(), "format yyyymmdd expected"
+            date = (int(date[:4], 10), int(date[4:6], 10), int(date[6:]))
         if len(date) == 1:
             return self.between((date[0], 1, 1), (date[0] + 1, 1, 1))
         if len(date) == 2:
@@ -128,6 +131,15 @@ class UnfoldableCalendar:
             return self.between((year, month, 1), (year, month + 1, 1))
         datetime = self.to_datetime(date)
         return self.between(datetime, datetime + self._DELTAS[len(date) - 3])
+    
+    def get_event_end(self, event):
+        end = event.get("DTEND")
+        if end is not None:
+            return end.dt
+        duration = event.get("DURATION")
+        if duration is not None:
+            return event["DTSTART"].dt + duration.dt
+        return event["DTSTART"].dt
 
     def between(self, start, stop): # TODO: add parameters from time_span_contains_event
         """Return events at a time between start (inclusive) and end (inclusive)"""
@@ -135,9 +147,10 @@ class UnfoldableCalendar:
         span_stop = self.to_datetime(stop)
         events = []
         events_by_id = defaultdict(dict) # UID (str) : RECURRENCE-ID(datetime) : event (Event)
+        default_uid = object()
         def add_event(event):
             """Add an event and check if it was edited."""
-            same_events = events_by_id[event["UID"]] # TODO: test what comes first
+            same_events = events_by_id[event.get("UID", default_uid)] # TODO: test what comes first
             recurrence_id = event.get("RECURRENCE-ID", event["DTSTART"]).dt
             other = same_events.get(recurrence_id, None)
             if other: # TODO: test that this is independet of order
@@ -152,7 +165,7 @@ class UnfoldableCalendar:
                 continue
             event_rrule = event.get("RRULE", None)
             event_start = event["DTSTART"].dt
-            event_end = event.get("DTEND", event["DTSTART"]).dt
+            event_end = self.get_event_end(event)
             event_duration = event_end - event_start
             if event_rrule is None:
                 if time_span_contains_event(span_start, span_stop, event_start, event_end):

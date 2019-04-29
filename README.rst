@@ -33,7 +33,7 @@ Let's put our expertise together and build a tool that can solve this!
 * events with start as date and start as datetime (DONE)
 * `RRULE <https://www.kanzaki.com/docs/ical/rrule.html>`_ (DONE)
 * `RDATE <https://www.kanzaki.com/docs/ical/rdate.html>`_
-* `DURATION <https://www.kanzaki.com/docs/ical/duration.html>`_
+* `DURATION <https://www.kanzaki.com/docs/ical/duration.html>`_ (DONE)
 * `EXDATE <https://www.kanzaki.com/docs/ical/exdate.html>`_ (DONE)
 
 Not included:
