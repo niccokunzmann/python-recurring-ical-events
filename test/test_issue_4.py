@@ -2,7 +2,7 @@
 These are tests concerning issue 4
 https://github.com/niccokunzmann/python-recurring-ical-events/issues/4
 
-It seems the rrule until parameter uncludes the date or until
+It seems the rrule until parameter includes the last date
 https://dateutil.readthedocs.io/en/stable/rrule.html
 '''
 import datetime
