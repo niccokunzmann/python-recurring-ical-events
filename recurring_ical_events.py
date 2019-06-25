@@ -176,11 +176,15 @@ class UnfoldableCalendar:
                 rule.rrule(rrulestr(rule_string, dtstart=event_start))
                 if compare_greater(span_start, event_start):
                     c_event_start, c_span_start = make_comparable((event_start, span_start))
+                    # the rrule until parameter includes the last date
+                    # thus we need to go one day back
+                    c_span_start -= datetime.timedelta(days=1)
                     rule.exrule(rrule(DAILY, dtstart=c_event_start, until=c_span_start)) # TODO: test overlap with -event_duration
                 exdates = event.get("EXDATE", [])
                 for exdates in ((exdates,) if not isinstance(exdates, list) else exdates):
                     for exdate in exdates.dts:
-                        rule.exdate(exdate.dt)
+                        _, exdate = make_comparable((event_start, exdate.dt))
+                        rule.exdate(exdate)
                 for revent_start in rule:
                     if revent_start.tzinfo is not None:
                         revent_start = revent_start.tzinfo.localize(revent_start.replace(tzinfo=None))
