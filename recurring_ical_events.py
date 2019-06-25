@@ -179,7 +179,6 @@ class UnfoldableCalendar:
                     # the rrule until parameter includes the last date
                     # thus we need to go one day back
                     c_span_start -= datetime.timedelta(days=1)
-                    print("rrule", c_event_start, c_span_start)
                     rule.exrule(rrule(DAILY, dtstart=c_event_start, until=c_span_start)) # TODO: test overlap with -event_duration
                 exdates = event.get("EXDATE", [])
                 for exdates in ((exdates,) if not isinstance(exdates, list) else exdates):
