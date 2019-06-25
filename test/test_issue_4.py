@@ -8,7 +8,7 @@ https://dateutil.readthedocs.io/en/stable/rrule.html
 import datetime
 
 start_date = (2019, 6, 13, 12, 00 ,00 , 00)
-end_date = (2019, 6, 13)
+end_date = (2019, 6, 14)
 a_date = (2019, 6, 13)
 
 def test_print_events(calendars):
