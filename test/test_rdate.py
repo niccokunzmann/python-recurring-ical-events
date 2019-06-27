@@ -44,9 +44,13 @@ Property Name:  RDATE
       and "RDATE" properties, only one recurrence is considered.
       Duplicate instances are ignored.
 """
+import pytest
 
-def test_rdate_is_included(todo):
-    pass
+@pytest.mark.parametrize("day", "20130803 20130831 20131005 20131102 20131130 "
+    "20140104 20140201 20140301 20140405 20140503 20140531 20140705".split())
+def test_rdate_is_included(calendars, day):
+    events = calendars.rdate_hackerpublicradio.at(day)
+    assert len(events) == 1
 
 def test_rdate_does_not_double_rrule_entry(todo):
     pass
@@ -76,8 +80,10 @@ def test_recurrence_length(todo):
     "DTSTART" property.
     """
 
-def test_rdate_occurs_multiple_times(todo):
+def test_rdate_occurs_multiple_times(calendars):
     """An event can not only have an RDATE once but also many of them."""
+    events = calendars.rdate_hackerpublicradio.all()
+    assert len(events) == 12
 
 def test_rdate_is_datetime(todo):
     pass

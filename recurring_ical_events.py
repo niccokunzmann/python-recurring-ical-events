@@ -167,35 +167,45 @@ class UnfoldableCalendar:
             event_start = event["DTSTART"].dt
             event_end = self.get_event_end(event)
             event_duration = event_end - event_start
-            if event_rrule is None:
-                if time_span_contains_event(span_start, span_stop, event_start, event_end):
-                    add_event(event)
-            else:
+            rule = rruleset()
+            c_event_start = event_start # avoid datetime and date mix
+            if event_rrule is not None:
                 rule_string = event_rrule.to_ical().decode()
-                rule = rruleset()
                 rule.rrule(rrulestr(rule_string, dtstart=event_start))
-                if compare_greater(span_start, event_start):
-                    c_event_start, c_span_start = make_comparable((event_start, span_start))
-                    # the rrule until parameter includes the last date
-                    # thus we need to go one day back
-                    c_span_start -= datetime.timedelta(days=1)
-                    rule.exrule(rrule(DAILY, dtstart=c_event_start, until=c_span_start)) # TODO: test overlap with -event_duration
-                exdates = event.get("EXDATE", [])
-                for exdates in ((exdates,) if not isinstance(exdates, list) else exdates):
-                    for exdate in exdates.dts:
-                        _, exdate = make_comparable((event_start, exdate.dt))
-                        rule.exdate(exdate)
-                for revent_start in rule:
-                    if revent_start.tzinfo is not None:
-                        revent_start = revent_start.tzinfo.localize(revent_start.replace(tzinfo=None))
-                    if compare_greater(revent_start, span_stop):
-                        break
-                    revent_stop = revent_start + event_duration
-                    if time_span_contains_event(span_start, span_stop, revent_start, revent_stop):
-                        revent = event.copy()
-                        revent["DTSTART"] = vDatetime(revent_start)
-                        revent["DTEND"] = vDatetime(revent_stop)
-                        add_event(revent)
+            if compare_greater(span_start, event_start):
+                c_event_start, c_span_start = make_comparable((event_start, span_start))
+                # the rrule until parameter includes the last date
+                # thus we need to go one day back
+                c_span_start -= datetime.timedelta(days=1)
+                if event_end:
+                    # do not exclude an event if it spans across the time span
+                    c_event_end, c_span_start = make_comparable((event_end, span_start))
+                    c_span_start -= c_event_end - c_event_start
+                rule.exrule(rrule(DAILY, dtstart=c_event_start, until=c_span_start))
+            exdates = event.get("EXDATE", [])
+            for exdates in ((exdates,) if not isinstance(exdates, list) else exdates):
+                for exdate in exdates.dts:
+                    c_event_start, exdate = make_comparable((c_event_start, exdate.dt))
+                    rule.exdate(exdate)
+            rdates = event.get("RDATE", [])
+            for rdates in ((rdates,) if not isinstance(rdates, list) else rdates):
+                for rdate in rdates.dts:
+                    c_event_start, rdate = make_comparable((c_event_start, rdate.dt))
+                    rule.rdate(rdate)
+            rule.rdate(c_event_start)
+            # TODO: If in the following line, we get an error, datetime and date
+            # may still be mixed because RDATE, EXDATE, start and rule.
+            for revent_start in rule:
+                if isinstance(revent_start, datetime.datetime) and revent_start.tzinfo is not None:
+                    revent_start = revent_start.tzinfo.localize(revent_start.replace(tzinfo=None))
+                if compare_greater(revent_start, span_stop):
+                    break
+                revent_stop = revent_start + event_duration
+                if time_span_contains_event(span_start, span_stop, revent_start, revent_stop):
+                    revent = event.copy()
+                    revent["DTSTART"] = vDatetime(revent_start)
+                    revent["DTEND"] = vDatetime(revent_stop)
+                    add_event(revent)
         return events
 
 
