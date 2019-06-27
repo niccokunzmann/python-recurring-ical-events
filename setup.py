@@ -11,7 +11,7 @@ PACKAGE_NAME = "recurring_ical_events"
 HERE = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, HERE)  # for package import
 
-__version__ = "0.1.6b"
+__version__ = "0.1.7b"
 __author__ = 'Nicco Kunzmann'
 
 
@@ -40,7 +40,7 @@ METADATA = dict(
     py_modules=[PACKAGE_NAME],
     author=__author__,
     author_email='niccokunzmann@rambler.ru',
-    description='A module which unfolds ICalendar events.',
+    description='A Python module which repeats ICalendar events by RRULE, RDATE and EXDATE.',
     license='LGPLv3+',
     url='https://github.com/niccokunzmann/python-recurring-ical-events',
     keywords='icalendar',
