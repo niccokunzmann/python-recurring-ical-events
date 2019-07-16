@@ -15,7 +15,7 @@ import datetime
 import pytz
 from dateutil.rrule import rrulestr, rruleset, rrule, DAILY
 from collections import defaultdict
-from icalendar.prop import vDatetime
+from icalendar.prop import vDatetime, vDate
 
 def is_event(component):
     """Return whether a component is a calendar event."""
@@ -203,10 +203,16 @@ class UnfoldableCalendar:
                 revent_stop = revent_start + event_duration
                 if time_span_contains_event(span_start, span_stop, revent_start, revent_stop):
                     revent = event.copy()
-                    revent["DTSTART"] = vDatetime(revent_start)
-                    revent["DTEND"] = vDatetime(revent_stop)
+                    revent["DTSTART"] = self._create_ical_entry_from(revent_start)
+                    revent["DTEND"] = self._create_ical_entry_from(revent_stop)
                     add_event(revent)
         return events
+
+    def _create_ical_entry_from(self, date_or_datetime):
+        """Choose the correct method for ical representation."""
+        if isinstance(date_or_datetime, datetime.datetime):
+            return vDatetime(date_or_datetime)
+        return vDate(date_or_datetime)
 
 
 def of(a_calendar):

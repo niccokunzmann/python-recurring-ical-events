@@ -18,7 +18,9 @@ class Calendars:
     def get_calendar(self, content):
         """Return the calendar given the content."""
         return self.Calendar.from_ical(content)
-
+    
+    def __getitem__(self, name):
+        return getattr(self, name)
 
 for calendar_file in os.listdir(CALENDARS_FOLDER):
     calendar_path = os.path.join(CALENDARS_FOLDER, calendar_file)
