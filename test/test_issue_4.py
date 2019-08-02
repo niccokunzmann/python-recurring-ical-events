@@ -28,3 +28,7 @@ def test_at(calendars):
     assert len(events) == 1
     assert events[0]["DTSTART"].dt == datetime.datetime(2019, 6, 13)
 
+def test_can_use_different_rrule_until(calendars):
+    events = calendars.issue_4_rrule_until.all()
+    assert len(events) == -1, "TODO"
+
