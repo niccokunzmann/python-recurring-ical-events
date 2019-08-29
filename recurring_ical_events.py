@@ -78,6 +78,86 @@ def compare_greater(date1, date2):
 
 class UnfoldableCalendar:
 
+    class RepeatedEvent:
+        """An event with repetitions created from an ical event."""
+        
+        class Repetition:
+            """A repetition of an event."""
+
+            def __init__(self, source, start, stop):
+                self.source = source
+                self.start = start
+                self.stop = stop
+            
+            def _create_ical_entry_from(self, date_or_datetime):
+                """Choose the correct method for ical representation."""
+                if isinstance(date_or_datetime, datetime.datetime):
+                    return vDatetime(date_or_datetime)
+                return vDate(date_or_datetime)
+
+            def as_vevent(self):
+                revent = self.source.copy()
+                revent["DTSTART"] = self._create_ical_entry_from(self.start)
+                revent["DTEND"] = self._create_ical_entry_from(self.stop)
+                return revent
+            
+            def is_in_span(self, span_start, span_stop):
+                return time_span_contains_event(span_start, span_stop, self.start, self.stop)
+        
+        def __init__(self, event, span_start):
+            self.event = event
+            self.span_start = span_start
+        
+        def __iter__(self):
+            event = self.event
+            event_rrule = event.get("RRULE", None)
+            event_start = event["DTSTART"].dt
+            event_end = self.get_event_end(event)
+            event_duration = event_end - event_start
+            rule = rruleset()
+            c_event_start = event_start # avoid datetime and date mix
+            if event_rrule is not None:
+                rule_string = event_rrule.to_ical().decode()
+                rule.rrule(rrulestr(rule_string, dtstart=event_start))
+            if compare_greater(self.span_start, event_start):
+                c_event_start, c_span_start = make_comparable((event_start, self.span_start))
+                # the rrule until parameter includes the last date
+                # thus we need to go one day back
+                c_span_start -= datetime.timedelta(days=1)
+                if event_end:
+                    # do not exclude an event if it spans across the time span
+                    c_event_end, c_span_start = make_comparable((event_end, self.span_start))
+                    c_span_start -= c_event_end - c_event_start
+                rule.exrule(rrule(DAILY, dtstart=c_event_start, until=c_span_start))
+            exdates = event.get("EXDATE", [])
+            for exdates in ((exdates,) if not isinstance(exdates, list) else exdates):
+                for exdate in exdates.dts:
+                    c_event_start, exdate = make_comparable((c_event_start, exdate.dt))
+                    rule.exdate(exdate)
+            rdates = event.get("RDATE", [])
+            for rdates in ((rdates,) if not isinstance(rdates, list) else rdates):
+                for rdate in rdates.dts:
+                    c_event_start, rdate = make_comparable((c_event_start, rdate.dt))
+                    rule.rdate(rdate)
+            rule.rdate(c_event_start)
+            # TODO: If in the following line, we get an error, datetime and date
+            # may still be mixed because RDATE, EXDATE, start and rule.
+            for revent_start in rule:
+                if isinstance(revent_start, datetime.datetime) and revent_start.tzinfo is not None:
+                    revent_start = revent_start.tzinfo.localize(revent_start.replace(tzinfo=None))
+                revent_stop = revent_start + event_duration
+                yield self.Repetition(self.event, revent_start, revent_stop)
+                
+        def get_event_end(self, event):
+            end = event.get("DTEND")
+            if end is not None:
+                return end.dt
+            duration = event.get("DURATION")
+            if duration is not None:
+                return event["DTSTART"].dt + duration.dt
+            return event["DTSTART"].dt
+
+
     def __init__(self, calendar):
         """Create an unfoldable calendar from a given calendar."""
         assert calendar.get("CALSCALE", "GREGORIAN") == "GREGORIAN", "Only Gregorian calendars are supported." # https://www.kanzaki.com/docs/ical/calscale.html
@@ -132,15 +212,6 @@ class UnfoldableCalendar:
         datetime = self.to_datetime(date)
         return self.between(datetime, datetime + self._DELTAS[len(date) - 3])
     
-    def get_event_end(self, event):
-        end = event.get("DTEND")
-        if end is not None:
-            return end.dt
-        duration = event.get("DURATION")
-        if duration is not None:
-            return event["DTSTART"].dt + duration.dt
-        return event["DTSTART"].dt
-
     def between(self, start, stop): # TODO: add parameters from time_span_contains_event
         """Return events at a time between start (inclusive) and end (inclusive)"""
         span_start = self.to_datetime(start)
@@ -163,57 +234,13 @@ class UnfoldableCalendar:
         for event in self.calendar.walk():
             if not is_event(event):
                 continue
-            event_rrule = event.get("RRULE", None)
-            event_start = event["DTSTART"].dt
-            event_end = self.get_event_end(event)
-            event_duration = event_end - event_start
-            rule = rruleset()
-            c_event_start = event_start # avoid datetime and date mix
-            if event_rrule is not None:
-                rule_string = event_rrule.to_ical().decode()
-                rule.rrule(rrulestr(rule_string, dtstart=event_start))
-            if compare_greater(span_start, event_start):
-                c_event_start, c_span_start = make_comparable((event_start, span_start))
-                # the rrule until parameter includes the last date
-                # thus we need to go one day back
-                c_span_start -= datetime.timedelta(days=1)
-                if event_end:
-                    # do not exclude an event if it spans across the time span
-                    c_event_end, c_span_start = make_comparable((event_end, span_start))
-                    c_span_start -= c_event_end - c_event_start
-                rule.exrule(rrule(DAILY, dtstart=c_event_start, until=c_span_start))
-            exdates = event.get("EXDATE", [])
-            for exdates in ((exdates,) if not isinstance(exdates, list) else exdates):
-                for exdate in exdates.dts:
-                    c_event_start, exdate = make_comparable((c_event_start, exdate.dt))
-                    rule.exdate(exdate)
-            rdates = event.get("RDATE", [])
-            for rdates in ((rdates,) if not isinstance(rdates, list) else rdates):
-                for rdate in rdates.dts:
-                    c_event_start, rdate = make_comparable((c_event_start, rdate.dt))
-                    rule.rdate(rdate)
-            rule.rdate(c_event_start)
-            # TODO: If in the following line, we get an error, datetime and date
-            # may still be mixed because RDATE, EXDATE, start and rule.
-            for revent_start in rule:
-                if isinstance(revent_start, datetime.datetime) and revent_start.tzinfo is not None:
-                    revent_start = revent_start.tzinfo.localize(revent_start.replace(tzinfo=None))
-                if compare_greater(revent_start, span_stop):
+            repetitions = self.RepeatedEvent(event, span_start)
+            for repetition in repetitions:
+                if compare_greater(repetition.start, span_stop):
                     break
-                revent_stop = revent_start + event_duration
-                if time_span_contains_event(span_start, span_stop, revent_start, revent_stop):
-                    revent = event.copy()
-                    revent["DTSTART"] = self._create_ical_entry_from(revent_start)
-                    revent["DTEND"] = self._create_ical_entry_from(revent_stop)
-                    add_event(revent)
+                if repetition.is_in_span(span_start, span_stop):
+                    add_event(repetition.as_vevent())
         return events
-
-    def _create_ical_entry_from(self, date_or_datetime):
-        """Choose the correct method for ical representation."""
-        if isinstance(date_or_datetime, datetime.datetime):
-            return vDatetime(date_or_datetime)
-        return vDate(date_or_datetime)
-
 
 def of(a_calendar):
     """Unfold recurring events of a_calendar"""
