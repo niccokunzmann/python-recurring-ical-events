@@ -20,15 +20,15 @@ def test_between(calendars):
     events = calendars.issue_4.between(start_date, end_date)
     print(events)
     assert len(events) == 1
-    assert events[0]["DTSTART"].dt == datetime.datetime(2019, 6, 13)
+    assert events[0]["DTSTART"].dt == datetime.date(2019, 6, 13)
 
 def test_at(calendars):
     events = calendars.issue_4.at(a_date)
     print(events)
     assert len(events) == 1
-    assert events[0]["DTSTART"].dt == datetime.datetime(2019, 6, 13)
+    assert events[0]["DTSTART"].dt == datetime.date(2019, 6, 13)
 
 def test_can_use_different_rrule_until(calendars):
     events = calendars.issue_4_rrule_until.all()
-    assert len(events) == -1, "TODO"
+    assert len(events) == 12
 
