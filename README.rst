@@ -47,7 +47,7 @@ Installation
 
 .. code:: shell
 
-    pip install python-recurring-ical-events
+    pip install recurring-ical-events
 
 Example
 -------
