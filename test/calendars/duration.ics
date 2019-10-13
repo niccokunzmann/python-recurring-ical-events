@@ -5,13 +5,13 @@ BEGIN:VEVENT
 DTSTART:20180110
 DURATION:P3D
 DESCRIPTION:Event with duration (3 days), instead of explicit end.
-SUMMARY:Duration Event
+SUMMARY:Duration Event 1
 END:VEVENT
 BEGIN:VEVENT
 DTSTART:20180115T100000
 DURATION:PT3H
 DESCRIPTION:Event with duration (3 hours), instead of explicit end.
-SUMMARY:Duration Event
+SUMMARY:Duration Event 2
 END:VEVENT
 BEGIN:VEVENT
 DTSTART:20180120T120000
