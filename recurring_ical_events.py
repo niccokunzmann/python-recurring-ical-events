@@ -262,6 +262,10 @@ class UnfoldableCalendar:
         if isinstance(date, str):
             assert len(date) == 8 and date.isdigit(), "format yyyymmdd expected"
             date = (int(date[:4], 10), int(date[4:6], 10), int(date[6:]))
+        if isinstance(date, datetime.datetime):
+            return self.between(date, date)
+        if isinstance(date, datetime.date):
+            return self.between(date, date + datetime.timedelta(days=1))
         if len(date) == 1:
             return self.between((date[0], 1, 1), (date[0] + 1, 1, 1))
         if len(date) == 2:
@@ -269,8 +273,8 @@ class UnfoldableCalendar:
             if month == 12:
                 return self.between((year, 12, 1), (year + 1, 1, 1))
             return self.between((year, month, 1), (year, month + 1, 1))
-        datetime = self.to_datetime(date)
-        return self.between(datetime, datetime + self._DELTAS[len(date) - 3])
+        dt = self.to_datetime(date)
+        return self.between(dt, dt + self._DELTAS[len(date) - 3])
     
     def between(self, start, stop): # TODO: add parameters from time_span_contains_event
         """Return events at a time between start (inclusive) and end (inclusive)"""
