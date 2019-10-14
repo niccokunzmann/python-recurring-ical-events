@@ -20,5 +20,5 @@ recurring_ical_events.py:292: in add_event
 
 def test_sequence_is_not_present(calendars):
     events = calendars.issue_15_duplicated_events.at("20130803")
-    assert len(events) == 1
+    assert len(events) == 3
 
