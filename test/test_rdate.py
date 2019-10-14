@@ -52,14 +52,17 @@ def test_rdate_is_included(calendars, day):
     events = calendars.rdate_hackerpublicradio.at(day)
     assert len(events) == 1
 
-def test_rdate_does_not_double_rrule_entry(todo):
-    pass
+def test_rdate_does_not_double_rrule_entry(calendars):
+    events = calendars.rdate.at("20140705")
+    assert len(events) == 1
 
-def test_rdate_can_be_excluded_by_exdate(todo):
-    pass
+def test_rdate_can_be_excluded_by_exdate(calendars):
+    events = calendars.rdate.at("20250705")
+    assert len(events) == 0
 
 def test_rdate_and_rrule_can_be_excluded_by_exdate(todo):
-    pass
+    events = calendars.rdate.at("20150705")
+    assert len(events) == 0
 
 def test_period_as_rdate(todo):
     """Test the PERIOD type.
