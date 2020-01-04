@@ -4,8 +4,8 @@ about: Create a report and help this package improve
 title: 'bug: '
 labels: bug
 assignees: ''
-
 ---
+<!-- This template is a suggestion. So, you do not have to use it. -->
 
 **Describe the bug**
 <!-- A clear and concise description of what the bug is. --> 
@@ -32,7 +32,7 @@ assignees: ''
 **Additional context**
 <!-- Add any other context about the problem here. Or maybe related issues. -->
 
-**Suggested Implementation**
+**Suggested implementation**
 <!-- If possible, suggest a way of solving this. -->
 
 - [ ] add an ICS file, example:
