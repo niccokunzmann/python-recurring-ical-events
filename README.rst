@@ -141,7 +141,7 @@ However, these attributes may differ from the source event:
 
 * DTSTART which is the start of the event instance.
 * DTEND which is the end of the event instance.
-* RDATE, EXDATE, RRULE are the rules to create event repetitions. If they are included is undefined. Future requirements may remove them. If you like to have them included, please write a test or `open an issue <https://github.com/niccokunzmann/python-recurring-ical-events/issues>`_.
+* RDATE, EXDATE, RRULE are the rules to create event repetitions. They are **not** included in repeated events, see `Issue 23 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/23>`_.
 
 Development
 -----------

@@ -91,6 +91,10 @@ class UnfoldableCalendar:
         class Repetition:
             """A repetition of an event."""
 
+            ATTRIBUTES_TO_DELETE_ON_COPY = [
+                "RRULE", "RDATE", "EXDATE"
+            ]
+
             def __init__(self, source, start, stop):
                 self.source = source
                 self.start = start
@@ -100,6 +104,9 @@ class UnfoldableCalendar:
                 revent = self.source.copy()
                 revent["DTSTART"] = vDDDTypes(self.start)
                 revent["DTEND"] = vDDDTypes(self.stop)
+                for attribute in self.ATTRIBUTES_TO_DELETE_ON_COPY:
+                    if attribute in revent:
+                        del revent[attribute]
                 return revent
 
             def is_in_span(self, span_start, span_stop):
