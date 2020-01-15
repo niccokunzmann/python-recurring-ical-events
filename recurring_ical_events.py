@@ -17,7 +17,8 @@ from dateutil.rrule import rrulestr, rruleset, rrule, DAILY
 import dateutil.parser
 
 from collections import defaultdict
-from icalendar.prop import vDatetime, vDate
+from icalendar.prop import vDDDTypes
+
 
 def is_event(component):
     """Return whether a component is a calendar event."""
@@ -94,22 +95,16 @@ class UnfoldableCalendar:
                 self.source = source
                 self.start = start
                 self.stop = stop
-            
-            def _create_ical_entry_from(self, date_or_datetime):
-                """Choose the correct method for ical representation."""
-                if isinstance(date_or_datetime, datetime.datetime):
-                    return vDatetime(date_or_datetime)
-                return vDate(date_or_datetime)
 
             def as_vevent(self):
                 revent = self.source.copy()
-                revent["DTSTART"] = self._create_ical_entry_from(self.start)
-                revent["DTEND"] = self._create_ical_entry_from(self.stop)
+                revent["DTSTART"] = vDDDTypes(self.start)
+                revent["DTEND"] = vDDDTypes(self.stop)
                 return revent
-            
+
             def is_in_span(self, span_start, span_stop):
                 return time_span_contains_event(span_start, span_stop, self.start, self.stop)
-        
+
         def __init__(self, event, span_start):
             self.event = event
             self.span_start = span_start
