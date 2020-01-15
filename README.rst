@@ -160,11 +160,13 @@ Development
 
         pytest
 
-To release new versions, edit setup.py, the ``__version__`` variable and run
+To release new versions,
 
-.. code-block:: shell
+- edit the Changelog Section
+- edit setup.py, the ``__version__`` variable and run
+    .. code-block:: shell
 
-    python3 setup.py tag_and_deploy
+        python3 setup.py tag_and_deploy
 
 Testing
 *******
@@ -175,8 +177,16 @@ You can view the tests in the `test folder
 If you have a calendar ICS file for which this library does not
 generate the desired output, you can add it to the ``test/calendars``
 folder and write tests for what you expect.
-If you like, `open an issue`_ first, e.g. to discuss the changes and
+If you like, `open an issue <https://github.com/niccokunzmann/python-recurring-ical-events/issues>`_ first, e.g. to discuss the changes and
 how to go about it.
+
+Changelog
+---------
+
+- v0.1.13b
+    - Remove attributes RDATE, EXDATE, RRULE from repeated events `Issue 23`_
+    - Use vDDDTypes instead of explicit date/datetime type `Pull Request 19 <https://github.com/niccokunzmann/python-recurring-ical-events/pull/19>`_
+    - Start Changelog
 
 Related Projects
 ----------------
@@ -197,3 +207,4 @@ Research
 - `<https://stackoverflow.com/questions/46471852/ical-parsing-reoccuring-events-in-python>`_
 - RDATE `<https://stackoverflow.com/a/46709850/1320237>`_
     - `<https://tools.ietf.org/html/rfc5545#section-3.8.5.2>`_
+
