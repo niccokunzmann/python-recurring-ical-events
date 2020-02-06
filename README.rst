@@ -183,6 +183,8 @@ how to go about it.
 Changelog
 ---------
 
+- v0.1.15b
+    - Repeated events also include subcomponents. `Issue 6 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/6>`_
 - v0.1.14b
     - Fix compatibility `issue 20 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/20>`_: EXDATEs of different time zones are now supported.
 - v0.1.13b
