@@ -22,12 +22,13 @@ from icalendar.prop import vDDDTypes
 
 if sys.version_info[0] == 2:
     _EPOCH = datetime.datetime.utcfromtimestamp(0)
+    _EPOCH_TZINFO = pytz.UTC.localize(_EPOCH)
     def timestamp(dt):
         """Return the time stamp of a datetime"""
         # from https://stackoverflow.com/a/35337826
-        total_seconds =  (dt - _EPOCH).total_seconds()
-        # total_seconds will be in decimals (millisecond precision)
-        return total_seconds
+        if dt.tzinfo:
+            return (dt - _EPOCH_TZINFO).total_seconds()
+        return (dt - _EPOCH).total_seconds()
 else:
     def timestamp(dt):
         """Return the time stamp of a datetime"""
