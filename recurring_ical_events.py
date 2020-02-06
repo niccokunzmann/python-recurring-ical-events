@@ -25,7 +25,7 @@ if sys.version_info[0] == 2:
     def timestamp(dt):
         """Return the time stamp of a datetime"""
         # from https://stackoverflow.com/a/35337826
-        total_seconds =  (d - _EPOCH).total_seconds()
+        total_seconds =  (dt - _EPOCH).total_seconds()
         # total_seconds will be in decimals (millisecond precision)
         return total_seconds
 else:
