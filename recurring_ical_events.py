@@ -121,6 +121,8 @@ class UnfoldableCalendar:
                 for attribute in self.ATTRIBUTES_TO_DELETE_ON_COPY:
                     if attribute in revent:
                         del revent[attribute]
+                for subcomponent in self.source.subcomponents:
+                    revent.add_component(subcomponent)
                 return revent
 
             def is_in_span(self, span_start, span_stop):
