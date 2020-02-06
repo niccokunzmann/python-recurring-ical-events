@@ -18,5 +18,5 @@ def test_exdates_do_not_show_up(exdate, calendars):
     
 def test_there_are_n_events(calendars):
     """Test the total numer of events."""
-    assert len(calendars.issue_20_exdate_ignored.all()) == 7
+    assert len(calendars.issue_20_exdate_ignored.all()) == 8
 
