@@ -15,10 +15,24 @@ import datetime
 import pytz
 from dateutil.rrule import rrulestr, rruleset, rrule, DAILY
 import dateutil.parser
+import sys
 
 from collections import defaultdict
 from icalendar.prop import vDDDTypes
 
+if sys.version_info[0] == 2:
+    _EPOCH = datetime.datetime.utcfromtimestamp(0)
+    _EPOCH_TZINFO = pytz.UTC.localize(_EPOCH)
+    def timestamp(dt):
+        """Return the time stamp of a datetime"""
+        # from https://stackoverflow.com/a/35337826
+        if dt.tzinfo:
+            return (dt - _EPOCH_TZINFO).total_seconds()
+        return (dt - _EPOCH).total_seconds()
+else:
+    def timestamp(dt):
+        """Return the time stamp of a datetime"""
+        return dt.timestamp() 
 
 def is_event(component):
     """Return whether a component is a calendar event."""
@@ -118,10 +132,12 @@ class UnfoldableCalendar:
             self.start = self.original_start = event["DTSTART"].dt
             self.end = self.original_end = self._get_event_end()
             self.exdates = []
+            self.exdates_utc = set()
             exdates = event.get("EXDATE", [])
             for exdates in ((exdates,) if not isinstance(exdates, list) else exdates):
                 for exdate in exdates.dts:
                     self.exdates.append(exdate.dt)
+                    self.exdates_utc.add(self._unify_exdate(exdate.dt))
             self.rdates = []
             rdates = event.get("RDATE", [])
             for rdates in ((rdates,) if not isinstance(rdates, list) else rdates):
@@ -192,6 +208,14 @@ class UnfoldableCalendar:
             self.rdates = [convert_to_datetime(rdate, tzinfo) for rdate in self.rdates]
             self.exdates = [convert_to_datetime(exdate, tzinfo) for exdate in self.exdates]
         
+        def _unify_exdate(self, dt):
+            """Return a unique string for the datetime which is used to
+            compare it with exdates.
+            """
+            if isinstance(dt, datetime.datetime):
+                return timestamp(dt)
+            return dt
+       
         def __iter__(self):
             # TODO: If in the following line, we get an error, datetime and date
             # may still be mixed because RDATE, EXDATE, start and rule.
@@ -199,6 +223,8 @@ class UnfoldableCalendar:
                 if isinstance(start, datetime.datetime) and start.tzinfo is not None:
                     start = start.tzinfo.localize(start.replace(tzinfo=None))
                 stop = start + self.duration
+                if self._unify_exdate(start) in self.exdates_utc:
+                    continue
                 yield self.Repetition(
                     self.event,
                     self.convert_to_original_type(start),
