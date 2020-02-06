@@ -15,10 +15,23 @@ import datetime
 import pytz
 from dateutil.rrule import rrulestr, rruleset, rrule, DAILY
 import dateutil.parser
+import sys
 
 from collections import defaultdict
 from icalendar.prop import vDDDTypes
 
+if sys.version_info[0] == 2:
+    _EPOCH = datetime.datetime.utcfromtimestamp(0)
+    def timestamp(dt):
+        """Return the time stamp of a datetime"""
+        # from https://stackoverflow.com/a/35337826
+        total_seconds =  (d - _EPOCH).total_seconds()
+        # total_seconds will be in decimals (millisecond precision)
+        return total_seconds
+else:
+    def timestamp(dt):
+        """Return the time stamp of a datetime"""
+        return dt.timestamp() 
 
 def is_event(component):
     """Return whether a component is a calendar event."""
@@ -199,7 +212,7 @@ class UnfoldableCalendar:
             compare it with exdates.
             """
             if isinstance(dt, datetime.datetime):
-                return dt.timestamp()
+                return timestamp(dt)
             return dt
        
         def __iter__(self):
