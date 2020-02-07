@@ -1,0 +1,484 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Calendar Labs//Calendar 1.0//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Germany Holidays
+X-WR-TIMEZONE:Etc/GMT
+BEGIN:VEVENT
+SUMMARY:New Year's Day
+DTSTART:20190101
+DTEND:20190101
+LOCATION:Germany
+DESCRIPTION:Visit https://calendarlabs.com/holidays/us/new-years-day.php to know more about New Year's Day. 
+ Like us on Facebook: http://fb.com/calendarlabs to get updates
+RRULE:
+UID:5e3a8f312427a1580896049@calendarlabs.com
+DTSTAMP:20200205T094729Z
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+SEQUENCE:0
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Epiphany
+DTSTART:20190106
+DTEND:20190106
+LOCATION:Germany
+DESCRIPTION:Visit https://calendarlabs.com/holidays/spain/epiphany.php to know more about Epiphany. 
+ Like us on Facebook: http://fb.com/calendarlabs to get updates
+RRULE:
+UID:5e3a8f31242de1580896049@calendarlabs.com
+DTSTAMP:20200205T094729Z
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+SEQUENCE:0
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Carnival
+DTSTART:20190305
+DTEND:20190305
+LOCATION:Germany
+DESCRIPTION:Visit https://calendarlabs.com/holidays/brazil/carnival.php to know more about Carnival. 
+ Like us on Facebook: http://fb.com/calendarlabs to get updates
+RRULE:
+UID:5e3a8f312433a1580896049@calendarlabs.com
+DTSTAMP:20200205T094729Z
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+SEQUENCE:0
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Good Friday
+DTSTART:20190419
+DTEND:20190419
+LOCATION:Germany
+DESCRIPTION:Visit https://calendarlabs.com/holidays/us/good-friday.php to know more about Good Friday. 
+ Like us on Facebook: http://fb.com/calendarlabs to get updates
+RRULE:
+UID:5e3a8f31243901580896049@calendarlabs.com
+DTSTAMP:20200205T094729Z
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+SEQUENCE:0
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Easter Sunday
+DTSTART:20190421
+DTEND:20190421
+LOCATION:Germany
+DESCRIPTION:Visit https://calendarlabs.com/holidays/us/easter.php to know more about Easter Sunday. 
+ Like us on Facebook: http://fb.com/calendarlabs to get updates
+RRULE:
+UID:5e3a8f31243e91580896049@calendarlabs.com
+DTSTAMP:20200205T094729Z
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+SEQUENCE:0
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Easter Monday
+DTSTART:20190422
+DTEND:20190422
+LOCATION:Germany
+DESCRIPTION:Visit https://calendarlabs.com/holidays/christian/easter-monday.php to know more about Easter Monday. 
+ Like us on Facebook: http://fb.com/calendarlabs to get updates
+RRULE:
+UID:5e3a8f31244431580896049@calendarlabs.com
+DTSTAMP:20200205T094729Z
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+SEQUENCE:0
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Labor Day
+DTSTART:20190501
+DTEND:20190501
+LOCATION:Germany
+DESCRIPTION:Visit https://calendarlabs.com/holidays/uk/may-day.php to know more about Labor Day. 
+ Like us on Facebook: http://fb.com/calendarlabs to get updates
+RRULE:
+UID:5e3a8f312449c1580896049@calendarlabs.com
+DTSTAMP:20200205T094729Z
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+SEQUENCE:0
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Ascension Day
+DTSTART:20190530
+DTEND:20190530
+LOCATION:Germany
+DESCRIPTION:Visit https://calendarlabs.com/holidays/romania/ascension-day.php to know more about Ascension Day. 
+ Like us on Facebook: http://fb.com/calendarlabs to get updates
+RRULE:
+UID:5e3a8f31244f81580896049@calendarlabs.com
+DTSTAMP:20200205T094729Z
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+SEQUENCE:0
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Whit Monday
+DTSTART:20190610
+DTEND:20190610
+LOCATION:Germany
+DESCRIPTION:Visit https://calendarlabs.com/holidays/germany/pentecost-monday.php to know more about Whit Monday. 
+ Like us on Facebook: http://fb.com/calendarlabs to get updates
+RRULE:
+UID:5e3a8f31245501580896049@calendarlabs.com
+DTSTAMP:20200205T094729Z
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+SEQUENCE:0
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Corpus Christi
+DTSTART:20190620
+DTEND:20190620
+LOCATION:Germany
+DESCRIPTION:Visit https://calendarlabs.com/holidays/us/corpus-christi.php to know more about Corpus Christi. 
+ Like us on Facebook: http://fb.com/calendarlabs to get updates
+RRULE:
+UID:5e3a8f31245aa1580896049@calendarlabs.com
+DTSTAMP:20200205T094729Z
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+SEQUENCE:0
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Assumption Day
+DTSTART:20190815
+DTEND:20190815
+LOCATION:Germany
+DESCRIPTION:Visit https://calendarlabs.com/holidays/us/the-assumption-of-mary.php to know more about Assumption Day. 
+ Like us on Facebook: http://fb.com/calendarlabs to get updates
+RRULE:
+UID:5e3a8f312460b1580896049@calendarlabs.com
+DTSTAMP:20200205T094729Z
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+SEQUENCE:0
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Unity Day (National)
+DTSTART:20191003
+DTEND:20191003
+LOCATION:Germany
+DESCRIPTION:Visit https://calendarlabs.com/holidays/germany/unity-day.php to know more about Unity Day (National). 
+ Like us on Facebook: http://fb.com/calendarlabs to get updates
+RRULE:
+UID:5e3a8f31246691580896049@calendarlabs.com
+DTSTAMP:20200205T094729Z
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+SEQUENCE:0
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Reformation Day
+DTSTART:20191031
+DTEND:20191031
+LOCATION:Germany
+DESCRIPTION:Visit https://calendarlabs.com/holidays/germany/reformation-day.php to know more about Reformation Day. 
+ Like us on Facebook: http://fb.com/calendarlabs to get updates
+RRULE:
+UID:5e3a8f31246e21580896049@calendarlabs.com
+DTSTAMP:20200205T094729Z
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+SEQUENCE:0
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:All Saints Day
+DTSTART:20191101
+DTEND:20191101
+LOCATION:Germany
+DESCRIPTION:Visit https://calendarlabs.com/holidays/philippines/all-saints-day.php to know more about All Saints Day. 
+ Like us on Facebook: http://fb.com/calendarlabs to get updates
+RRULE:
+UID:5e3a8f31247411580896049@calendarlabs.com
+DTSTAMP:20200205T094729Z
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+SEQUENCE:0
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:National Day of Mourning
+DTSTART:20191117
+DTEND:20191117
+LOCATION:Germany
+DESCRIPTION:Visit https://calendarlabs.com/holidays/germany/national-day-of-mourning.php to know more about National Day of Mourning. 
+ Like us on Facebook: http://fb.com/calendarlabs to get updates
+RRULE:
+UID:5e3a8f31247a21580896049@calendarlabs.com
+DTSTAMP:20200205T094729Z
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+SEQUENCE:0
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Christmas Day
+DTSTART:20191225
+DTEND:20191225
+LOCATION:Germany
+DESCRIPTION:Visit https://calendarlabs.com/holidays/us/christmas.php to know more about Christmas Day. 
+ Like us on Facebook: http://fb.com/calendarlabs to get updates
+RRULE:
+UID:5e3a8f31248001580896049@calendarlabs.com
+DTSTAMP:20200205T094729Z
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+SEQUENCE:0
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Boxing Day
+DTSTART:20191226
+DTEND:20191226
+LOCATION:Germany
+DESCRIPTION:Visit https://calendarlabs.com/holidays/canada/boxing-day.php to know more about Boxing Day. 
+ Like us on Facebook: http://fb.com/calendarlabs to get updates
+RRULE:
+UID:5e3a8f312485a1580896049@calendarlabs.com
+DTSTAMP:20200205T094729Z
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+SEQUENCE:0
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:New Year's Day
+DTSTART:20200101
+DTEND:20200101
+LOCATION:Germany
+DESCRIPTION:Visit https://calendarlabs.com/holidays/us/new-years-day.php to know more about New Year's Day. 
+ Like us on Facebook: http://fb.com/calendarlabs to get updates
+RRULE:
+UID:5e3a8f31248b51580896049@calendarlabs.com
+DTSTAMP:20200205T094729Z
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+SEQUENCE:0
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Epiphany (BW\, BY & ST)
+DTSTART:20200106
+DTEND:20200106
+LOCATION:Germany
+DESCRIPTION:Visit https://calendarlabs.com/holidays/spain/epiphany.php to know more about Epiphany (BW\, BY & ST). 
+ Like us on Facebook: http://fb.com/calendarlabs to get updates
+RRULE:
+UID:5e3a8f312491a1580896049@calendarlabs.com
+DTSTAMP:20200205T094729Z
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+SEQUENCE:0
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Carnival
+DTSTART:20200225
+DTEND:20200225
+LOCATION:Germany
+DESCRIPTION:Visit https://calendarlabs.com/holidays/brazil/carnival.php to know more about Carnival. 
+ Like us on Facebook: http://fb.com/calendarlabs to get updates
+RRULE:
+UID:5e3a8f312497e1580896049@calendarlabs.com
+DTSTAMP:20200205T094729Z
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+SEQUENCE:0
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Good Friday
+DTSTART:20200410
+DTEND:20200410
+LOCATION:Germany
+DESCRIPTION:Visit https://calendarlabs.com/holidays/us/good-friday.php to know more about Good Friday. 
+ Like us on Facebook: http://fb.com/calendarlabs to get updates
+RRULE:
+UID:5e3a8f31249e41580896049@calendarlabs.com
+DTSTAMP:20200205T094729Z
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+SEQUENCE:0
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Easter Sunday
+DTSTART:20200412
+DTEND:20200412
+LOCATION:Germany
+DESCRIPTION:Visit https://calendarlabs.com/holidays/us/easter.php to know more about Easter Sunday. 
+ Like us on Facebook: http://fb.com/calendarlabs to get updates
+RRULE:
+UID:5e3a8f3124a431580896049@calendarlabs.com
+DTSTAMP:20200205T094729Z
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+SEQUENCE:0
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Easter Monday
+DTSTART:20200413
+DTEND:20200413
+LOCATION:Germany
+DESCRIPTION:Visit https://calendarlabs.com/holidays/christian/easter-monday.php to know more about Easter Monday. 
+ Like us on Facebook: http://fb.com/calendarlabs to get updates
+RRULE:
+UID:5e3a8f3124aa51580896049@calendarlabs.com
+DTSTAMP:20200205T094729Z
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+SEQUENCE:0
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Labor Day
+DTSTART:20200501
+DTEND:20200501
+LOCATION:Germany
+DESCRIPTION:Visit https://calendarlabs.com/holidays/uk/may-day.php to know more about Labor Day. 
+ Like us on Facebook: http://fb.com/calendarlabs to get updates
+RRULE:
+UID:5e3a8f3124b021580896049@calendarlabs.com
+DTSTAMP:20200205T094729Z
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+SEQUENCE:0
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Ascension Day
+DTSTART:20200521
+DTEND:20200521
+LOCATION:Germany
+DESCRIPTION:Visit https://calendarlabs.com/holidays/romania/ascension-day.php to know more about Ascension Day. 
+ Like us on Facebook: http://fb.com/calendarlabs to get updates
+RRULE:
+UID:5e3a8f3124b5f1580896049@calendarlabs.com
+DTSTAMP:20200205T094729Z
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+SEQUENCE:0
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Whit Monday
+DTSTART:20200601
+DTEND:20200601
+LOCATION:Germany
+DESCRIPTION:Visit https://calendarlabs.com/holidays/germany/pentecost-monday.php to know more about Whit Monday. 
+ Like us on Facebook: http://fb.com/calendarlabs to get updates
+RRULE:
+UID:5e3a8f3124bc41580896049@calendarlabs.com
+DTSTAMP:20200205T094729Z
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+SEQUENCE:0
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Corpus Christi
+DTSTART:20200611
+DTEND:20200611
+LOCATION:Germany
+DESCRIPTION:Visit https://calendarlabs.com/holidays/us/corpus-christi.php to know more about Corpus Christi. 
+ Like us on Facebook: http://fb.com/calendarlabs to get updates
+RRULE:
+UID:5e3a8f3124c291580896049@calendarlabs.com
+DTSTAMP:20200205T094729Z
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+SEQUENCE:0
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Assumption Day
+DTSTART:20200815
+DTEND:20200815
+LOCATION:Germany
+DESCRIPTION:Visit https://calendarlabs.com/holidays/us/the-assumption-of-mary.php to know more about Assumption Day. 
+ Like us on Facebook: http://fb.com/calendarlabs to get updates
+RRULE:
+UID:5e3a8f3124c891580896049@calendarlabs.com
+DTSTAMP:20200205T094729Z
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+SEQUENCE:0
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Unity Day (National)
+DTSTART:20201003
+DTEND:20201003
+LOCATION:Germany
+DESCRIPTION:Visit https://calendarlabs.com/holidays/germany/unity-day.php to know more about Unity Day (National). 
+ Like us on Facebook: http://fb.com/calendarlabs to get updates
+RRULE:
+UID:5e3a8f3124ceb1580896049@calendarlabs.com
+DTSTAMP:20200205T094729Z
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+SEQUENCE:0
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Reformation Day
+DTSTART:20201031
+DTEND:20201031
+LOCATION:Germany
+DESCRIPTION:Visit https://calendarlabs.com/holidays/germany/reformation-day.php to know more about Reformation Day. 
+ Like us on Facebook: http://fb.com/calendarlabs to get updates
+RRULE:
+UID:5e3a8f3124d521580896049@calendarlabs.com
+DTSTAMP:20200205T094729Z
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+SEQUENCE:0
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:All Saints Day
+DTSTART:20201101
+DTEND:20201101
+LOCATION:Germany
+DESCRIPTION:Visit https://calendarlabs.com/holidays/philippines/all-saints-day.php to know more about All Saints Day. 
+ Like us on Facebook: http://fb.com/calendarlabs to get updates
+RRULE:
+UID:5e3a8f3124dbe1580896049@calendarlabs.com
+DTSTAMP:20200205T094729Z
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+SEQUENCE:0
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:National Day of Mourning
+DTSTART:20201115
+DTEND:20201115
+LOCATION:Germany
+DESCRIPTION:Visit https://calendarlabs.com/holidays/germany/national-day-of-mourning.php to know more about National Day of Mourning. 
+ Like us on Facebook: http://fb.com/calendarlabs to get updates
+RRULE:
+UID:5e3a8f3124e231580896049@calendarlabs.com
+DTSTAMP:20200205T094729Z
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+SEQUENCE:0
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Christmas Day
+DTSTART:20201225
+DTEND:20201225
+LOCATION:Germany
+DESCRIPTION:Visit https://calendarlabs.com/holidays/us/christmas.php to know more about Christmas Day. 
+ Like us on Facebook: http://fb.com/calendarlabs to get updates
+RRULE:
+UID:5e3a8f3124e841580896049@calendarlabs.com
+DTSTAMP:20200205T094729Z
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+SEQUENCE:0
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Boxing Day
+DTSTART:20201226
+DTEND:20201226
+LOCATION:Germany
+DESCRIPTION:Visit https://calendarlabs.com/holidays/canada/boxing-day.php to know more about Boxing Day. 
+ Like us on Facebook: http://fb.com/calendarlabs to get updates
+RRULE:
+UID:5e3a8f3124eeb1580896049@calendarlabs.com
+DTSTAMP:20200205T094729Z
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+SEQUENCE:0
+END:VEVENT
+END:VCALENDAR

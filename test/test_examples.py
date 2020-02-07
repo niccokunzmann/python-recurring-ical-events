@@ -66,3 +66,11 @@ def test_no_more_events_are_scheduled(calendars, month):
     events = calendars.machbar_16_feb_2019.at(month)
     mb_events = [event for event in events if "mB-onTour" in event["SUMMARY"]]
     assert len(mb_events) == number_of_dates
+
+def test_german_holidays(calendars):
+    """Test the calendar from
+    https://www.calendarlabs.com/ical-calendar/ics/46/Germany_Holidays.ics
+    """
+    holidays = calendars.Germany_Holidays.at(2020)
+    assert len(holidays) == 17
+

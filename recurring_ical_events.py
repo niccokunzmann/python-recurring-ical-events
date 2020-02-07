@@ -151,7 +151,7 @@ class UnfoldableCalendar:
             self.duration = self.end - self.start
             self.rule = rule = rruleset()
             _rule = event.get("RRULE", None)
-            if _rule is not None:
+            if _rule:
                 rule.rrule(self.create_rule_with_start(_rule.to_ical().decode(), self.start))
 
             if compare_greater(self.span_start, self.start):
