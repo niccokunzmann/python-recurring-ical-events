@@ -183,6 +183,9 @@ how to go about it.
 Changelog
 ---------
 
+- v0.1.16b
+    - Events with an empty RRULE are handled like events without an RRULE.
+    - Remove fixed dependency versions, see `Issue 14 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/14>`_
 - v0.1.15b
     - Repeated events also include subcomponents. `Issue 6 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/6>`_
 - v0.1.14b
