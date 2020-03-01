@@ -33,7 +33,7 @@ assignees: ''
 <!-- Add any other context about the problem here. Or maybe related issues. -->
 
 **Suggested implementation**
-<!-- If possible, suggest a way of solving this. -->
+<!-- If possible, suggest a way of solving this or just let this text down there remain as it is. -->
 
 - [ ] add an ICS file, example:
     https://github.com/niccokunzmann/python-recurring-ical-events/blob/f4a90b211f30bf0522f03514ba50eb69826f0fdb/test/calendars/issue-15-duplicated-events.ics#L1
