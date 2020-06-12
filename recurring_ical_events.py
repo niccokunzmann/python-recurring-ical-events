@@ -175,16 +175,20 @@ class UnfoldableCalendar:
                 # string: FREQ=WEEKLY;UNTIL=20191023;BYDAY=TH;WKST=SU
                 # start: 2019-08-01 14:00:00+01:00
                 # ValueError: RRULE UNTIL values must be specified in UTC when DTSTART is timezone-aware
-                assert self.start.tzinfo is not None, "we assume the start is timezone aware but the until value is not" # see the comment above
                 rule_list = rule_string.split(";UNTIL=")
                 assert len(rule_list) == 2
                 date_end_index = rule_list[1].find(";")
                 if date_end_index == -1:
                     date_end_index = len(rule_list[1])
                 until_string = rule_list[1][:date_end_index]
-                rule_string = rule_list[0] + rule_list[1][date_end_index:] + ";UNTIL=" + until_string + \
-                    "T000000Z" # https://stackoverflow.com/a/49991809
-                return rrulestr(rule_string, dtstart=self.start)
+                if self.start.tzinfo is None:
+                    # remove the Z from the time zone
+                    until_string = until_string[:-1]
+                else:
+                    # we assume the start is timezone aware but the until value is not, see the comment above
+                    until_string += "T000000Z" # https://stackoverflow.com/a/49991809
+                new_rule_string = rule_list[0] + rule_list[1][date_end_index:] + ";UNTIL=" + until_string
+                return rrulestr(new_rule_string, dtstart=self.start)
 
 
         def make_all_dates_comparable(self):
