@@ -18,7 +18,7 @@ before_script:
   - rm -rf build
   # show the versions
   - python setup.py --version
-  - pytest --version
+  - pip list
   - echo "Package version $PACKAGE_VERSION with possible tag name $TAG_NAME"
 script:
   - pytest
