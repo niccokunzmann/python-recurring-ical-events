@@ -183,6 +183,8 @@ how to go about it.
 Changelog
 ---------
 
+- v0.1.17b
+    - Handle `Issue 28 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/28>`_ where passed arguments lead to errors where it is expected to work.
 - v0.1.16b
     - Events with an empty RRULE are handled like events without an RRULE.
     - Remove fixed dependency versions, see `Issue 14 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/14>`_
