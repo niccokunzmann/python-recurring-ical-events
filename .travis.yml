@@ -5,6 +5,10 @@ python:
   - "3.6"
   - "3.7"
   - "3.8"
+env:
+  jobs:
+    - TEST_TIMEZONE=/usr/share/zoneinfo/Europe/Berlin
+    - TEST_TIMEZONE=/usr/share/zoneinfo/Australia/Sydney
 install:
   # install the package
   - PACKAGE_VERSION=`python setup.py --version`
@@ -14,6 +18,7 @@ install:
   - pip install wheel
   - ( cd dist ; pip install recurring_ical_events-${PACKAGE_VERSION}.zip )
   #  - pip install -r requirements.txt -r test-requirements.txt
+  - cp "$TEST_TIMEZONE" /etc/localtime # change the time zone, see https://linuxacademy.com/blog/linux/changing-the-time-zone-in-linux-command-line/
 before_script:
   # remove the build folder because it creates problems for py.test
   - rm -rf build
@@ -21,6 +26,7 @@ before_script:
   - python setup.py --version
   - pip list
   - echo "Package version $PACKAGE_VERSION with possible tag name $TAG_NAME"
+  - echo "Check the time zone: `date`"
 script:
   - pytest
   # test that the tag represents the version
