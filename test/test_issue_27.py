@@ -1,5 +1,6 @@
 """These tests are for Issue 27
 https://github.com/niccokunzmann/python-recurring-ical-events/issues/27
+https://github.com/niccokunzmann/python-recurring-ical-events/pull/32
 
 Diff of the two files:
 
