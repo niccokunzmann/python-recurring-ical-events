@@ -321,6 +321,8 @@ class UnfoldableCalendar:
             """Add an event and check if it was edited."""
             same_events = events_by_id[event.get("UID", default_uid)] # TODO: test what comes first
             recurrence_id = event.get("RECURRENCE-ID", event["DTSTART"]).dt # TODO: this is still wrong: what if there are different events at the same time?
+            if isinstance(recurrence_id, datetime.datetime):
+                recurrence_id = recurrence_id.date()
             other = same_events.get(recurrence_id, None)
             if other: # TODO: test that this is independet of order
                 event_sequence = event.get("SEQUENCE", None)
@@ -346,3 +348,4 @@ class UnfoldableCalendar:
 def of(a_calendar):
     """Unfold recurring events of a_calendar"""
     return UnfoldableCalendar(a_calendar)
+
