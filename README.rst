@@ -162,8 +162,10 @@ Development
 
 To release new versions,
 
-- edit the Changelog Section
-- edit setup.py, the ``__version__`` variable and run
+1. edit the Changelog Section
+2. edit setup.py, the ``__version__`` variable
+3. create a commit and push it
+4. run
     .. code-block:: shell
 
         python3 setup.py tag_and_deploy
@@ -183,6 +185,9 @@ how to go about it.
 Changelog
 ---------
 
+- v0.1.18b
+    - Handle `Issue 28 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/28>`_ so that EXDATEs match as expected.
+    - Handle `Issue 27 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/27>`_ so that parsing some rrule UNTIL values does not crash.
 - v0.1.17b
     - Handle `Issue 28 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/28>`_ where passed arguments lead to errors where it is expected to work.
 - v0.1.16b
