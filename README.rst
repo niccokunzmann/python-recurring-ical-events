@@ -169,6 +169,7 @@ To release new versions,
     .. code-block:: shell
 
         python3 setup.py tag_and_deploy
+5. notify the issues about their release
 
 Testing
 *******
