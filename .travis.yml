@@ -5,6 +5,10 @@ python:
   - "3.6"
   - "3.7"
   - "3.8"
+env:
+  jobs:
+    - TZ=Europe/Berlin
+    - TZ=Australia/Sydney
 install:
   # install the package
   - PACKAGE_VERSION=`python setup.py --version`
@@ -21,6 +25,7 @@ before_script:
   - python setup.py --version
   - pip list
   - echo "Package version $PACKAGE_VERSION with possible tag name $TAG_NAME"
+  - python3 -c 'import time; time.tzset(); print(time.strftime("%X %x %Z"))'
 script:
   - pytest
   # test that the tag represents the version
@@ -41,6 +46,5 @@ deploy:
     secure: pEM3dshSbjGx7A+t3JisuzIhkGva0mPlZZYbZ1boNBU3Y2YiNYhhtkt8ilkGWxblmmZAq9r0UGLDY2fPlX73o6kwxIcQiwiLFFvZK+KcO7cOck35tnwWVepmMdi7x0qyjO13m1FbY1FnR9jNG7so+Pcmn1aey2XR/3Aroyx5PTDFx3SKsN8xwTtYs18Z8Huc99M7vUH9loOOsHXI0UZ5dUOk1XswDj+Zxm0stJeBqLAhMk2euh5ADBK8jNB+ZiNap8hxvKeYigB8jCP7c4YOev4nOYKAIsY15gOjBC7MSoH6668J7uiH1kgNDQyrtGHz46jKJRFke45tksefW4+gAOs8FdPVfTZR3GpnzfKxnu1yZdRktD1FOWcGZwzPpuXW9w2oGpcVt5Lh0rP7HhnK0ILnTPx7jD9c86gQiy5EhGKpgkbOsQTDIidzoVcrxDJdfS2oRyXPiHsobUNpzMTbGbnuwUKvisdHjPzhXt2/Rd/kB0Yd8KD+cdwyM6kX8ab4aevTCXWyp3hbFs+acxp0r3BZgF9T6fEWsv61ihxWV/eeWiQXmKJy1pOXEDaa/scmWDHRrxaJtXF5ASXcAIDw1pQWsqs66tcYcQC2GMsIRNpEH/TgaQ+Ozr/REWgJXNxA4NCOw7XPiDGN8pg4qjeC0zgauC8tjAaO6zQ8x85L/xU=
   on:
     tags: true
-    distributions: sdist bdist_wheel
     repo: niccokunzmann/python-recurring-ical-events
     condition: $TRAVIS_PYTHON_VERSION == 3.6

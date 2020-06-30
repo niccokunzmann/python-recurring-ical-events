@@ -2,6 +2,7 @@ import pytest
 import os
 import icalendar
 import sys
+import time
 
 sys.path.append(".")
 
@@ -9,6 +10,9 @@ from recurring_ical_events import of
 
 HERE = os.path.dirname(__name__) or "test"
 CALENDARS_FOLDER = os.path.join(HERE, "calendars")
+# set the default time zone
+# see https://stackoverflow.com/questions/1301493/setting-timezone-in-python
+time.tzset()
 
 class Calendars:
     """Collection of calendars"""
