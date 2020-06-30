@@ -186,7 +186,10 @@ class UnfoldableCalendar:
                     until_string = until_string[:-1]
                 else:
                     # we assume the start is timezone aware but the until value is not, see the comment above
-                    until_string += "T000000Z" # https://stackoverflow.com/a/49991809
+                    if len(until_string) == 8:
+                        until_string += "T000000"
+                    assert len(until_string) == 15
+                    until_string += "Z" # https://stackoverflow.com/a/49991809
                 new_rule_string = rule_list[0] + rule_list[1][date_end_index:] + ";UNTIL=" + until_string
                 return rrulestr(new_rule_string, dtstart=self.start)
 
