@@ -1,2 +1,3 @@
 icalendar
 pytz
+python-dateutil>=2.8.1
