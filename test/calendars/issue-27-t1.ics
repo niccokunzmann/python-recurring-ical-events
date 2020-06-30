@@ -23,9 +23,9 @@ END:VTIMEZONE
 BEGIN:VEVENT
 UID:3bbe38c205956551730fc9233525fe268296ec02
 DTSTAMP:20200423T174240Z
-DTSTART;TZID=/freeassociation.sourceforge.net/Europe/Berlin:
+DTSTART;TZID=Europe/Berlin:
  20200426T140000
-DTEND;TZID=/freeassociation.sourceforge.net/Europe/Berlin:
+DTEND;TZID=Europe/Berlin:
  20200426T143000
 SUMMARY:Reoccur
 SEQUENCE:7
