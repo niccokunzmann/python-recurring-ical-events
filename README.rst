@@ -203,11 +203,17 @@ Changelog
     - Use vDDDTypes instead of explicit date/datetime type `Pull Request 19 <https://github.com/niccokunzmann/python-recurring-ical-events/pull/19>`_
     - Start Changelog
 
+Libraries Used
+--------------
+
+- `python-dateutil <https://pypi.org/project/python-dateutil/>`_ - to compute the recurrences of events using ``rrule``
+- `icalendar`_ - the library used to parse ICS files
+- `pytz <https://pypi.org/project/pytz/>`_ - for timezones
+
 Related Projects
 ----------------
 
 - `icalevents <https://github.com/irgangla/icalevents>`_ - another library for roughly the same use-case
-- `icalendar`_ - the library used to parse ICS files
 - `Open Web Calendar <https://github.com/niccokunzmann/open-web-calendar>`_ - a web calendar to embed into websites which uses this library
 
 Research
