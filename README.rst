@@ -176,7 +176,7 @@ Testing
 
 This project's development is driven by tests.
 You can view the tests in the `test folder
-<https://github.com/niccokunzmann/python-recurring-ical-events/tree/master/test>`_
+<https://github.com/niccokunzmann/python-recurring-ical-events/tree/master/test>`_.
 If you have a calendar ICS file for which this library does not
 generate the desired output, you can add it to the ``test/calendars``
 folder and write tests for what you expect.
