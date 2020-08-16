@@ -128,9 +128,10 @@ class UnfoldableCalendar:
             def is_in_span(self, span_start, span_stop):
                 return time_span_contains_event(span_start, span_stop, self.start, self.stop)
 
-        def __init__(self, event, span_start):
+        def __init__(self, event, span_start, span_stop):
             self.event = event
             self.span_start = span_start
+            self.span_stop = span_stop
             self.start = self.original_start = event["DTSTART"].dt
             self.end = self.original_end = self._get_event_end()
             self.exdates = []
@@ -213,6 +214,7 @@ class UnfoldableCalendar:
                     break
             self.start = convert_to_datetime(self.start, tzinfo)
             self.span_start = convert_to_datetime(self.span_start, tzinfo)
+            self.span_stop = convert_to_datetime(self.span_stop, tzinfo)
             self.end = convert_to_datetime(self.end, tzinfo)
             self.rdates = [convert_to_datetime(rdate, tzinfo) for rdate in self.rdates]
             self.exdates = [convert_to_datetime(exdate, tzinfo) for exdate in self.exdates]
@@ -228,7 +230,7 @@ class UnfoldableCalendar:
         def __iter__(self):
             # TODO: If in the following line, we get an error, datetime and date
             # may still be mixed because RDATE, EXDATE, start and rule.
-            for start in self.rule:
+            for start in self.rule.between(self.span_start, self.span_stop):
                 if isinstance(start, datetime.datetime) and start.tzinfo is not None:
                     start = start.tzinfo.localize(start.replace(tzinfo=None))
                 stop = start + self.duration
@@ -340,7 +342,7 @@ class UnfoldableCalendar:
         for event in self.calendar.walk():
             if not is_event(event):
                 continue
-            repetitions = self.RepeatedEvent(event, span_start)
+            repetitions = self.RepeatedEvent(event, span_start, span_stop)
             for repetition in repetitions:
                 if compare_greater(repetition.start, span_stop):
                     break
