@@ -16,7 +16,9 @@ ical_string = "".join(text_utf)
 
 calendar = icalendar.Calendar.from_ical(ical_string)
 
+rec_calendar = recurring_ical_events.of(calendar)
+
 for day in range(1,29):
   print("day",day)
   start_date = (2011, 11, day)
-  events = recurring_ical_events.of(calendar).at(start_date)
+  events = rec_calendar.at(start_date)

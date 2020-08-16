@@ -128,10 +128,8 @@ class UnfoldableCalendar:
             def is_in_span(self, span_start, span_stop):
                 return time_span_contains_event(span_start, span_stop, self.start, self.stop)
 
-        def __init__(self, event, span_start, span_stop):
+        def __init__(self, event):
             self.event = event
-            self.span_start = span_start
-            self.span_stop = span_stop
             self.start = self.original_start = event["DTSTART"].dt
             self.end = self.original_end = self._get_event_end()
             self.exdates = []
@@ -150,18 +148,13 @@ class UnfoldableCalendar:
             self.make_all_dates_comparable()
             
             self.duration = self.end - self.start
-            self.rule = rule = rruleset()
+            self.rule = rule = rruleset(cache=True)
             _rule = event.get("RRULE", None)
             if _rule:
-                rule.rrule(self.create_rule_with_start(_rule.to_ical().decode(), self.start))
-
-            if compare_greater(self.span_start, self.start):
-                # the rrule until parameter includes the last date
-                # thus we need to go one day back
-                span_start = self.span_start - datetime.timedelta(days=1)
-                # do not exclude an event if it spans across the time span
-                span_start -= self.duration
-                rule.exrule(rrule(DAILY, dtstart=self.start, until=span_start))
+                self.rrule = self.create_rule_with_start(_rule.to_ical().decode())
+                rule.rrule(self.rrule)
+            else:
+                self.rrule = None
 
             for exdate in self.exdates:
                 rule.exdate(exdate)
@@ -169,9 +162,9 @@ class UnfoldableCalendar:
                 rule.rdate(rdate)
             rule.rdate(self.start)
             
-        def create_rule_with_start(self, rule_string, start):
+        def create_rule_with_start(self, rule_string):
             try:
-                return rrulestr(rule_string, dtstart=start)
+                return rrulestr(rule_string, dtstart=self.start)
             except ValueError:
                 # string: FREQ=WEEKLY;UNTIL=20191023;BYDAY=TH;WKST=SU
                 # start: 2019-08-01 14:00:00+01:00
@@ -182,7 +175,9 @@ class UnfoldableCalendar:
                 if date_end_index == -1:
                     date_end_index = len(rule_list[1])
                 until_string = rule_list[1][:date_end_index]
-                if self.start.tzinfo is None:
+                if self.is_all_dates:
+                    until_string = until_string[:8]
+                elif self.tzinfo is None:
                     # remove the Z from the time zone
                     until_string = until_string[:-1]
                 else:
@@ -204,20 +199,18 @@ class UnfoldableCalendar:
             - datetime with timezone
             These three are not comparable but can be converted.
             """
-            dates = [self.start, self.end, self.span_start] + self.exdates + self.rdates
-            if not any(isinstance(date, datetime.datetime) for date in dates):
-                return
-            tzinfo = None
+            self.tzinfo = None
+            dates = [self.start, self.end] + self.exdates + self.rdates
+            self.is_all_dates = not any(isinstance(date, datetime.datetime) for date in dates)
             for date in dates:
                 if isinstance(date, datetime.datetime) and date.tzinfo is not None:
-                    tzinfo = date.tzinfo
+                    self.tzinfo = date.tzinfo
                     break
-            self.start = convert_to_datetime(self.start, tzinfo)
-            self.span_start = convert_to_datetime(self.span_start, tzinfo)
-            self.span_stop = convert_to_datetime(self.span_stop, tzinfo)
-            self.end = convert_to_datetime(self.end, tzinfo)
-            self.rdates = [convert_to_datetime(rdate, tzinfo) for rdate in self.rdates]
-            self.exdates = [convert_to_datetime(exdate, tzinfo) for exdate in self.exdates]
+            self.start = convert_to_datetime(self.start, self.tzinfo)
+            
+            self.end = convert_to_datetime(self.end, self.tzinfo)
+            self.rdates = [convert_to_datetime(rdate, self.tzinfo) for rdate in self.rdates]
+            self.exdates = [convert_to_datetime(exdate, self.tzinfo) for exdate in self.exdates]
         
         def _unify_exdate(self, dt):
             """Return a unique string for the datetime which is used to
@@ -227,10 +220,16 @@ class UnfoldableCalendar:
                 return timestamp(dt)
             return dt
        
-        def __iter__(self):
-            # TODO: If in the following line, we get an error, datetime and date
+        def within(self, span_start, span_stop):
+            # make dates comparable, rrule converts them to datetimes
+            span_start = convert_to_datetime(span_start, self.tzinfo)
+            span_stop = convert_to_datetime(span_stop, self.tzinfo)
+            if compare_greater(span_start, self.start):
+                # do not exclude an event if it spans across the time span
+                span_start -= self.duration
+            # NOTE: If in the following line, we get an error, datetime and date
             # may still be mixed because RDATE, EXDATE, start and rule.
-            for start in self.rule.between(self.span_start, self.span_stop):
+            for start in self.rule.between(span_start, span_stop, inc=True):
                 if isinstance(start, datetime.datetime) and start.tzinfo is not None:
                     start = start.tzinfo.localize(start.replace(tzinfo=None))
                 stop = start + self.duration
@@ -240,7 +239,7 @@ class UnfoldableCalendar:
                     self.event,
                     self.convert_to_original_type(start),
                     self.convert_to_original_type(stop))
-        
+                
         def convert_to_original_type(self, date):
             if not isinstance(self.original_start, datetime.datetime) and \
                     not isinstance(self.original_end, datetime.datetime):
@@ -260,7 +259,12 @@ class UnfoldableCalendar:
     def __init__(self, calendar):
         """Create an unfoldable calendar from a given calendar."""
         assert calendar.get("CALSCALE", "GREGORIAN") == "GREGORIAN", "Only Gregorian calendars are supported." # https://www.kanzaki.com/docs/ical/calscale.html
-        self.calendar = calendar
+        self.repetitions = []
+        for event in calendar.walk():
+            if not is_event(event):
+                continue
+            self.repetitions.append(self.RepeatedEvent(event))
+
 
     @staticmethod
     def to_datetime(date):
@@ -339,11 +343,8 @@ class UnfoldableCalendar:
             same_events[recurrence_id] = event
             events.append(event)
 
-        for event in self.calendar.walk():
-            if not is_event(event):
-                continue
-            repetitions = self.RepeatedEvent(event, span_start, span_stop)
-            for repetition in repetitions:
+        for event_repetions in self.repetitions:
+            for repetition in event_repetions.within(span_start, span_stop):
                 if compare_greater(repetition.start, span_stop):
                     break
                 if repetition.is_in_span(span_start, span_stop):
