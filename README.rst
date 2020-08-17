@@ -186,6 +186,8 @@ how to go about it.
 Changelog
 ---------
 
+- v0.1.19b
+    - Benchmark using `@mrx23dot's <https://github.com/mrx23dot>`_ script and speed up recurrence calculation by factor 4, see `Issue 28 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/42>`_.
 - v0.1.18b
     - Handle `Issue 28 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/28>`_ so that EXDATEs match as expected.
     - Handle `Issue 27 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/27>`_ so that parsing some rrule UNTIL values does not crash.
