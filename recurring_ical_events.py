@@ -334,12 +334,19 @@ class UnfoldableCalendar:
                 recurrence_id = recurrence_id.date()
             other = same_events.get(recurrence_id, None)
             if other: # TODO: test that this is independet of order
-                event_sequence = event.get("SEQUENCE", None)
-                other_sequence = other.get("SEQUENCE", None)
-                if event_sequence is not None and other_sequence is not None:
-                    if event["SEQUENCE"] < other["SEQUENCE"]:
-                        return
+                event_recurrence_id = event.get("RECURRENCE-ID", None)
+                other_recurrence_id = other.get("RECURRENCE-ID", None)
+                if event_recurrence_id is not None and other_recurrence_id is None:
                     events.remove(other)
+                elif event_recurrence_id is None and other_recurrence_id is not None:
+                    return
+                else:
+                    event_sequence = event.get("SEQUENCE", None)
+                    other_sequence = other.get("SEQUENCE", None)
+                    if event_sequence is not None and other_sequence is not None:
+                        if event["SEQUENCE"] < other["SEQUENCE"]:
+                            return
+                        events.remove(other)
             same_events[recurrence_id] = event
             events.append(event)
 
