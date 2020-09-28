@@ -186,6 +186,8 @@ how to go about it.
 Changelog
 ---------
 
+- v0.1.20b
+    - Fix handling of modified recurrences with lower sequence number than their base event `Pull Request 45 <https://github.com/niccokunzmann/python-recurring-ical-events/pull/45>`_
 - v0.1.19b
     - Benchmark using `@mrx23dot <https://github.com/mrx23dot>`_'s script and speed up recurrence calculation by factor 4, see `Issue 42 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/42>`_.
 - v0.1.18b
