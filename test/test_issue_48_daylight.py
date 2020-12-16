@@ -2,21 +2,9 @@
 https://github.com/niccokunzmann/python-recurring-ical-events/issues/48
 
 These were the events occurring when the issue was raised:
-    EVENT1:
-    start: 2020-11-02 09:30:00+00:00
-    stop:  2020-11-02 11:00:00+00:00
-
     EVENT2:
     start: 2020-11-02 11:30:00+00:00
     stop:  2020-11-02 13:00:00+00:00
-
-    EVENT3:
-    start: 2020-11-02 15:30:00+00:00
-    stop:  2020-11-02 17:00:00+00:00
-
-    EVENT4:
-    start: 2020-11-02 16:00:00+00:00
-    stop:  2020-11-02 18:00:00+00:00
 
 March to October: UTC+1
 October to March: UTC+0
@@ -39,11 +27,6 @@ TZ = timezone("Europe/Lisbon")
 def test_event_timing(calendars,date,event_name):
     date = date.tzinfo.localize(date.replace(tzinfo= None))
     events = calendars.issue_48_daylight_aware_repeats.at(date)
-    for event in events:
-        print()
-        print(event["dtstart"].dt)
-        print(event["dtend"].dt)
-        print(event["uid"])
     if event_name:
         assert len(events) == 1
         assert events[0]["UID"] == event_name
