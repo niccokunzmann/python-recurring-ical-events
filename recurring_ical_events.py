@@ -127,6 +127,9 @@ class UnfoldableCalendar:
 
             def is_in_span(self, span_start, span_stop):
                 return time_span_contains_event(span_start, span_stop, self.start, self.stop)
+            
+            def __repr__(self):
+                return "{}({{'UID':{}...}}, {}, {})".format(self.__class__.__name__, self.source.get("UID"), self.start, self.stop)
 
         def __init__(self, event):
             self.event = event
@@ -220,7 +223,7 @@ class UnfoldableCalendar:
                 return timestamp(dt)
             return dt
        
-        def within(self, span_start, span_stop):
+        def within_days(self, span_start, span_stop):
             # make dates comparable, rrule converts them to datetimes
             span_start = convert_to_datetime(span_start, self.tzinfo)
             span_stop = convert_to_datetime(span_stop, self.tzinfo)
@@ -231,10 +234,11 @@ class UnfoldableCalendar:
             # may still be mixed because RDATE, EXDATE, start and rule.
             for start in self.rule.between(span_start, span_stop, inc=True):
                 if isinstance(start, datetime.datetime) and start.tzinfo is not None:
+                    # update the time zone in case of summer/winter time change
                     start = start.tzinfo.localize(start.replace(tzinfo=None))
-                stop = start + self.duration
                 if self._unify_exdate(start) in self.exdates_utc:
                     continue
+                stop = start + self.duration
                 yield self.Repetition(
                     self.event,
                     self.convert_to_original_type(start),
@@ -350,8 +354,15 @@ class UnfoldableCalendar:
             same_events[recurrence_id] = event
             events.append(event)
 
+        span_start_day = span_start
+        if isinstance(span_start_day, datetime.datetime):
+            span_start_day = span_start_day.replace(hour=0,minute=0,second=0)
+        span_stop_day = span_stop
+        if isinstance(span_stop_day, datetime.datetime):
+            span_stop_day = span_stop.replace(hour=23,minute=59,second=59)
+
         for event_repetions in self.repetitions:
-            for repetition in event_repetions.within(span_start, span_stop):
+            for repetition in event_repetions.within_days(span_start_day, span_stop_day):
                 if compare_greater(repetition.start, span_stop):
                     break
                 if repetition.is_in_span(span_start, span_stop):
