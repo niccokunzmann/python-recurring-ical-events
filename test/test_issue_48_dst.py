@@ -5,62 +5,17 @@ https://github.com/niccokunzmann/python-recurring-ical-events/issues/4
 It seems the rrule until parameter includes the last date
 https://dateutil.readthedocs.io/en/stable/rrule.html
 '''
-from datetime import datetime
+import datetime
+import pytest
 import pytz
 
-def test_between_8_and_15(calendars):
-    localTZ = pytz.timezone("America/Chicago")
+chicago = pytz.timezone("America/Chicago")
 
-    start_time = datetime.now()
-    start_time = start_time.replace(
-        hour=8, minute=0, second=0, microsecond=0)
-    end_time = start_time.replace(hour=15, minute=0)
-
-    start_time=localTZ.localize(start_time)
-    end_time=localTZ.localize(end_time)
-
+@pytest.mark.parametrize("start_time,end_time,expected_count", [
+    (chicago.localize(datetime.datetime(2020, 12, 11, 8)),chicago.localize(datetime.datetime(2020, 12, 11, 15)),4),
+    (chicago.localize(datetime.datetime(2020, 12, 11, 9)),chicago.localize(datetime.datetime(2020, 12, 11, 15)),3),
+    (chicago.localize(datetime.datetime(2020, 12, 11, 10)),chicago.localize(datetime.datetime(2020, 12, 11, 15)),3),
+])
+def test_between(calendars, start_time, end_time, expected_count):
     events = calendars.issue_48_dst.between(start_time, end_time)
-    
-    print("Events between {} and {}".format(start_time, end_time))
-    for event in events:
-        print("{} {}".format(event["DTSTART"].dt, event["SUMMARY"]))
-    
-    assert len(events) == 4, "four events between 8AM and 3 PM"
-
-def test_between_9_and_15(calendars):
-    localTZ = pytz.timezone("America/Chicago")
-
-    start_time = datetime.now()
-    start_time = start_time.replace(
-        hour=9, minute=0, second=0, microsecond=0)
-    end_time = start_time.replace(hour=15, minute=0)
-
-    start_time=localTZ.localize(start_time)
-    end_time=localTZ.localize(end_time)
-
-    events = calendars.issue_48_dst.between(start_time, end_time)
-    
-    print("Events between {} and {}".format(start_time, end_time))
-    for event in events:
-        print("{} {}".format(event["DTSTART"].dt, event["SUMMARY"]))
-
-    assert len(events) == 3, "three events between 9AM and 3 PM"
-
-def test_between_10_and_15(calendars):
-    localTZ = pytz.timezone("America/Chicago")
-
-    start_time = datetime.now()
-    start_time = start_time.replace(
-        hour=10, minute=0, second=0, microsecond=0)
-    end_time = start_time.replace(hour=15, minute=0)
-
-    start_time=localTZ.localize(start_time)
-    end_time=localTZ.localize(end_time)
-
-    events = calendars.issue_48_dst.between(start_time, end_time)
-    
-    print("Events between {} and {}".format(start_time, end_time))
-    for event in events:
-        print("{} {}".format(event["DTSTART"].dt, event["SUMMARY"]))
-
-    assert len(events) == 3, "three events between 10AM and 3 PM"
+    assert len(events) == expected_count, "{} events expected between {} and {}".format(expected_count, start_time, end_time)
