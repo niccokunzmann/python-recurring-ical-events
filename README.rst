@@ -186,6 +186,8 @@ how to go about it.
 Changelog
 ---------
 
+- v0.1.21b
+    - Fix: Time spans smaller than a day do not skip events any more. See `Issue 48 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/48>`_.
 - v0.1.20b
     - Fix handling of modified recurrences with lower sequence number than their base event `Pull Request 45 <https://github.com/niccokunzmann/python-recurring-ical-events/pull/45>`_
 - v0.1.19b
