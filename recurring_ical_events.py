@@ -109,18 +109,20 @@ class UnfoldableCalendar:
                 "RRULE", "RDATE", "EXDATE"
             ]
 
-            def __init__(self, source, start, stop):
+            def __init__(self, source, start, stop, keep_recurrence_attributes=False):
                 self.source = source
                 self.start = start
                 self.stop = stop
+                self.keep_recurrence_attributes = keep_recurrence_attributes
 
             def as_vevent(self):
                 revent = self.source.copy()
                 revent["DTSTART"] = vDDDTypes(self.start)
                 revent["DTEND"] = vDDDTypes(self.stop)
-                for attribute in self.ATTRIBUTES_TO_DELETE_ON_COPY:
-                    if attribute in revent:
-                        del revent[attribute]
+                if not self.keep_recurrence_attributes:
+                    for attribute in self.ATTRIBUTES_TO_DELETE_ON_COPY:
+                        if attribute in revent:
+                            del revent[attribute]
                 for subcomponent in self.source.subcomponents:
                     revent.add_component(subcomponent)
                 return revent
@@ -131,10 +133,11 @@ class UnfoldableCalendar:
             def __repr__(self):
                 return "{}({{'UID':{}...}}, {}, {})".format(self.__class__.__name__, self.source.get("UID"), self.start, self.stop)
 
-        def __init__(self, event):
+        def __init__(self, event, keep_recurrence_attributes=False):
             self.event = event
             self.start = self.original_start = event["DTSTART"].dt
             self.end = self.original_end = self._get_event_end()
+            self.keep_recurrence_attributes = keep_recurrence_attributes
             self.exdates = []
             self.exdates_utc = set()
             exdates = event.get("EXDATE", [])
@@ -242,8 +245,10 @@ class UnfoldableCalendar:
                 yield self.Repetition(
                     self.event,
                     self.convert_to_original_type(start),
-                    self.convert_to_original_type(stop))
-                
+                    self.convert_to_original_type(stop),
+                    self.keep_recurrence_attributes,
+                )
+
         def convert_to_original_type(self, date):
             if not isinstance(self.original_start, datetime.datetime) and \
                     not isinstance(self.original_end, datetime.datetime):
@@ -260,14 +265,14 @@ class UnfoldableCalendar:
             return self.event["DTSTART"].dt
 
 
-    def __init__(self, calendar):
+    def __init__(self, calendar, keep_recurrence_attributes=False):
         """Create an unfoldable calendar from a given calendar."""
         assert calendar.get("CALSCALE", "GREGORIAN") == "GREGORIAN", "Only Gregorian calendars are supported." # https://www.kanzaki.com/docs/ical/calscale.html
         self.repetitions = []
         for event in calendar.walk():
             if not is_event(event):
                 continue
-            self.repetitions.append(self.RepeatedEvent(event))
+            self.repetitions.append(self.RepeatedEvent(event, keep_recurrence_attributes))
 
 
     @staticmethod
@@ -369,7 +374,7 @@ class UnfoldableCalendar:
                     add_event(repetition.as_vevent())
         return events
 
-def of(a_calendar):
+def of(a_calendar, keep_recurrence_attributes=False):
     """Unfold recurring events of a_calendar"""
-    return UnfoldableCalendar(a_calendar)
+    return UnfoldableCalendar(a_calendar, keep_recurrence_attributes)
 
