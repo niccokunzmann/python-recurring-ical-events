@@ -7,7 +7,7 @@ from icalendar import Calendar
 
 HERE = os.path.dirname(__name__) or "test"
 CALENDARS_FOLDER = os.path.join(HERE, "calendars")
-calendar_path = os.path.join(CALENDARS_FOLDER, "one-day-event-repeat-every-day.ics")
+calendar_path = os.path.join(CALENDARS_FOLDER, "rdate.ics")
 
 
 def test_keep_recurrence_attributes_default(calendars):
@@ -21,6 +21,8 @@ def test_keep_recurrence_attributes_default(calendars):
     events = of(calendar).between(today, one_year_ahead)
     for event in events:
         assert event.get("RRULE", False) is False
+        assert event.get("RDATE", False) is False
+        assert event.get("EXDATE", False) is False
 
 
 def test_keep_recurrence_attributes_false(calendars):
@@ -34,6 +36,8 @@ def test_keep_recurrence_attributes_false(calendars):
     events = of(calendar, keep_recurrence_attributes=False).between(today, one_year_ahead)
     for event in events:
         assert event.get("RRULE", False) is False
+        assert event.get("RDATE", False) is False
+        assert event.get("EXDATE", False) is False
 
 
 def test_keep_recurrence_attributes_true(calendars):
@@ -47,3 +51,5 @@ def test_keep_recurrence_attributes_true(calendars):
     events = of(calendar, keep_recurrence_attributes=True).between(today, one_year_ahead)
     for event in events:
         assert event.get("RRULE", False) is not False
+        assert event.get("RDATE", False) is not False
+        assert event.get("EXDATE", False) is not False
