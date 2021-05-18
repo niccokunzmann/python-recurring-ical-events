@@ -23,6 +23,19 @@ def test_keep_recurrence_attributes_default(calendars):
         assert event.get("RRULE", False) is False
 
 
+def test_keep_recurrence_attributes_false(calendars):
+    with open(calendar_path, "rb") as file:
+        content = file.read()
+
+    calendar = Calendar.from_ical(content)
+    today = datetime.today()
+    one_year_ahead = today.replace(year=today.year + 1)
+
+    events = of(calendar, keep_recurrence_attributes=False).between(today, one_year_ahead)
+    for event in events:
+        assert event.get("RRULE", False) is False
+
+
 def test_keep_recurrence_attributes_true(calendars):
     with open(calendar_path, "rb") as file:
         content = file.read()
