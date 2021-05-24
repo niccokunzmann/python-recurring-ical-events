@@ -192,9 +192,8 @@ Changelog
 ---------
 
 - v0.2.0b
-    - Add ability to keep the recurrence attributes (RRULE, RDATE, EXDATE) on the event copies instead of stripping them. See `Pull Request 54 <https://github.com/niccokunzmann/python-recurring-ical-events/pull/54>`.
-- v0.1.21b
     - Fix issue with repetitions over DST boundary. See `Issue 48 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/48>`.
+    - Add ability to keep the recurrence attributes (RRULE, RDATE, EXDATE) on the event copies instead of stripping them. See `Pull Request 54 <https://github.com/niccokunzmann/python-recurring-ical-events/pull/54>`.
 - v0.1.20b
     - Fix handling of modified recurrences with lower sequence number than their base event `Pull Request 45 <https://github.com/niccokunzmann/python-recurring-ical-events/pull/45>`_
 - v0.1.19b
