@@ -162,6 +162,9 @@ Development
 
         pytest
 
+New Releases
+------------
+
 To release new versions,
 
 1. edit the Changelog Section
