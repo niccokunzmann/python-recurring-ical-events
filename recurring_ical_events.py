@@ -12,7 +12,6 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import icalendar
 import datetime
-import pytz
 from dateutil.rrule import rrulestr, rruleset, rrule, DAILY
 import dateutil.parser
 import sys
@@ -22,7 +21,7 @@ from icalendar.prop import vDDDTypes
 
 if sys.version_info[0] == 2:
     _EPOCH = datetime.datetime.utcfromtimestamp(0)
-    _EPOCH_TZINFO = pytz.UTC.localize(_EPOCH)
+    _EPOCH_TZINFO = _EPOCH.astimezone(datetime.timezone.utc)
     def timestamp(dt):
         """Return the time stamp of a datetime"""
         # from https://stackoverflow.com/a/35337826
@@ -32,7 +31,7 @@ if sys.version_info[0] == 2:
 else:
     def timestamp(dt):
         """Return the time stamp of a datetime"""
-        return dt.timestamp() 
+        return dt.timestamp()
 
 def is_event(component):
     """Return whether a component is a calendar event."""
@@ -47,7 +46,7 @@ def convert_to_datetime(date, tzinfo):
     if isinstance(date, datetime.datetime):
         if date.tzinfo is None:
             if tzinfo is not None:
-                return tzinfo.localize(date)
+                return date.astimezone(tzinfo)
         elif tzinfo is None:
             return date.replace(tzinfo=None)
         return date
@@ -236,9 +235,6 @@ class RepeatedEvent:
         # NOTE: If in the following line, we get an error, datetime and date
         # may still be mixed because RDATE, EXDATE, start and rule.
         for start in self.rule.between(span_start, span_stop, inc=True):
-            if isinstance(start, datetime.datetime) and start.tzinfo is not None:
-                # update the time zone in case of summer/winter time change
-                start = start.tzinfo.localize(start.replace(tzinfo=None))
             if self._unify_exdate(start) in self.exdates_utc:
                 continue
             stop = start + self.duration
