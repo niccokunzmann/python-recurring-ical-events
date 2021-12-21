@@ -1,8 +1,8 @@
 Recurring ICal events for Python
 ================================
 
-.. image:: https://travis-ci.org/niccokunzmann/python-recurring-ical-events.svg?branch=master
-   :target: https://travis-ci.org/niccokunzmann/python-recurring-ical-events
+.. image:: https://app.travis-ci.com/niccokunzmann/python-recurring-ical-events.svg?branch=master
+   :target: https://app.travis-ci.com/github/niccokunzmann/python-recurring-ical-events
    :alt: Travis Build and Tests Status
 
 .. image:: https://badge.fury.io/py/recurring-ical-events.svg
