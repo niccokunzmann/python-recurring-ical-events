@@ -19,20 +19,6 @@ import sys
 from collections import defaultdict
 from icalendar.prop import vDDDTypes
 
-if sys.version_info[0] == 2:
-    _EPOCH = datetime.datetime.utcfromtimestamp(0)
-    _EPOCH_TZINFO = _EPOCH.astimezone(datetime.timezone.utc)
-    def timestamp(dt):
-        """Return the time stamp of a datetime"""
-        # from https://stackoverflow.com/a/35337826
-        if dt.tzinfo:
-            return (dt - _EPOCH_TZINFO).total_seconds()
-        return (dt - _EPOCH).total_seconds()
-else:
-    def timestamp(dt):
-        """Return the time stamp of a datetime"""
-        return dt.timestamp()
-
 def is_event(component):
     """Return whether a component is a calendar event."""
     return isinstance(component, icalendar.cal.Event)
@@ -222,7 +208,7 @@ class RepeatedEvent:
         compare it with exdates.
         """
         if isinstance(dt, datetime.datetime):
-            return timestamp(dt)
+            return dt.timestamp()
         return dt
 
     def within_days(self, span_start, span_stop):
