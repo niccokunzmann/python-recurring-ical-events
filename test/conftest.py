@@ -14,8 +14,8 @@ CALENDARS_FOLDER = os.path.join(HERE, "calendars")
 # see https://stackoverflow.com/questions/1301493/setting-timezone-in-python
 time.tzset()
 
-class Calendars:
-    """Collection of calendars"""
+class ICSCalendars:
+    """A collection of parsed ICS calendars"""
 
     Calendar = icalendar.Calendar
 
@@ -26,6 +26,10 @@ class Calendars:
     def __getitem__(self, name):
         return getattr(self, name)
 
+    @property
+    def raw(self):
+        return ICSCalendars()
+
 for calendar_file in os.listdir(CALENDARS_FOLDER):
     calendar_path = os.path.join(CALENDARS_FOLDER, calendar_file)
     name = os.path.splitext(calendar_file)[0]
@@ -33,11 +37,17 @@ for calendar_file in os.listdir(CALENDARS_FOLDER):
         content = file.read()
     @property
     def get_calendar(self, content=content):
-        return of(self.get_calendar(content))
+        return self.get_calendar(content)
     attribute_name = name.replace("-", "_")
-    setattr(Calendars, attribute_name, get_calendar)
+    setattr(ICSCalendars, attribute_name, get_calendar)
 
-class ReversedCalendars(Calendars):
+class Calendars(ICSCalendars):
+    """Collection of calendars from recurring_ical_events"""
+
+    def get_calendar(self, content):
+        return of(ICSCalendars.get_calendar(self, content))
+
+class ReversedCalendars(ICSCalendars):
     """All test should run in reversed item order.
 
     RFC5545:
@@ -46,13 +56,13 @@ class ReversedCalendars(Calendars):
 
     def get_calendar(self, content):
         """Calendar traversing events in reversed order."""
-        calendar = Calendars.get_calendar(self, content)
+        calendar = ICSCalendars.get_calendar(self, content)
         _walk = calendar.walk
         def walk():
             """Return properties in reversed order."""
             return reversed(_walk())
         calendar.walk = walk
-        return calendar
+        return of(calendar)
 
 
 # for parametrizing fixtures, see https://docs.pytest.org/en/latest/fixture.html#parametrizing-fixtures
