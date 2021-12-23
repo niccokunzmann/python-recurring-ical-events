@@ -97,12 +97,7 @@ def compare_greater(date1, date2):
     date1, date2 = make_comparable((date1, date2))
     return date1 > date2
 
-class UnfoldableCalendar:
-
-    class RepeatedEvent:
-        """An event with repetitions created from an ical event."""
-        
-        class Repetition:
+class Repetition:
             """A repetition of an event."""
 
             ATTRIBUTES_TO_DELETE_ON_COPY = [
@@ -132,6 +127,9 @@ class UnfoldableCalendar:
             
             def __repr__(self):
                 return "{}({{'UID':{}...}}, {}, {})".format(self.__class__.__name__, self.source.get("UID"), self.start, self.stop)
+
+class RepeatedEvent:
+        """An event with repetitions created from an ical event."""
 
         def __init__(self, event, keep_recurrence_attributes=False):
             self.event = event
@@ -242,7 +240,7 @@ class UnfoldableCalendar:
                 if self._unify_exdate(start) in self.exdates_utc:
                     continue
                 stop = start + self.duration
-                yield self.Repetition(
+                yield Repetition(
                     self.event,
                     self.convert_to_original_type(start),
                     self.convert_to_original_type(stop),
@@ -264,6 +262,16 @@ class UnfoldableCalendar:
                 return self.event["DTSTART"].dt + duration.dt
             return self.event["DTSTART"].dt
 
+        def is_recurrence(self):
+            return "RECURRENCE-ID" in self.event
+
+        def as_single_event(self):
+            for repetition in self.within_days(self.start, self.start):
+                return repetition
+
+
+class UnfoldableCalendar:
+    '''A calendar that can unfold its events at a certain time.'''
 
     def __init__(self, calendar, keep_recurrence_attributes=False):
         """Create an unfoldable calendar from a given calendar."""
@@ -272,8 +280,7 @@ class UnfoldableCalendar:
         for event in calendar.walk():
             if not is_event(event):
                 continue
-            self.repetitions.append(self.RepeatedEvent(event, keep_recurrence_attributes))
-
+            self.repetitions.append(RepeatedEvent(event, keep_recurrence_attributes))
 
     @staticmethod
     def to_datetime(date):
@@ -366,12 +373,29 @@ class UnfoldableCalendar:
         if isinstance(span_stop_day, datetime.datetime):
             span_stop_day = span_stop.replace(hour=23,minute=59,second=59)
 
-        for event_repetions in self.repetitions:
-            for repetition in event_repetions.within_days(span_start_day, span_stop_day):
+        # repetitions must be considered because the may remove events from the time span
+        # see https://github.com/niccokunzmann/python-recurring-ical-events/issues/62
+        remove_because_not_in_span = []
+        for event_repetitions in self.repetitions:
+            if event_repetitions.is_recurrence():
+                repetition = event_repetitions.as_single_event()
+                vevent = repetition.as_vevent()
+                add_event(vevent)
+                if not repetition.is_in_span(span_start, span_stop):
+                    remove_because_not_in_span.append(vevent)
+                continue
+            for repetition in event_repetitions.within_days(span_start_day, span_stop_day):
                 if compare_greater(repetition.start, span_stop):
                     break
                 if repetition.is_in_span(span_start, span_stop):
                     add_event(repetition.as_vevent())
+
+        for vevent in remove_because_not_in_span:
+            try:
+                events.remove(vevent)
+            except ValueError:
+                pass
+
         return events
 
 def of(a_calendar, keep_recurrence_attributes=False):
