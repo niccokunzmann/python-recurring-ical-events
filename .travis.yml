@@ -2,7 +2,7 @@ language: python
 python:
   - "3.7"
   - "3.8"
-  - "3.9"
+  - "3.9" # check deployment if you remove this
 #  - "3.10"
 env:
   jobs:
@@ -46,4 +46,4 @@ deploy:
   on:
     tags: true
     repo: niccokunzmann/python-recurring-ical-events
-    condition: $TRAVIS_PYTHON_VERSION == 3.6
+    condition: $TRAVIS_PYTHON_VERSION == 3.9
