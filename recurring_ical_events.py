@@ -98,176 +98,176 @@ def compare_greater(date1, date2):
     return date1 > date2
 
 class Repetition:
-            """A repetition of an event."""
+    """A repetition of an event."""
 
-            ATTRIBUTES_TO_DELETE_ON_COPY = [
-                "RRULE", "RDATE", "EXDATE"
-            ]
+    ATTRIBUTES_TO_DELETE_ON_COPY = [
+        "RRULE", "RDATE", "EXDATE"
+    ]
 
-            def __init__(self, source, start, stop, keep_recurrence_attributes=False):
-                self.source = source
-                self.start = start
-                self.stop = stop
-                self.keep_recurrence_attributes = keep_recurrence_attributes
+    def __init__(self, source, start, stop, keep_recurrence_attributes=False):
+        self.source = source
+        self.start = start
+        self.stop = stop
+        self.keep_recurrence_attributes = keep_recurrence_attributes
 
-            def as_vevent(self):
-                revent = self.source.copy()
-                revent["DTSTART"] = vDDDTypes(self.start)
-                revent["DTEND"] = vDDDTypes(self.stop)
-                if not self.keep_recurrence_attributes:
-                    for attribute in self.ATTRIBUTES_TO_DELETE_ON_COPY:
-                        if attribute in revent:
-                            del revent[attribute]
-                for subcomponent in self.source.subcomponents:
-                    revent.add_component(subcomponent)
-                return revent
+    def as_vevent(self):
+        revent = self.source.copy()
+        revent["DTSTART"] = vDDDTypes(self.start)
+        revent["DTEND"] = vDDDTypes(self.stop)
+        if not self.keep_recurrence_attributes:
+            for attribute in self.ATTRIBUTES_TO_DELETE_ON_COPY:
+                if attribute in revent:
+                    del revent[attribute]
+        for subcomponent in self.source.subcomponents:
+            revent.add_component(subcomponent)
+        return revent
 
-            def is_in_span(self, span_start, span_stop):
-                return time_span_contains_event(span_start, span_stop, self.start, self.stop)
-            
-            def __repr__(self):
-                return "{}({{'UID':{}...}}, {}, {})".format(self.__class__.__name__, self.source.get("UID"), self.start, self.stop)
+    def is_in_span(self, span_start, span_stop):
+        return time_span_contains_event(span_start, span_stop, self.start, self.stop)
+
+    def __repr__(self):
+        return "{}({{'UID':{}...}}, {}, {})".format(self.__class__.__name__, self.source.get("UID"), self.start, self.stop)
 
 class RepeatedEvent:
-        """An event with repetitions created from an ical event."""
+    """An event with repetitions created from an ical event."""
 
-        def __init__(self, event, keep_recurrence_attributes=False):
-            self.event = event
-            self.start = self.original_start = event["DTSTART"].dt
-            self.end = self.original_end = self._get_event_end()
-            self.keep_recurrence_attributes = keep_recurrence_attributes
-            self.exdates = []
-            self.exdates_utc = set()
-            exdates = event.get("EXDATE", [])
-            for exdates in ((exdates,) if not isinstance(exdates, list) else exdates):
-                for exdate in exdates.dts:
-                    self.exdates.append(exdate.dt)
-                    self.exdates_utc.add(self._unify_exdate(exdate.dt))
-            self.rdates = []
-            rdates = event.get("RDATE", [])
-            for rdates in ((rdates,) if not isinstance(rdates, list) else rdates):
-                for rdate in rdates.dts:
-                    self.rdates.append(rdate.dt)
-            
-            self.make_all_dates_comparable()
-            
-            self.duration = self.end - self.start
-            self.rule = rule = rruleset(cache=True)
-            _rule = event.get("RRULE", None)
-            if _rule:
-                self.rrule = self.create_rule_with_start(_rule.to_ical().decode())
-                rule.rrule(self.rrule)
+    def __init__(self, event, keep_recurrence_attributes=False):
+        self.event = event
+        self.start = self.original_start = event["DTSTART"].dt
+        self.end = self.original_end = self._get_event_end()
+        self.keep_recurrence_attributes = keep_recurrence_attributes
+        self.exdates = []
+        self.exdates_utc = set()
+        exdates = event.get("EXDATE", [])
+        for exdates in ((exdates,) if not isinstance(exdates, list) else exdates):
+            for exdate in exdates.dts:
+                self.exdates.append(exdate.dt)
+                self.exdates_utc.add(self._unify_exdate(exdate.dt))
+        self.rdates = []
+        rdates = event.get("RDATE", [])
+        for rdates in ((rdates,) if not isinstance(rdates, list) else rdates):
+            for rdate in rdates.dts:
+                self.rdates.append(rdate.dt)
+
+        self.make_all_dates_comparable()
+
+        self.duration = self.end - self.start
+        self.rule = rule = rruleset(cache=True)
+        _rule = event.get("RRULE", None)
+        if _rule:
+            self.rrule = self.create_rule_with_start(_rule.to_ical().decode())
+            rule.rrule(self.rrule)
+        else:
+            self.rrule = None
+
+        for exdate in self.exdates:
+            rule.exdate(exdate)
+        for rdate in self.rdates:
+            rule.rdate(rdate)
+        rule.rdate(self.start)
+
+    def create_rule_with_start(self, rule_string):
+        try:
+            return rrulestr(rule_string, dtstart=self.start)
+        except ValueError:
+            # string: FREQ=WEEKLY;UNTIL=20191023;BYDAY=TH;WKST=SU
+            # start: 2019-08-01 14:00:00+01:00
+            # ValueError: RRULE UNTIL values must be specified in UTC when DTSTART is timezone-aware
+            rule_list = rule_string.split(";UNTIL=")
+            assert len(rule_list) == 2
+            date_end_index = rule_list[1].find(";")
+            if date_end_index == -1:
+                date_end_index = len(rule_list[1])
+            until_string = rule_list[1][:date_end_index]
+            if self.is_all_dates:
+                until_string = until_string[:8]
+            elif self.tzinfo is None:
+                # remove the Z from the time zone
+                until_string = until_string[:-1]
             else:
-                self.rrule = None
-
-            for exdate in self.exdates:
-                rule.exdate(exdate)
-            for rdate in self.rdates:
-                rule.rdate(rdate)
-            rule.rdate(self.start)
-            
-        def create_rule_with_start(self, rule_string):
-            try:
-                return rrulestr(rule_string, dtstart=self.start)
-            except ValueError:
-                # string: FREQ=WEEKLY;UNTIL=20191023;BYDAY=TH;WKST=SU
-                # start: 2019-08-01 14:00:00+01:00
-                # ValueError: RRULE UNTIL values must be specified in UTC when DTSTART is timezone-aware
-                rule_list = rule_string.split(";UNTIL=")
-                assert len(rule_list) == 2
-                date_end_index = rule_list[1].find(";")
-                if date_end_index == -1:
-                    date_end_index = len(rule_list[1])
-                until_string = rule_list[1][:date_end_index]
-                if self.is_all_dates:
-                    until_string = until_string[:8]
-                elif self.tzinfo is None:
-                    # remove the Z from the time zone
-                    until_string = until_string[:-1]
-                else:
-                    # we assume the start is timezone aware but the until value is not, see the comment above
-                    if len(until_string) == 8:
-                        until_string += "T000000"
-                    assert len(until_string) == 15
-                    until_string += "Z" # https://stackoverflow.com/a/49991809
-                new_rule_string = rule_list[0] + rule_list[1][date_end_index:] + ";UNTIL=" + until_string
-                return rrulestr(new_rule_string, dtstart=self.start)
+                # we assume the start is timezone aware but the until value is not, see the comment above
+                if len(until_string) == 8:
+                    until_string += "T000000"
+                assert len(until_string) == 15
+                until_string += "Z" # https://stackoverflow.com/a/49991809
+            new_rule_string = rule_list[0] + rule_list[1][date_end_index:] + ";UNTIL=" + until_string
+            return rrulestr(new_rule_string, dtstart=self.start)
 
 
-        def make_all_dates_comparable(self):
-            """Make sure we can use all dates with eachother.
-            
-            Dates may be mixed and we have many of them.
-            - date
-            - datetime without timezome
-            - datetime with timezone
-            These three are not comparable but can be converted.
-            """
-            self.tzinfo = None
-            dates = [self.start, self.end] + self.exdates + self.rdates
-            self.is_all_dates = not any(isinstance(date, datetime.datetime) for date in dates)
-            for date in dates:
-                if isinstance(date, datetime.datetime) and date.tzinfo is not None:
-                    self.tzinfo = date.tzinfo
-                    break
-            self.start = convert_to_datetime(self.start, self.tzinfo)
-            
-            self.end = convert_to_datetime(self.end, self.tzinfo)
-            self.rdates = [convert_to_datetime(rdate, self.tzinfo) for rdate in self.rdates]
-            self.exdates = [convert_to_datetime(exdate, self.tzinfo) for exdate in self.exdates]
+    def make_all_dates_comparable(self):
+        """Make sure we can use all dates with eachother.
+
+        Dates may be mixed and we have many of them.
+        - date
+        - datetime without timezome
+        - datetime with timezone
+        These three are not comparable but can be converted.
+        """
+        self.tzinfo = None
+        dates = [self.start, self.end] + self.exdates + self.rdates
+        self.is_all_dates = not any(isinstance(date, datetime.datetime) for date in dates)
+        for date in dates:
+            if isinstance(date, datetime.datetime) and date.tzinfo is not None:
+                self.tzinfo = date.tzinfo
+                break
+        self.start = convert_to_datetime(self.start, self.tzinfo)
         
-        def _unify_exdate(self, dt):
-            """Return a unique string for the datetime which is used to
-            compare it with exdates.
-            """
-            if isinstance(dt, datetime.datetime):
-                return timestamp(dt)
-            return dt
-       
-        def within_days(self, span_start, span_stop):
-            # make dates comparable, rrule converts them to datetimes
-            span_start = convert_to_datetime(span_start, self.tzinfo)
-            span_stop = convert_to_datetime(span_stop, self.tzinfo)
-            if compare_greater(span_start, self.start):
-                # do not exclude an event if it spans across the time span
-                span_start -= self.duration
-            # NOTE: If in the following line, we get an error, datetime and date
-            # may still be mixed because RDATE, EXDATE, start and rule.
-            for start in self.rule.between(span_start, span_stop, inc=True):
-                if isinstance(start, datetime.datetime) and start.tzinfo is not None:
-                    # update the time zone in case of summer/winter time change
-                    start = start.tzinfo.localize(start.replace(tzinfo=None))
-                if self._unify_exdate(start) in self.exdates_utc:
-                    continue
-                stop = start + self.duration
-                yield Repetition(
-                    self.event,
-                    self.convert_to_original_type(start),
-                    self.convert_to_original_type(stop),
-                    self.keep_recurrence_attributes,
-                )
+        self.end = convert_to_datetime(self.end, self.tzinfo)
+        self.rdates = [convert_to_datetime(rdate, self.tzinfo) for rdate in self.rdates]
+        self.exdates = [convert_to_datetime(exdate, self.tzinfo) for exdate in self.exdates]
 
-        def convert_to_original_type(self, date):
-            if not isinstance(self.original_start, datetime.datetime) and \
-                    not isinstance(self.original_end, datetime.datetime):
-                return convert_to_date(date)
-            return date
-                
-        def _get_event_end(self):
-            end = self.event.get("DTEND")
-            if end is not None:
-                return end.dt
-            duration = self.event.get("DURATION")
-            if duration is not None:
-                return self.event["DTSTART"].dt + duration.dt
-            return self.event["DTSTART"].dt
+    def _unify_exdate(self, dt):
+        """Return a unique string for the datetime which is used to
+        compare it with exdates.
+        """
+        if isinstance(dt, datetime.datetime):
+            return timestamp(dt)
+        return dt
 
-        def is_recurrence(self):
-            return "RECURRENCE-ID" in self.event
+    def within_days(self, span_start, span_stop):
+        # make dates comparable, rrule converts them to datetimes
+        span_start = convert_to_datetime(span_start, self.tzinfo)
+        span_stop = convert_to_datetime(span_stop, self.tzinfo)
+        if compare_greater(span_start, self.start):
+            # do not exclude an event if it spans across the time span
+            span_start -= self.duration
+        # NOTE: If in the following line, we get an error, datetime and date
+        # may still be mixed because RDATE, EXDATE, start and rule.
+        for start in self.rule.between(span_start, span_stop, inc=True):
+            if isinstance(start, datetime.datetime) and start.tzinfo is not None:
+                # update the time zone in case of summer/winter time change
+                start = start.tzinfo.localize(start.replace(tzinfo=None))
+            if self._unify_exdate(start) in self.exdates_utc:
+                continue
+            stop = start + self.duration
+            yield Repetition(
+                self.event,
+                self.convert_to_original_type(start),
+                self.convert_to_original_type(stop),
+                self.keep_recurrence_attributes,
+            )
 
-        def as_single_event(self):
-            for repetition in self.within_days(self.start, self.start):
-                return repetition
+    def convert_to_original_type(self, date):
+        if not isinstance(self.original_start, datetime.datetime) and \
+                not isinstance(self.original_end, datetime.datetime):
+            return convert_to_date(date)
+        return date
+
+    def _get_event_end(self):
+        end = self.event.get("DTEND")
+        if end is not None:
+            return end.dt
+        duration = self.event.get("DURATION")
+        if duration is not None:
+            return self.event["DTSTART"].dt + duration.dt
+        return self.event["DTSTART"].dt
+
+    def is_recurrence(self):
+        return "RECURRENCE-ID" in self.event
+
+    def as_single_event(self):
+        for repetition in self.within_days(self.start, self.start):
+            return repetition
 
 
 class UnfoldableCalendar:
