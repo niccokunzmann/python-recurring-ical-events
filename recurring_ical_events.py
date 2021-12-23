@@ -32,7 +32,7 @@ def convert_to_datetime(date, tzinfo):
     if isinstance(date, datetime.datetime):
         if date.tzinfo is None:
             if tzinfo is not None:
-                return date.astimezone(tzinfo)
+                return date.replace(tzinfo=tzinfo)
         elif tzinfo is None:
             return date.replace(tzinfo=None)
         return date
