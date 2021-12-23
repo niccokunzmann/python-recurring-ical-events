@@ -40,7 +40,8 @@ Not included:
 
 * EXRULE (deprecated), see `8.3.2.  Properties Registry
   <https://tools.ietf.org/html/rfc5545#section-8.3.2>`_
-
+* Python 2 support. Use Version 0.2.0b if you need Python 2 support.
+  Later versions may accidentially break Python 2 programs.
 
 Installation
 ------------
@@ -191,6 +192,8 @@ how to go about it.
 Changelog
 ---------
 
+- v1.0.0b
+    - Remove Python 2 support, see `Issue 64 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/64>`_.
 - v0.2.0b
     - Add ability to keep the recurrence attributes (RRULE, RDATE, EXDATE) on the event copies instead of stripping them. See `Pull Request 54 <https://github.com/niccokunzmann/python-recurring-ical-events/pull/54>`_.
 - v0.1.21b
