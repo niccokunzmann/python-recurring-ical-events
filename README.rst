@@ -190,7 +190,8 @@ how to go about it.
 
 Changelog
 ---------
-
+- v0.2.1b
+    - Check that recurring events are removed if they are modified to leave the requested time span, see `Issue 62 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/62>`_.
 - v0.2.0b
     - Add ability to keep the recurrence attributes (RRULE, RDATE, EXDATE) on the event copies instead of stripping them. See `Pull Request 54 <https://github.com/niccokunzmann/python-recurring-ical-events/pull/54>`_.
 - v0.1.21b
