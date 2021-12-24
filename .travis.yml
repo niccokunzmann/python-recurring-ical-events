@@ -15,7 +15,7 @@ install:
   - TAG_NAME=v$PACKAGE_VERSION
   # install from the zip file to see if files were forgotten
   - python setup.py sdist --dist-dir=dist --formats=zip
-  - pip install wheel restructuredtext-lint
+  - pip install wheel restructuredtext-lint pygments
   - ( cd dist ; pip install recurring_ical_events-${PACKAGE_VERSION}.zip )
   #  - pip install -r requirements.txt -r test-requirements.txt
 before_script:
