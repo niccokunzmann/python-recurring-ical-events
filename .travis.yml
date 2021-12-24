@@ -15,7 +15,7 @@ install:
   - TAG_NAME=v$PACKAGE_VERSION
   # install from the zip file to see if files were forgotten
   - python setup.py sdist --dist-dir=dist --formats=zip
-  - pip install wheel
+  - pip install wheel restructuredtext-lint
   - ( cd dist ; pip install recurring_ical_events-${PACKAGE_VERSION}.zip )
   #  - pip install -r requirements.txt -r test-requirements.txt
 before_script:
@@ -31,6 +31,8 @@ script:
   # test that the tag represents the version
   # https://docs.travis-ci.com/user/environment-variables/#Default-Environment-Variables
   - ( if [ -n "$TRAVIS_TAG" ]; then if [ $TAG_NAME != $TRAVIS_TAG ]; then echo "This tag is for the wrong version. Got \"$TRAVIS_TAG\" expected \"$TAG_NAME\"."; exit 1; fi; fi; )
+  # check README for errors, credits https://stackoverflow.com/a/47494076/1320237
+  - rst-lint README.rst
 before_deploy:
   # check that we do not release with print statements
   - "! grep 'print(' recurring_ical_events.py"
