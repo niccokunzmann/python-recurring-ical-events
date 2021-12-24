@@ -47,4 +47,4 @@ deploy:
   on:
     tags: true
     repo: niccokunzmann/python-recurring-ical-events
-    condition: $TRAVIS_PYTHON_VERSION == 3.6
+    condition: $TRAVIS_PYTHON_VERSION-$TZ == 3.6-Europe/Berlin

@@ -54,14 +54,14 @@ berlin = timezone("Europe/Berlin")
     (datetime(2019, 1, 1, 1), datetime(2019, 1, 4, 1), date(2019, 1, 2), date(2019, 1, 3), True, False, True, "date is in datetime span 3"),
     (datetime(2019, 1, 1, 1), datetime(2019, 1, 4, 1), date(2019, 1, 2), date(2019, 1, 3), False, False, True, "date is in datetime span 4"),
 
-    (date(2019, 1, 3), date(2019, 1, 4), date(2019, 1, 2), date(2019, 1, 3), True, True, True, "date is in span 1"),
+    (date(2019, 1, 3), date(2019, 1, 4), date(2019, 1, 2), date(2019, 1, 3), True, True, False, "date is in span 1"),
     (date(2019, 1, 3), date(2019, 1, 4), date(2019, 1, 2), date(2019, 1, 3), False, True, False, "date is in span 2"),
-    (date(2019, 1, 3), date(2019, 1, 4), date(2019, 1, 2), date(2019, 1, 3), True, False, True, "date is in span 3"),
+    (date(2019, 1, 3), date(2019, 1, 4), date(2019, 1, 2), date(2019, 1, 3), True, False, False, "date is in span 3"),
     (date(2019, 1, 3), date(2019, 1, 4), date(2019, 1, 2), date(2019, 1, 3), False, False, False, "date is in span 4"),
 
-    (date(2019, 1, 4), date(2019, 1, 4), datetime(2019, 1, 2, 1), datetime(2019, 1, 4), True, True, True, "datetime is in date span start 1"),
+    (date(2019, 1, 4), date(2019, 1, 4), datetime(2019, 1, 2, 1), datetime(2019, 1, 4), True, True, False, "datetime is in date span start 1"),
     (date(2019, 1, 4), date(2019, 1, 4), datetime(2019, 1, 2, 1), datetime(2019, 1, 4), False, True, False, "datetime is in date span start 2"),
-    (date(2019, 1, 4), date(2019, 1, 4), datetime(2019, 1, 2, 1), datetime(2019, 1, 4), True, False, True, "datetime is in date span start 3"),
+    (date(2019, 1, 4), date(2019, 1, 4), datetime(2019, 1, 2, 1), datetime(2019, 1, 4), True, False, False, "datetime is in date span start 3"),
     (date(2019, 1, 4), date(2019, 1, 4), datetime(2019, 1, 2, 1), datetime(2019, 1, 4), False, False, False, "datetime is in date span start 4"),
 
     (date(2019, 1, 4), date(2019, 1, 5), datetime(2019, 1, 4, 1), datetime(2019, 1, 4, 2), True, True, True, "datetime is in date span end 1"),
@@ -76,6 +76,21 @@ berlin = timezone("Europe/Berlin")
 
     (datetime(2019, 1, 1, 1, tzinfo=berlin), datetime(2019, 1, 1, 2, tzinfo=berlin), datetime(2019, 1, 1, 0, tzinfo=utc), datetime(2019, 1, 1, 1, tzinfo=utc), True, True, True, "comparing times from different time zones 1"),
     (datetime(2019, 1, 1, 4, tzinfo=berlin), datetime(2019, 1, 1, 5, tzinfo=berlin), datetime(2019, 1, 1, 0, tzinfo=utc), datetime(2019, 1, 1, 1, tzinfo=utc), True, True, False, "comparing times from different time zones 2"),
+# The end of the VEVENT is exclusive, see RFC5545
+#    Note that the "DTEND" property is
+#    set to July 9th, 2007, since the "DTEND" property specifies the
+#    non-inclusive end of the event.
+#
+#Tests:
+#- We should not include an event which ends at a requested start date.
+#- We should include an event which ends at an end date but is included
+#  in the range.
+    (date(2019, 1, 4), date(2019, 1, 5), date(2019, 1, 3), date(2019, 1, 4), True, True, False, "We should not include an event which ends at a requested start date."),
+    (datetime(2019, 1, 4), datetime(2019, 1, 5), date(2019, 1, 3), date(2019, 1, 4), True, True, False, "We should not include an event which ends at a requested start date."),
+
+    (datetime(2019, 1, 4), datetime(2019, 1, 5), datetime(2019, 1, 4, 3), datetime(2019, 1, 5), True, True, True, "We should include an event which ends at an end date but is included"),
+    (date(2019, 1, 4), date(2019, 1, 4), date(2019, 1, 4), date(2019, 1, 4), True, True, True, "We should include an event which ends at an end date but is included"),
+    (date(2019, 1, 3), date(2019, 1, 4), date(2019, 1, 4), date(2019, 1, 4), True, True, True, "We should include an event which ends at an end date but is included"),
 ])
 def test_time_span_inclusion(
     span_start, span_stop, event_start, event_stop, include_start, include_stop,
@@ -85,15 +100,5 @@ def test_time_span_inclusion(
         include_start, include_stop
         ) == result, message
 
-def test_end_time(todo):
-    """The end of the VEVENT is exclusive, see RFC5545
-
-    Note that the "DTEND" property is
-        set to July 9th, 2007, since the "DTEND" property specifies the
-        non-inclusive end of the event.
-
-    Tests:
-    - We should not include an event which ends at a requested start date.
-    - We should include an event which ends at an end date but is included
-      in the range.
-    """
+def test_event_of_zero_size(todo):
+    """We should test events of zero size, ending and starting at the same time."""
