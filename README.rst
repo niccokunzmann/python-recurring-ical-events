@@ -170,6 +170,7 @@ To release new versions,
 1. edit the Changelog Section
 2. edit setup.py, the ``__version__`` variable
 3. create a commit and push it
+4. Wait for `Travis <https://app.travis-ci.com/github/niccokunzmann/python-recurring-ical-events>`_ to finish the build.
 4. run
     .. code-block:: shell
 
@@ -180,6 +181,11 @@ Testing
 *******
 
 This project's development is driven by tests.
+Tests assure a consistent interface and less knowledge lost over time.
+If you like to change the code, tests help that nothing breaks in the future.
+They are required in that sense.
+Example code and ics files can be transferred into tests and speed up fixing bugs.
+
 You can view the tests in the `test folder
 <https://github.com/niccokunzmann/python-recurring-ical-events/tree/master/test>`_.
 If you have a calendar ICS file for which this library does not
