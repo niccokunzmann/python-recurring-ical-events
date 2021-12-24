@@ -48,8 +48,8 @@ def convert_to_datetime(date, tzinfo):
         if date.tzinfo is None:
             if tzinfo is not None:
                 return tzinfo.localize(date)
-        else:
-            assert tzinfo is not None, "Error in algorithm: tzinfo expected to be known."
+        elif tzinfo is None:
+            return date.replace(tzinfo=None)
         return date
     elif isinstance(date, datetime.date):
         return datetime.datetime(date.year, date.month, date.day, tzinfo=tzinfo)
