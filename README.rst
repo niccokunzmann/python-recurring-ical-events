@@ -171,11 +171,11 @@ To release new versions,
 2. edit setup.py, the ``__version__`` variable
 3. create a commit and push it
 4. Wait for `Travis <https://app.travis-ci.com/github/niccokunzmann/python-recurring-ical-events>`_ to finish the build.
-4. run
+5. run
     .. code-block:: shell
 
         python3 setup.py tag_and_deploy
-5. notify the issues about their release
+6. notify the issues about their release
 
 Testing
 *******
