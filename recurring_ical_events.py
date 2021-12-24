@@ -69,7 +69,6 @@ def time_span_contains_event(span_start, span_stop, event_start, event_stop,
         You can set it to True if you are sure you have timezones and
         date/datetime correctly or used make_comparable() before.
     """
-    print(span_start, span_stop, event_start, event_stop)
     if not comparable:
         span_start, span_stop, event_start, event_stop = make_comparable((
             span_start, span_stop, event_start, event_stop
