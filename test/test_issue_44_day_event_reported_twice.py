@@ -14,3 +14,10 @@ def test_event_is_present_where_it_should_be(calendars):
 def test_event_is_absent_on_the_next_day(calendars):
     events = calendars.issue_44_double_event.at((2020, 8, 15))
     assert events == [], "the issue is that an event could turn up here"
+
+def test_event_is_absent_on_the_previous_day(calendars):
+    events = calendars.issue_44_double_event.at((2020, 8, 13))
+    assert events == [], "the issue is that an event could turn up here"
+
+def test_event_of_recurrence_should_behave_the_same(todo):
+    '''we should check that a repeated event does not have the same problem.'''
