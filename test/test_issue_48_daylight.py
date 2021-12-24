@@ -21,7 +21,7 @@ TZ = timezone("Europe/Lisbon")
         (datetime(2020,11,2,11,31,0,0,TZ),"EVENT2"),
         (datetime(2020,11,2,12,0,0,0,TZ),"EVENT2"),
         (datetime(2020,11,2,12,1,0,0,TZ),"EVENT2"),
-        (datetime(2020,11,2,13,0,0,0,TZ),"EVENT2"),
+        (datetime(2020,11,2,12,59,0,0,TZ),"EVENT2"),
         (datetime(2020,11,2,13,1,0,0,TZ),0)
         ])
 def test_event_timing(calendars,date,event_name):
