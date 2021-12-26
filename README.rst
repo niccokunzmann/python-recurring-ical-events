@@ -225,10 +225,10 @@ Changelog
 - v0.1.19b
     - Benchmark using `@mrx23dot <https://github.com/mrx23dot>`_'s script and speed up recurrence calculation by factor 4, see `Issue 42 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/42>`_.
 - v0.1.18b
-    - Handle `Issue 28 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/28>`_ so that EXDATEs match as expected.
+    - Handle `Issue 28 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/28>`__ so that EXDATEs match as expected.
     - Handle `Issue 27 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/27>`_ so that parsing some rrule UNTIL values does not crash.
 - v0.1.17b
-    - Handle `Issue 28 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/28>`_ where passed arguments lead to errors where it is expected to work.
+    - Handle `Issue 28 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/28>`__ where passed arguments lead to errors where it is expected to work.
 - v0.1.16b
     - Events with an empty RRULE are handled like events without an RRULE.
     - Remove fixed dependency versions, see `Issue 14 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/14>`_
