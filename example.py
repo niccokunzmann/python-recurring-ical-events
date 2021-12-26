@@ -1,12 +1,15 @@
 import icalendar
 import recurring_ical_events
-import urllib.request
+try:
+    from urllib.request import urlopen # Python 3
+except ImportError:
+    from urllib import urlopen # Python 2
 
 start_date = (2019, 3, 5)
 end_date =   (2019, 4, 1)
 url = "http://tinyurl.com/y24m3r8f"
 
-ical_string = urllib.request.urlopen(url).read() # https://stackoverflow.com/a/645318
+ical_string = urlopen(url).read() # https://stackoverflow.com/a/645318
 calendar = icalendar.Calendar.from_ical(ical_string)
 events = recurring_ical_events.of(calendar).between(start_date, end_date)
 for event in events:
