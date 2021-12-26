@@ -213,7 +213,7 @@ Changelog
 - v0.2.3b
     - ``between()`` and ``at()`` allow arguments with time zones now when calendar events do not have time zones, reported in `Issue 61 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/61>`_ and `Issue 52 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/52>`_.
 - v0.2.2b
-    - Check that at does not return an event starting at the next day, see `Issue 44 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/44>`_.
+    - Check that ``at()`` does not return an event starting at the next day, see `Issue 44 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/44>`_.
 - v0.2.1b
     - Check that recurring events are removed if they are modified to leave the requested time span, see `Issue 62 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/62>`_.
 - v0.2.0b
