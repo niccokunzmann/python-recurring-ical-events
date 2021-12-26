@@ -145,6 +145,20 @@ However, these attributes may differ from the source event:
   They are **not** included in repeated events, see `Issue 23 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/23>`_.
   To change this, use ``of(calendar, keep_recurrence_attributes=True)``.
 
+Speed
+*****
+
+If you use ``between()`` or ``at()``
+several times, it is faster to re-use the object coming from ``of()``.
+
+.. code:: Python
+
+    rcalendar = recurring_ical_events.of(an_icalendar_object)
+    events_of_day_1 = rcalendar.at(day_1)
+    events_of_day_2 = rcalendar.at(day_2)
+    events_of_day_3 = rcalendar.at(day_3)
+    # ...
+
 Development
 -----------
 
