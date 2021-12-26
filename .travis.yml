@@ -17,7 +17,6 @@ install:
   - python setup.py sdist --dist-dir=dist --formats=zip
   - pip install wheel virtualenv
   - ( cd dist ; pip install recurring_ical_events-${PACKAGE_VERSION}.zip )
-  #  - pip install -r requirements.txt -r test-requirements.txt
 before_script:
   # remove the build folder because it creates problems for py.test
   - rm -rf build
@@ -30,7 +29,7 @@ script:
   # test the example script to test proper installation with all packages
   - python example.py
   # use virtualenv for test-environment
-  - virtualenv -p python ENV && source ENV/bin/activate && pip install -r test-requirements.txt
+  - virtualenv -p python ENV && source ENV/bin/activate && pip install -r test-requirements.txt && ( cd dist ; pip install recurring_ical_events-${PACKAGE_VERSION}.zip )
   - pytest
   # test that the tag represents the version
   # https://docs.travis-ci.com/user/environment-variables/#Default-Environment-Variables
