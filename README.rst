@@ -159,6 +159,19 @@ several times, it is faster to re-use the object coming from ``of()``.
     events_of_day_3 = rcalendar.at(day_3)
     # ...
 
+Version Fixing
+**************
+
+If you use this library in your code, you may want to make sure that
+updates can be received but they do not break your code.
+The version numbers are handeled this way: ``a.b.c`` example: ``0.1.12``
+- ``c`` is changed for each minor bug fix.
+- ``b`` is changed whenever new features are added.
+- ``a`` is changed when the interface or major assumptions change that may break your code.
+
+So, I recommend to version-fix this library to stay with the same ``a``
+while ``b`` and ``c`` can change.
+
 Development
 -----------
 
