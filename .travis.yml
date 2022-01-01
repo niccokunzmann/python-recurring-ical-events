@@ -34,9 +34,9 @@ script:
   # test that the tag represents the version
   # https://docs.travis-ci.com/user/environment-variables/#Default-Environment-Variables
   - ( if [ -n "$TRAVIS_TAG" ]; then if [ $TAG_NAME != $TRAVIS_TAG ]; then echo "This tag is for the wrong version. Got \"$TRAVIS_TAG\" expected \"$TAG_NAME\"."; exit 1; fi; fi; )
-before_deploy:
   # check that we do not release with print statements
   - "! grep 'print(' recurring_ical_events.py"
+before_deploy:
   # create the documentation
   - python setup.py sdist bdist_wheel
 deploy:
