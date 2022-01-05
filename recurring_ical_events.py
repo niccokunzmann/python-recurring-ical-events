@@ -213,7 +213,7 @@ class RepeatedEvent:
                 self.tzinfo = date.tzinfo
                 break
         self.start = convert_to_datetime(self.start, self.tzinfo)
-        
+
         self.end = convert_to_datetime(self.end, self.tzinfo)
         self.rdates = [convert_to_datetime(rdate, self.tzinfo) for rdate in self.rdates]
         self.exdates = [convert_to_datetime(exdate, self.tzinfo) for exdate in self.exdates]
@@ -287,7 +287,10 @@ class UnfoldableCalendar:
     @staticmethod
     def to_datetime(date):
         """Convert date inputs of various sorts into a datetime object."""
+        if isinstance(date, int):
+            date = (date,)
         if isinstance(date, tuple):
+            date += (1,) * (3 - len(date))
             return datetime.datetime(*date)
         elif isinstance(date, str):
             # see https://docs.python.org/2/library/datetime.html#strftime-strptime-behavior
