@@ -21,8 +21,10 @@ def test_three_events_total(calendars):
 def test_edited_event_as_part_of_exdate(todo):
     """What happens when an edited event is part of the exdate?"""
 
-def test_edited_event_as_part_of_exrule(todo):
-    """What happens when an edited event is part of the exrule?"""
+def test_edited_event_as_part_of_exrule():
+    """What happens when an edited event is part of the exrule?
+
+    Well nothing, EXRULE is not supported by this module."""
 
 @pytest.mark.parametrize("date,hour", [
     ((2019, 3, 7), 2),
