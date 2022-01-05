@@ -20,6 +20,8 @@ def test_three_events_total(calendars):
 
 def test_edited_event_as_part_of_exdate(todo):
     """What happens when an edited event is part of the exdate?"""
+    # TODO: Quote the standard here!
+    # I remember that the event should take place.
 
 def test_edited_event_as_part_of_exrule():
     """What happens when an edited event is part of the exrule?
