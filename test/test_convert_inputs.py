@@ -1,4 +1,7 @@
-'''Test that different inputs are understood'''
+'''Test that different inputs are understood
+
+Also see test_time_arguments.py
+'''
 import pytest
 
 @pytest.mark.parametrize("start,stop,event_count", [
