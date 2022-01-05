@@ -300,7 +300,10 @@ class UnfoldableCalendar:
         return date
 
     def all(self):
-        """Returns all events."""
+        """Returns all events.
+
+        I personally do not recommend to use this because
+        this method is not documented and you may end up with lots of events most of which you may not use anyway."""
         # TODO: test MAX and MIN values
         return self.between((1000, 1, 1), (3000, 1, 1))
 
