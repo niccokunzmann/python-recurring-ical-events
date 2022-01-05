@@ -24,7 +24,7 @@ class ICSCalendars:
     def get_calendar(self, content):
         """Return the calendar given the content."""
         return self.Calendar.from_ical(content)
-    
+
     def __getitem__(self, name):
         return getattr(self, name)
 
