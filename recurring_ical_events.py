@@ -68,6 +68,8 @@ def time_span_contains_event(span_start, span_stop, event_start, event_stop,
     - comparable indicates whether the dates can be compared.
         You can set it to True if you are sure you have timezones and
         date/datetime correctly or used make_comparable() before.
+
+    Note that the stops are exlusive but the starts are inclusive.
     """
     if not comparable:
         span_start, span_stop, event_start, event_stop = make_comparable((
@@ -77,9 +79,9 @@ def time_span_contains_event(span_start, span_stop, event_start, event_stop,
     assert span_start <= span_stop, "the time span must start before it ends"
     return (include_start or span_start <= event_start) and \
         (include_stop or event_stop <= span_stop) and \
-        event_start <= span_stop and span_start <= event_stop \
-        and (event_stop != span_start or event_start == span_start) \
-        and (span_stop != event_start or span_stop == event_stop)
+        event_start <= span_stop and span_start <= event_stop and \
+        (event_stop != span_start or event_start == span_start) and \
+        not (span_stop == event_stop == event_start != span_start)
 
 
 def make_comparable(dates):

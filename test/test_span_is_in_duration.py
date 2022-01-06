@@ -89,8 +89,16 @@ berlin = timezone("Europe/Berlin")
     (datetime(2019, 1, 4), datetime(2019, 1, 5), date(2019, 1, 3), date(2019, 1, 4), True, True, False, "We should not include an event which ends at a requested start date."),
 
     (datetime(2019, 1, 4), datetime(2019, 1, 5), datetime(2019, 1, 4, 3), datetime(2019, 1, 5), True, True, True, "We should include an event which ends at an end date but is included"),
-    (date(2019, 1, 4), date(2019, 1, 4), date(2019, 1, 4), date(2019, 1, 4), True, True, True, "We should include an event which ends at an end date but is included"),
-    (date(2019, 1, 3), date(2019, 1, 4), date(2019, 1, 4), date(2019, 1, 4), True, True, True, "We should include an event which ends at an end date but is included"),
+    (date(2019, 1, 4), date(2019, 1, 4), date(2019, 1, 4), date(2019, 1, 4), True, True, True, "We should include an event which is of the same size as the span"),
+    (date(2019, 1, 3), date(2019, 1, 4), date(2019, 1, 4), date(2019, 1, 4), True, True, False, "We should NOT include an event which ends at an end date but is included"),
+# Events with 0 duration should be tested
+    (0, 1, 0, 0, True, True, True, "zero size event at start"),
+    (0, 2, 1, 1, True, True, True, "zero size event in middle"),
+    (0, 1, 1, 1, True, True, False, "zero size event at end"),
+    (1, 1, 1, 1, True, True, True, "zero size event at zero size span"),
+
+    (0, 0, 1, 1, True, True, False, "zero size event after"),
+    (2, 2, 1, 1, True, True, False, "zero size event before"),
 ])
 def test_time_span_inclusion(
     span_start, span_stop, event_start, event_stop, include_start, include_stop,
@@ -99,6 +107,3 @@ def test_time_span_inclusion(
         span_start, span_stop, event_start, event_stop,
         include_start, include_stop
         ) == result, message
-
-def test_event_of_zero_size(todo):
-    """We should test events of zero size, ending and starting at the same time."""
