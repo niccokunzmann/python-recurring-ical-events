@@ -60,7 +60,7 @@ def test_rdate_can_be_excluded_by_exdate(calendars):
     events = calendars.rdate.at("20250705")
     assert len(events) == 0
 
-def test_rdate_and_rrule_can_be_excluded_by_exdate(todo):
+def test_rdate_and_rrule_can_be_excluded_by_exdate(calendars):
     events = calendars.rdate.at("20150705")
     assert len(events) == 0
 
