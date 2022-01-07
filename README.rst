@@ -142,9 +142,9 @@ The result of both ``between(start, end)`` and ``at(a_date)`` is a list of `ical
 By default, all attributes of the event with repetitions are copied, like UID and SUMMARY.
 However, these attributes may differ from the source event:
 
-* DTSTART which is the start of the event instance.
-* DTEND which is the end of the event instance.
-* RDATE, EXDATE, RRULE are the rules to create event repetitions.
+* **DTSTART** which is the start of the event instance. (always present)
+* **DTEND** which is the end of the event instance. (always present)
+* **RDATE**, **EXDATE**, **RRULE** are the rules to create event repetitions.
   They are **not** included in repeated events, see `Issue 23 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/23>`_.
   To change this, use ``of(calendar, keep_recurrence_attributes=True)``.
 
