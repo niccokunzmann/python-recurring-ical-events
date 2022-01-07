@@ -55,21 +55,19 @@ def convert_to_datetime(date, tzinfo):
         return datetime.datetime(date.year, date.month, date.day, tzinfo=tzinfo)
     return date
 
-def time_span_contains_event(span_start, span_stop, event_start, event_stop,
-        include_start=True, include_stop=True, comparable=False):
+def time_span_contains_event(span_start, span_stop, event_start, event_stop, comparable=False):
     """Return whether an event should is included within a time span.
 
     - span_start and span_stop define the time span
     - event_start and event_stop define the event time
-    - include_start defines whether events overlapping the start of the
-        time span should be included
-    - include_stop defines whether events overlapping the stop of the
-        time span should be included
     - comparable indicates whether the dates can be compared.
         You can set it to True if you are sure you have timezones and
         date/datetime correctly or used make_comparable() before.
 
     Note that the stops are exlusive but the starts are inclusive.
+
+    This is an essential function of the module. It should be tested in
+    test/test_time_span_contains_event.py.
     """
     if not comparable:
         span_start, span_stop, event_start, event_stop = make_comparable((
@@ -77,11 +75,13 @@ def time_span_contains_event(span_start, span_stop, event_start, event_stop,
         ))
     assert event_start <= event_stop, "the event must start before it ends"
     assert span_start <= span_stop, "the time span must start before it ends"
-    return (include_start or span_start <= event_start) and \
-        (include_stop or event_stop <= span_stop) and \
-        event_start <= span_stop and span_start <= event_stop and \
-        (event_stop != span_start or event_start == span_start) and \
-        not (span_stop == event_stop == event_start != span_start)
+    if event_start == event_stop:
+        if span_start == span_stop:
+            return event_start == span_start
+        return span_start <= event_start < span_stop
+    if span_start == span_stop:
+        return event_start <= span_start < event_stop
+    return event_start < span_stop and span_start < event_stop
 
 
 def make_comparable(dates):
@@ -339,7 +339,7 @@ class UnfoldableCalendar:
         dt = self.to_datetime(date)
         return self.between(dt, dt + self._DELTAS[len(date) - 3])
     
-    def between(self, start, stop): # TODO: add parameters from time_span_contains_event
+    def between(self, start, stop):
         """Return events at a time between start (inclusive) and end (inclusive)"""
         span_start = self.to_datetime(start)
         span_stop = self.to_datetime(stop)
