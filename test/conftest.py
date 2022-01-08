@@ -4,11 +4,13 @@ import icalendar
 import sys
 import time
 
-sys.path.append(".")
+HERE = os.path.dirname(__file__)
+REPO = os.path.dirname(HERE)
+
+sys.path.append(REPO)
 
 from recurring_ical_events import of
 
-HERE = os.path.dirname(__name__) or "test"
 CALENDARS_FOLDER = os.path.join(HERE, "calendars")
 # set the default time zone
 # see https://stackoverflow.com/questions/1301493/setting-timezone-in-python
@@ -22,7 +24,7 @@ class ICSCalendars:
     def get_calendar(self, content):
         """Return the calendar given the content."""
         return self.Calendar.from_ical(content)
-    
+
     def __getitem__(self, name):
         return getattr(self, name)
 

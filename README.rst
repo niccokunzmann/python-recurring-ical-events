@@ -40,7 +40,7 @@ Not included:
 
 * EXRULE (deprecated), see `8.3.2.  Properties Registry
   <https://tools.ietf.org/html/rfc5545#section-8.3.2>`_
-
+* ``X-WR-TIMEZONE`` support at the moment, see `Issue 71 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/71>`_.
 
 Installation
 ------------
@@ -107,13 +107,16 @@ The start and end are inclusive. As an example: if an event is longer than one d
 
 .. code:: Python
 
-    a_date = 2023 # a year
+    a_date =  2023   # a year
+    a_date = (2023,) # a year
     a_date = (2023, 1) # January in 2023
     a_date = (2023, 1, 1) # the 1st of January in 2023
+    a_date = "20230101"   # the 1st of January in 2023
     a_date = (2023, 1, 1, 0) # the first hour of the year 2023
     a_date = (2023, 1, 1, 0, 0) # the first minute in 2023
     a_date = datetime.date(2023) # the first day in 2023
     a_date = datetime.date(2023, 1, 1) # the first day in 2023
+    a_date = datetime.datetime.now() # this exact second
     
     events = recurring_ical_events.of(an_icalendar_object).at(a_date)
 
@@ -139,9 +142,9 @@ The result of both ``between(start, end)`` and ``at(a_date)`` is a list of `ical
 By default, all attributes of the event with repetitions are copied, like UID and SUMMARY.
 However, these attributes may differ from the source event:
 
-* DTSTART which is the start of the event instance.
-* DTEND which is the end of the event instance.
-* RDATE, EXDATE, RRULE are the rules to create event repetitions.
+* **DTSTART** which is the start of the event instance. (always present)
+* **DTEND** which is the end of the event instance. (always present)
+* **RDATE**, **EXDATE**, **RRULE** are the rules to create event repetitions.
   They are **not** included in repeated events, see `Issue 23 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/23>`_.
   To change this, use ``of(calendar, keep_recurrence_attributes=True)``.
 

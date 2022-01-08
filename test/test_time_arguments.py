@@ -1,4 +1,7 @@
-"""This file tests whether the time input is correctly converted."""
+"""This file tests whether the time input is correctly converted.
+
+Also see test_convert_inputs.py
+"""
 import pytest
 from recurring_ical_events import UnfoldableCalendar
 from datetime import datetime
