@@ -227,6 +227,9 @@ how to go about it.
 
 Changelog
 ---------
+- v0.2.4b
+    - Events with a duration of 0 seconds are correctly returned.
+    - ``between()`` and ``at()`` take the same kind of arguments. These arguments are documented.
 - v0.2.3b
     - ``between()`` and ``at()`` allow arguments with time zones now when calendar events do not have time zones, reported in `Issue 61 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/61>`_ and `Issue 52 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/52>`_.
 - v0.2.2b
