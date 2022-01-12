@@ -37,6 +37,9 @@ script:
   # check print in release and more
   - test/test_code_quality.sh
 before_deploy:
+  # deactivate virtualenv, allowing deployment
+  # see Issue 76 https://github.com/niccokunzmann/python-recurring-ical-events/issues/76
+  - deactivate || true
   # create the documentation
   - python setup.py sdist bdist_wheel
 deploy:
