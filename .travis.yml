@@ -15,7 +15,7 @@ install:
   - TAG_NAME=v$PACKAGE_VERSION
   # install from the zip file to see if files were forgotten
   - python setup.py sdist --dist-dir=dist --formats=zip
-  - pip install wheel virtualenv
+  - pip install wheel
   - ( cd dist ; pip install recurring_ical_events-${PACKAGE_VERSION}.zip )
 before_script:
   # remove the build folder because it creates problems for py.test
@@ -28,8 +28,8 @@ before_script:
 script:
   # test the example script to test proper installation with all packages
   - python example.py
-  # use virtualenv for test-environment
-  - virtualenv -p python ENV && source ENV/bin/activate && pip install -r test-requirements.txt && ( cd dist ; pip install recurring_ical_events-${PACKAGE_VERSION}.zip )
+  # install test environment after testing example
+  - pip install -r test-requirements.txt
   - pytest
   # test that the tag represents the version
   # https://docs.travis-ci.com/user/environment-variables/#Default-Environment-Variables
@@ -37,9 +37,6 @@ script:
   # check print in release and more
   - test/test_code_quality.sh
 before_deploy:
-  # deactivate virtualenv, allowing deployment
-  # see Issue 76 https://github.com/niccokunzmann/python-recurring-ical-events/issues/76
-  - deactivate || true
   # create the documentation
   - python setup.py sdist bdist_wheel
 deploy:
