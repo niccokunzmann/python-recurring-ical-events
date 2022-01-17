@@ -16,7 +16,7 @@ import pytz
 from dateutil.rrule import rrulestr, rruleset, rrule, DAILY
 import dateutil.parser
 import sys
-
+import x_wr_timezone
 from collections import defaultdict
 from icalendar.prop import vDDDTypes
 
@@ -410,5 +410,6 @@ class UnfoldableCalendar:
 
 def of(a_calendar, keep_recurrence_attributes=False):
     """Unfold recurring events of a_calendar"""
+    a_calendar = x_wr_timezone.to_standard(a_calendar)
     return UnfoldableCalendar(a_calendar, keep_recurrence_attributes)
 
