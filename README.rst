@@ -229,6 +229,7 @@ Changelog
 
 - v1.0.0b
     - Remove Python 2 support, see `Issue 64 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/64>`_.
+    - ``X-WR-TIMEZONE`` support, see `Issue 71 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/71>`_.
 - v0.2.4b
     - Events with a duration of 0 seconds are correctly returned.
     - ``between()`` and ``at()`` take the same kind of arguments. These arguments are documented.
