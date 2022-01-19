@@ -7,12 +7,6 @@ def test_a_calendar_with_one_event_has_one_event(calendars):
     events = calendars.one_event.between((2000, 1, 1), (2099,1,1))
     assert len(events) == 1
 
-def test_event_duration_and_start_overlap(todo):
-    pass
-
-def test_event_duration_and_end_overlap(todo):
-    pass
-
 def test_event_is_not_included_if_it_is_later(calendars):
     events = calendars.one_event.between((2000, 1, 1), (2001,1,1))
     assert not events

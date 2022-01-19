@@ -20,13 +20,11 @@ def test_duration_stays_the_same(calendars, index):
     duration2 = events[index]["DTEND"].dt - events[index]["DTSTART"].dt
     assert duration1 == duration2
 
-def test_duration_is_edited(todo):
-    """Test that the duration of an event can be edited."""
+def test_attributes_are_created(calendars):
+    """Some properties should be part of every event
 
-def test_attributes_are_not_copied(todo):
-    """Some attributes should not be copied because they create a wrong meaning
-    - rrule
-    - exdate
-    - rdate
-    - dtend if not given
-    """
+    This is, even if they are not given in the event at the beginning."""
+    events = calendars.discourse_no_dtend.at((2019, 1, 17))
+    assert len(events) == 1
+    event = events[0]
+    assert "DTEND" in event

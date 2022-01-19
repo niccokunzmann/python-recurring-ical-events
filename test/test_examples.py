@@ -15,19 +15,18 @@ def test_example_from_README(calendars):
     """The examples from the README should be tested so we make no
     false promises.
     """
-    #import requests
     import icalendar
-    import datetime
     import recurring_ical_events
 
-    today = datetime.datetime.today()
-    print(today)
-    one_year_ahead = today.replace(year=today.year + 1)
+    start_date = (2019, 3, 5)
+    end_date =   (2019, 4, 1)
 
-    #ical_string = requests.get("https://url-to-ical-feed").text
-    #calendar = icalendar.Calendar.from_ical(ical_string)
-    for event in calendars.one_day_event_repeat_every_day.between(today, one_year_ahead):
-        print(event["DTSTART"])
+    events = calendars.one_day_event_repeat_every_day.between(start_date, end_date)
+    for event in events:
+        start = event["DTSTART"].dt
+        duration = event["DTEND"].dt - event["DTSTART"].dt
+        print("start {} duration {}".format(start, duration))
+    assert event
 
 
 def test_no_dtend(calendars):

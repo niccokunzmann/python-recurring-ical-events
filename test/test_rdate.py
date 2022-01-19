@@ -53,6 +53,12 @@ def test_rdate_is_included(calendars, day):
     assert len(events) == 1
 
 def test_rdate_does_not_double_rrule_entry(calendars):
+    """
+    When the combination of the "RRULE" and "RDATE" properties in a
+    recurring component produces multiple instances having the same
+    start DATE-TIME value, they should be collapsed to, and
+    considered as, a single instance.
+    """
     events = calendars.rdate.at("20140705")
     assert len(events) == 1
 
@@ -60,7 +66,7 @@ def test_rdate_can_be_excluded_by_exdate(calendars):
     events = calendars.rdate.at("20250705")
     assert len(events) == 0
 
-def test_rdate_and_rrule_can_be_excluded_by_exdate(todo):
+def test_rdate_and_rrule_can_be_excluded_by_exdate(calendars):
     events = calendars.rdate.at("20150705")
     assert len(events) == 0
 
@@ -69,14 +75,8 @@ def test_period_as_rdate(todo):
 
     Value Type:  The default value type for this property is DATE-TIME.
        The value type can be set to DATE or PERIOD.
-    """
 
-def test_recurrence_length(todo):
-    """
-    When the combination of the "RRULE" and "RDATE" properties in a
-    recurring component produces multiple instances having the same
-    start DATE-TIME value, they should be collapsed to, and
-    considered as, a single instance.  If the "RDATE" property is
+    If the "RDATE" property is
     specified as a PERIOD value the duration of the recurrence
     instance will be the one specified by the "RDATE" property, and
     not the duration of the recurrence instance defined by the
@@ -87,13 +87,4 @@ def test_rdate_occurs_multiple_times(calendars):
     """An event can not only have an RDATE once but also many of them."""
     events = calendars.rdate_hackerpublicradio.all()
     assert len(events) == 12
-
-def test_rdate_is_datetime(todo):
-    pass
-
-def test_rdate_is_date(todo):
-    pass
-
-def test_rdate_is_period(todo):
-    pass
 

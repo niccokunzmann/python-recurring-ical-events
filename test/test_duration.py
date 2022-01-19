@@ -23,3 +23,16 @@ def test_events_expected(date, count, calendars):
     events = calendars.duration.at(date)
     assert len(events) == count
 
+@pytest.mark.parametrize("date,summary,expected_hours", [
+    ("20190318", "original event", 1),
+    ("20190319", "edited duration", 3),
+    ("20190320", "original event", 1),
+])
+def test_duration_is_edited(calendars, date, summary, expected_hours):
+    """Test that the duration of an event can be edited."""
+    events = calendars.duration_edited.at(date)
+    assert len(events) == 1
+    event = events[0]
+    event_hours = (event["DTEND"].dt - event["DTSTART"].dt).total_seconds() / 3600
+    assert summary == event["SUMMARY"], "we should have the correct event"
+    assert event_hours == expected_hours, "the duration is only edited in the edited event"

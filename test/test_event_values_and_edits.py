@@ -18,11 +18,15 @@ def test_three_events_total(calendars):
     events = calendars.three_events_one_edited.all()
     assert len(events) == 3
 
-def test_edited_event_as_part_of_exdate(todo):
-    """What happens when an edited event is part of the exdate?"""
+#def test_edited_event_as_part_of_exdate(todo):
+#    """What happens when an edited event is part of the exdate?"""
+# There is nothing written in the RFC 5545 about this case
+# I would assume that a software creating an event and exluding it is faulty.
 
-def test_edited_event_as_part_of_exrule(todo):
-    """What happens when an edited event is part of the exrule?"""
+def test_edited_event_as_part_of_exrule():
+    """What happens when an edited event is part of the exrule?
+
+    Well nothing, EXRULE is not supported by this module."""
 
 @pytest.mark.parametrize("date,hour", [
     ((2019, 3, 7), 2),
