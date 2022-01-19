@@ -39,6 +39,9 @@ script:
 before_deploy:
   # create the documentation
   - python setup.py sdist bdist_wheel
+  # remove zip file, cannot be uploaded with .tar.gz
+  # see https://app.travis-ci.com/github/niccokunzmann/x-wr-timezone/jobs/555629298#L565
+  - rm -f dist/*.zip
 deploy:
   # created with travis command line tool
   # https://docs.travis-ci.com/user/deployment/pypi
