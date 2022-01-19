@@ -26,7 +26,7 @@ class ICSCalendars:
         return self.Calendar.from_ical(content)
 
     def __getitem__(self, name):
-        return getattr(self, name)
+        return getattr(self, name.replace("-", "_"))
 
     @property
     def raw(self):

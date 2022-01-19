@@ -40,7 +40,6 @@ Not included:
 
 * EXRULE (deprecated), see `8.3.2.  Properties Registry
   <https://tools.ietf.org/html/rfc5545#section-8.3.2>`_
-* ``X-WR-TIMEZONE`` support at the moment, see `Issue 71 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/71>`_.
 
 Installation
 ------------
@@ -227,6 +226,8 @@ how to go about it.
 
 Changelog
 ---------
+- v1.0.0b
+    - ``X-WR-TIMEZONE`` support, see `Issue 71 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/71>`_.
 - v0.2.4b
     - Events with a duration of 0 seconds are correctly returned.
     - ``between()`` and ``at()`` take the same kind of arguments. These arguments are documented.
