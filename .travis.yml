@@ -1,10 +1,10 @@
 language: python
 python:
   - "2.7"
-  - "3.5"
-  - "3.6"
   - "3.7"
   - "3.8"
+  - "3.9" # check deployment if you remove this
+#  - "3.10"
 env:
   jobs:
     - TZ=Europe/Berlin
@@ -50,4 +50,4 @@ deploy:
   on:
     tags: true
     repo: niccokunzmann/python-recurring-ical-events
-    condition: $TRAVIS_PYTHON_VERSION-$TZ == 3.6-Europe/Berlin
+    condition: $TRAVIS_PYTHON_VERSION-$TZ == 3.9-Europe/Berlin

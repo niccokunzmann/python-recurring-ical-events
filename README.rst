@@ -226,7 +226,11 @@ how to go about it.
 
 Changelog
 ---------
+
 - v1.0.0b
+    - Remove Python 2 support, see `Issue 64 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/64>`_.
+    - Remove support for Python 3.5 and 3.6.
+    - Note: These deprecated Python versions may still work. We just do not claim they do.
     - ``X-WR-TIMEZONE`` support, see `Issue 71 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/71>`_.
 - v0.2.4b
     - Events with a duration of 0 seconds are correctly returned.
