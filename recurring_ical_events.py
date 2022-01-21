@@ -47,7 +47,7 @@ def convert_to_datetime(date, tzinfo):
     if isinstance(date, datetime.datetime):
         if date.tzinfo is None:
             if tzinfo is not None:
-                return tzinfo.localize(date)
+                return localize(tzinfo, date)
         elif tzinfo is None:
             return date.replace(tzinfo=None)
         return date
@@ -96,10 +96,22 @@ def make_comparable(dates):
             break
     return [convert_to_datetime(date, tzinfo) for date in dates]
 
+
 def compare_greater(date1, date2):
     """Compare two dates if date1 > date2 and make them comparable before."""
     date1, date2 = make_comparable((date1, date2))
     return date1 > date2
+
+
+def localize(tzinfo, dt):
+    """Make the datetime dt local to tzinfo.
+
+    Indirection for pytz's localize function with support for zoneinfo.ZoneInfo."""
+    if hasattr(tzinfo , "localize"):
+        # seems like a pytz timezone
+        return tzinfo.localize(dt)
+    return dt.astimezone(tzinfo)
+
 
 class Repetition:
     """A repetition of an event."""
@@ -240,7 +252,7 @@ class RepeatedEvent:
         for start in self.rule.between(span_start, span_stop, inc=True):
             if isinstance(start, datetime.datetime) and start.tzinfo is not None:
                 # update the time zone in case of summer/winter time change
-                start = start.tzinfo.localize(start.replace(tzinfo=None))
+                start = localize(start.tzinfo, start.replace(tzinfo=None))
             if self._unify_exdate(start) in self.exdates_utc:
                 continue
             stop = start + self.duration
