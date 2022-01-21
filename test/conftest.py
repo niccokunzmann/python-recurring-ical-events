@@ -76,3 +76,25 @@ def calendars(request):
 def todo():
     """Skip a test because it needs to be written first."""
     pytest.skip("This test is not yet implemented.")
+
+
+@pytest.fixture(scope='module')
+def zoneinfo():
+    """Return the zoneinfo module if present, otherwise skip the test.
+
+    Uses backports.zoneinfo or zoneinfo.
+    """
+    try:
+        import zoneinfo
+    except ImportError:
+        try:
+            import backports.zoneinfo as zoneinfo
+        except ImportError:
+            pytest.skip("zoneinfo module not given. Use pip install backports.zoneinfo to install it.")
+    return zoneinfo
+
+
+@pytest.fixture(scope='module')
+def ZoneInfo(zoneinfo):
+    """Shortcut for zoneinfo.ZoneInfo."""
+    return zoneinfo.ZoneInfo
