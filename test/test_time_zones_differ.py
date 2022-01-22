@@ -22,7 +22,7 @@ def test_include_events_if_the_time_zone_differs(calendars, date, hours, timezon
     excluded because they are in another time zone.
     """
     tzinfo = pytz.timezone(timezone)
-    start = datetime.datetime(*date, tzinfo=tzinfo)
+    start = tzinfo.localize(datetime.datetime(*date))
     stop = start + datetime.timedelta(hours=hours)
     events = calendars[calendar_name].between(start, stop)
     if events:
