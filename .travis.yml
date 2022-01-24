@@ -18,7 +18,7 @@ install:
   - pip install wheel
   - ( cd dist ; pip install recurring_ical_events-${PACKAGE_VERSION}.zip )
   # install zoneinfo for the tests in older Python versions
-  - if [ $TRAVIS_PYTHON_VERSION == 3.7 ] || [ $TRAVIS_PYTHON_VERSION == 3.8 ]; then pip install backports.zoneinfo; fi
+  - if [ $TRAVIS_PYTHON_VERSION == 3.7 ] || [ $TRAVIS_PYTHON_VERSION == 3.8 ]; then pip install -r backports-requirements.txt; fi
 before_script:
   # remove the build folder because it creates problems for py.test
   - rm -rf build
