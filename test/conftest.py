@@ -3,6 +3,15 @@ import os
 import icalendar
 import sys
 import time
+try:
+    import zoneinfo as _zoneinfo
+except ImportError:
+    try:
+        import backports.zoneinfo as _zoneinfo
+    except ImportError:
+        _zoneinfo = None
+from x_wr_timezone import TimeZoneChangingVisitor
+
 
 HERE = os.path.dirname(__file__)
 REPO = os.path.dirname(HERE)
@@ -66,9 +75,34 @@ class ReversedCalendars(ICSCalendars):
         calendar.walk = walk
         return of(calendar)
 
+calendar_params = [Calendars, ReversedCalendars]
+
+if _zoneinfo is not None:
+    class ZoneInfoVisitor(TimeZoneChangingVisitor):
+        """Visit a calendar and change all time zones to ZoneInfo"""
+        def visit_value_datetime(self, dt):
+             py_tz = dt.tzinfo
+             if py_tz is None:
+                 return dt
+             name = py_tz.zone #, py_tz.tzname(dt)
+             new_tz = _zoneinfo.ZoneInfo(name) # create a zoneinfo from pytz time zone
+             return dt.astimezone(new_tz)
+
+    class ZoneInfoCalendars(ICSCalendars):
+        """Collection of calendars using zoneinfo.ZoneInfo and not pytz."""
+
+        def get_calendar(self, content):
+            calendar = ICSCalendars.get_calendar(self, content)
+            changer = ZoneInfoVisitor(None)
+            zoneinfo_calendar = changer.visit(calendar)
+            if zoneinfo_calendar is calendar:
+                pytest.skip("ZoneInfo not in use. Already tested..")
+            return of(zoneinfo_calendar)
+
+    calendar_params.append(ZoneInfoCalendars)
 
 # for parametrizing fixtures, see https://docs.pytest.org/en/latest/fixture.html#parametrizing-fixtures
-@pytest.fixture(params=[Calendars, ReversedCalendars])
+@pytest.fixture(params=calendar_params)
 def calendars(request):
     return request.param()
 
@@ -84,14 +118,9 @@ def zoneinfo():
 
     Uses backports.zoneinfo or zoneinfo.
     """
-    try:
-        import zoneinfo
-    except ImportError:
-        try:
-            import backports.zoneinfo as zoneinfo
-        except ImportError:
-            pytest.skip("zoneinfo module not given. Use pip install backports.zoneinfo to install it.")
-    return zoneinfo
+    if _zoneinfo is None:
+        pytest.skip("zoneinfo module not given. Use pip install backports.zoneinfo to install it.")
+    return _zoneinfo
 
 
 @pytest.fixture(scope='module')
