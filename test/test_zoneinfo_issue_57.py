@@ -3,11 +3,12 @@
 See also Issue https://github.com/niccokunzmann/python-recurring-ical-events/issues/57
 """
 from datetime import date, datetime, timedelta
-
+import pytest
 from icalendar import Calendar, Event, vDDDTypes
 import recurring_ical_events
 import sys
 from importlib.util import find_spec as module_exists
+import pytz
 
 
 def test_zoneinfo_example_yields_events(ZoneInfo):
@@ -42,3 +43,19 @@ def test_zoneinfo_must_be_installed_if_it_is_possible():
     else:
         assert module_exists("zoneinfo"), "We assume that zoneinfo exists."
     assert module_exists("tzdata"), "tzdata is necessary to test current time zone understanding."
+
+
+@pytest.mark.parametrize("dt1", [
+    datetime(2019, 4, 24, 19),
+    pytz.timezone("Europe/Berlin").localize(datetime(2019, 4, 24, 19)),
+    pytz.timezone("America/New_York").localize(datetime(2019, 4, 24, 19)),
+])
+def test_zoneinfo_consistent_conversion(calendars, dt1):
+    """Make sure that the conversion function actually works."""
+    dt2 = calendars.consistent_tz(dt1)
+    assert dt1.year == dt2.year
+    assert dt1.month == dt2.month
+    assert dt1.day == dt2.day
+    assert dt1.hour == dt2.hour
+    assert dt1.minute == dt2.minute
+    assert dt1.second == dt2.second

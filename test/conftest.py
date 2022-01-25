@@ -41,6 +41,11 @@ class ICSCalendars:
     def raw(self):
         return ICSCalendars()
 
+    def consistent_tz(self, dt):
+        """Make the datetime consistent with the time zones used in these calendars."""
+        assert dt.tzinfo is None or "pytz" in dt.tzinfo.__class__.__module__, "We need pytz time zones for now."
+        return dt
+
 for calendar_file in os.listdir(CALENDARS_FOLDER):
     calendar_path = os.path.join(CALENDARS_FOLDER, calendar_file)
     name = os.path.splitext(calendar_file)[0]
@@ -75,34 +80,42 @@ class ReversedCalendars(ICSCalendars):
         calendar.walk = walk
         return of(calendar)
 
+
+class ZoneInfoVisitor(TimeZoneChangingVisitor):
+    """Visit a calendar and change all time zones to ZoneInfo"""
+    def visit_value_datetime(self, dt):
+         py_tz = dt.tzinfo
+         if py_tz is None:
+             return dt
+         name = py_tz.zone #, py_tz.tzname(dt)
+         new_tz = _zoneinfo.ZoneInfo(name) # create a zoneinfo from pytz time zone
+         return dt.astimezone(new_tz)
+
+class ZoneInfoCalendars(ICSCalendars):
+    """Collection of calendars using zoneinfo.ZoneInfo and not pytz."""
+
+    def __init__(self):
+        assert _zoneinfo is not None, "zoneinfo must exist to use these calendars"
+        self.changer = ZoneInfoVisitor(None)
+
+    def get_calendar(self, content):
+        calendar = ICSCalendars.get_calendar(self, content)
+        zoneinfo_calendar = self.changer.visit(calendar)
+        if zoneinfo_calendar is calendar:
+            pytest.skip("ZoneInfo not in use. Already tested..")
+        return of(zoneinfo_calendar)
+
+    def consistent_tz(self, dt):
+        """To make the time zones consistent with this one, convert them to zoneinfo."""
+        return self.changer.visit_value_datetime(dt)
+
+
 calendar_params = [Calendars, ReversedCalendars]
-
 if _zoneinfo is not None:
-    class ZoneInfoVisitor(TimeZoneChangingVisitor):
-        """Visit a calendar and change all time zones to ZoneInfo"""
-        def visit_value_datetime(self, dt):
-             py_tz = dt.tzinfo
-             if py_tz is None:
-                 return dt
-             name = py_tz.zone #, py_tz.tzname(dt)
-             new_tz = _zoneinfo.ZoneInfo(name) # create a zoneinfo from pytz time zone
-             return dt.astimezone(new_tz)
-
-    class ZoneInfoCalendars(ICSCalendars):
-        """Collection of calendars using zoneinfo.ZoneInfo and not pytz."""
-
-        def get_calendar(self, content):
-            calendar = ICSCalendars.get_calendar(self, content)
-            changer = ZoneInfoVisitor(None)
-            zoneinfo_calendar = changer.visit(calendar)
-            if zoneinfo_calendar is calendar:
-                pytest.skip("ZoneInfo not in use. Already tested..")
-            return of(zoneinfo_calendar)
-
     calendar_params.append(ZoneInfoCalendars)
 
 # for parametrizing fixtures, see https://docs.pytest.org/en/latest/fixture.html#parametrizing-fixtures
-@pytest.fixture(params=calendar_params)
+@pytest.fixture(params=calendar_params, scope="module")
 def calendars(request):
     return request.param()
 
