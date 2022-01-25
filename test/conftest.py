@@ -83,7 +83,9 @@ class ReversedCalendars(ICSCalendars):
 
 class ZoneInfoConverter(CalendarWalker):
     """Visit a calendar and change all time zones to ZoneInfo"""
-    def visit_value_datetime(self, dt):
+
+    def walk_value_datetime(self, dt):
+         """Chnage timezone of datetime to zoneinfo"""
          py_tz = dt.tzinfo
          if py_tz is None:
              return dt
