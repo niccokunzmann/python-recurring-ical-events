@@ -10,7 +10,7 @@ except ImportError:
         import backports.zoneinfo as _zoneinfo
     except ImportError:
         _zoneinfo = None
-from x_wr_timezone import TimeZoneChangingVisitor
+from x_wr_timezone import CalendarWalker
 
 
 HERE = os.path.dirname(__file__)
@@ -81,7 +81,7 @@ class ReversedCalendars(ICSCalendars):
         return of(calendar)
 
 
-class ZoneInfoVisitor(TimeZoneChangingVisitor):
+class ZoneInfoConverter(CalendarWalker):
     """Visit a calendar and change all time zones to ZoneInfo"""
     def visit_value_datetime(self, dt):
          py_tz = dt.tzinfo
@@ -96,18 +96,18 @@ class ZoneInfoCalendars(ICSCalendars):
 
     def __init__(self):
         assert _zoneinfo is not None, "zoneinfo must exist to use these calendars"
-        self.changer = ZoneInfoVisitor(None)
+        self.changer = ZoneInfoConverter()
 
     def get_calendar(self, content):
         calendar = ICSCalendars.get_calendar(self, content)
-        zoneinfo_calendar = self.changer.visit(calendar)
+        zoneinfo_calendar = self.changer.walk(calendar)
         if zoneinfo_calendar is calendar:
             pytest.skip("ZoneInfo not in use. Already tested..")
         return of(zoneinfo_calendar)
 
     def consistent_tz(self, dt):
         """To make the time zones consistent with this one, convert them to zoneinfo."""
-        return self.changer.visit_value_datetime(dt)
+        return self.changer.walk_value_datetime(dt)
 
 
 calendar_params = [Calendars, ReversedCalendars]

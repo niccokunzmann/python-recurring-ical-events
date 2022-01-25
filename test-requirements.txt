@@ -1,3 +1,4 @@
 pytest
 restructuredtext-lint
 pygments
+x-wr-timezone >= 0.0.3
