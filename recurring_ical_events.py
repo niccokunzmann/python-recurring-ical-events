@@ -286,6 +286,10 @@ class RepeatedEvent:
             return repetition
 
 
+DATE_MIN = (1970, 1, 1)
+DATE_MAX = (2038, 1, 1)
+
+
 class UnfoldableCalendar:
     '''A calendar that can unfold its events at a certain time.'''
 
@@ -319,7 +323,7 @@ class UnfoldableCalendar:
         I personally do not recommend to use this because
         this method is not documented and you may end up with lots of events most of which you may not use anyway."""
         # MAX and MIN values may change in the future
-        return self.between((1970, 1, 1), (2038, 1, 1))
+        return self.between(DATE_MIN, DATE_MAX)
 
     _DELTAS = [
         datetime.timedelta(days=1),
