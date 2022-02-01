@@ -223,7 +223,6 @@ class RepeatedEvent:
 
     def rrulestr(self, rule_string):
         """Return an rrulestr with a start."""
-        print("rule: {} start: {}".format(rule_string, self.start))
         rule = rrulestr(rule_string, dtstart=self.start)
         rule.string = rule_string
         return rule
@@ -281,25 +280,19 @@ class RepeatedEvent:
         # make dates comparable, rrule converts them to datetimes
         span_start = convert_to_datetime(span_start, self.tzinfo)
         span_stop = convert_to_datetime(span_stop, self.tzinfo)
-        print("tzinfo", self.tzinfo)
-        print("span_start", span_start)
-        print("span_stop", span_stop)
         if compare_greater(span_start, self.start):
             # do not exclude an event if it spans across the time span
             span_start -= self.duration
         # NOTE: If in the following line, we get an error, datetime and date
         # may still be mixed because RDATE, EXDATE, start and rule.
         for start in self.rule.between(span_start, span_stop, inc=True):
-            print("start:", start)
             if isinstance(start, datetime.datetime) and is_pytz(start.tzinfo):
                 # update the time zone in case of summer/winter time change
                 start = localize(start.tzinfo, start.replace(tzinfo=None))
                 # We could now well be out of bounce of the end of the UNTIL
                 # value. This is tested by test/test_issue_20_exdate_ignored.py.
                 until = self.get_rrule_until()
-                print("until", until)
-                if      until is not None and start > until and \
-                        start not in self.rdates:
+                if until is not None and start > until and start not in self.rdates:
                     continue
             if self._unify_exdate(start) in self.exdates_utc:
                 continue

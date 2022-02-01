@@ -63,3 +63,9 @@ def test_there_are_n_events(calendars):
         print("start: {}".format(event["DTSTART"].dt))
     assert len(events) == 7
 
+
+def test_rdate_after_until_also_in_rrule(calendars):
+    """Special test for pytz, if the event is included."""
+    events = calendars.rdate_falls_on_rrule_until.at("20200204")
+    assert len(events) == 1
+
