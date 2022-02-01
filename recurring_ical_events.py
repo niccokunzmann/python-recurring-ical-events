@@ -194,7 +194,7 @@ class RepeatedEvent:
 
     def create_rule_with_start(self, rule_string):
         try:
-            return rrulestr(rule_string, dtstart=self.start)
+            return self.rrulestr(rule_string)
         except ValueError:
             # string: FREQ=WEEKLY;UNTIL=20191023;BYDAY=TH;WKST=SU
             # start: 2019-08-01 14:00:00+01:00
@@ -217,8 +217,33 @@ class RepeatedEvent:
                 assert len(until_string) == 15
                 until_string += "Z" # https://stackoverflow.com/a/49991809
             new_rule_string = rule_list[0] + rule_list[1][date_end_index:] + ";UNTIL=" + until_string
-            return rrulestr(new_rule_string, dtstart=self.start)
+            return self.rrulestr(new_rule_string)
 
+    def rrulestr(self, rule_string):
+        """Return an rrulestr with a start."""
+        print("rule: {} start: {}".format(rule_string, self.start))
+        rule = rrulestr(rule_string, dtstart=self.start)
+        rule.string = rule_string
+        return rule
+
+    _until = UNTIL_NOT_SET = "NOT_SET"
+    def get_rrule_until(self):
+        """Return the UNTIL datetime of the rrule or None is absent."""
+        if self._until is not self.UNTIL_NOT_SET:
+            return self._until
+        self._until = None
+        if self.rrule is None:
+            return None
+        rule_list = self.rrule.string.split(";UNTIL=")
+        if len(rule_list) == 1:
+            return None
+        assert len(rule_list) == 2, "There should be only one UNTIL."
+        date_end_index = rule_list[1].find(";")
+        if date_end_index == -1:
+            date_end_index = len(rule_list[1])
+        until_string = rule_list[1][:date_end_index]
+        self._until = vDDDTypes.from_ical(until_string)
+        return self._until
 
     def make_all_dates_comparable(self):
         """Make sure we can use all dates with eachother.
@@ -260,9 +285,17 @@ class RepeatedEvent:
         # NOTE: If in the following line, we get an error, datetime and date
         # may still be mixed because RDATE, EXDATE, start and rule.
         for start in self.rule.between(span_start, span_stop, inc=True):
+            print("start:", start)
             if isinstance(start, datetime.datetime) and is_pytz(start.tzinfo):
                 # update the time zone in case of summer/winter time change
                 start = localize(start.tzinfo, start.replace(tzinfo=None))
+                # We could now well be out of bounce of the end of the UNTIL
+                # value. This is tested by test/test_issue_20_exdate_ignored.py.
+                until = self.get_rrule_until()
+                print("until", until)
+                if      until is not None and start > until and \
+                        start not in self.rdates:
+                    continue
             if self._unify_exdate(start) in self.exdates_utc:
                 continue
             stop = start + self.duration
@@ -370,7 +403,7 @@ class UnfoldableCalendar:
             return self.between((year, month, 1), (year, month + 1, 1))
         dt = self.to_datetime(date)
         return self.between(dt, dt + self._DELTAS[len(date) - 3])
-    
+
     def between(self, start, stop):
         """Return events at a time between start (inclusive) and end (inclusive)"""
         span_start = self.to_datetime(start)
