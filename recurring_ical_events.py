@@ -48,7 +48,9 @@ def convert_to_datetime(date, tzinfo):
     if isinstance(date, datetime.datetime):
         if date.tzinfo is None:
             if tzinfo is not None:
-                return localize(tzinfo, date)
+                if is_pytz(tzinfo):
+                    return tzinfo.localize(date)
+                return date.replace(tzinfo=tzinfo)
         elif tzinfo is None:
             return date.replace(tzinfo=None)
         return date
@@ -279,6 +281,9 @@ class RepeatedEvent:
         # make dates comparable, rrule converts them to datetimes
         span_start = convert_to_datetime(span_start, self.tzinfo)
         span_stop = convert_to_datetime(span_stop, self.tzinfo)
+        print("tzinfo", self.tzinfo)
+        print("span_start", span_start)
+        print("span_stop", span_stop)
         if compare_greater(span_start, self.start):
             # do not exclude an event if it spans across the time span
             span_start -= self.duration

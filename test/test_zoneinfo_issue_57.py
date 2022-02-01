@@ -59,3 +59,17 @@ def test_zoneinfo_consistent_conversion(calendars, dt1):
     assert dt1.hour == dt2.hour
     assert dt1.minute == dt2.minute
     assert dt1.second == dt2.second
+
+
+ATTRS = "year,month,day,hour,minute,second".split(",")
+@pytest.mark.parametrize("dt,tz,times", [
+    (datetime(2019, 2, 22, 4, 30), "Europe/Berlin", (2019, 2, 22, 4, 30)),
+    (datetime(2019, 2, 22, 4, 30), "UTC", (2019, 2, 22, 4, 30)),
+])
+def test_convert_to_date(dt, tz, times, ZoneInfo):
+    """Check that a datetime conversion takes place properly."""
+    new = recurring_ical_events.convert_to_datetime(dt, ZoneInfo(tz))
+    converted = ()
+    for attr, value in zip(ATTRS, times):
+        converted += (getattr(new, attr),)
+    assert converted == times

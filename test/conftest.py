@@ -103,8 +103,8 @@ class ZoneInfoCalendars(ICSCalendars):
     def get_calendar(self, content):
         calendar = ICSCalendars.get_calendar(self, content)
         zoneinfo_calendar = self.changer.walk(calendar)
-        if zoneinfo_calendar is calendar:
-            pytest.skip("ZoneInfo not in use. Already tested..")
+#        if zoneinfo_calendar is calendar:
+#            pytest.skip("ZoneInfo not in use. Already tested..")
         return of(zoneinfo_calendar)
 
     def consistent_tz(self, dt):
