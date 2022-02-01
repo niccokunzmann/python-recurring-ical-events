@@ -21,6 +21,7 @@ from collections import defaultdict
 from icalendar.prop import vDDDTypes
 
 if sys.version_info[0] == 2:
+    # Python2 has no ZoneInfo. We can assume that pytz is used.
     _EPOCH = datetime.datetime.utcfromtimestamp(0)
     _EPOCH_TZINFO = pytz.UTC.localize(_EPOCH)
     def timestamp(dt):
@@ -103,12 +104,20 @@ def compare_greater(date1, date2):
     return date1 > date2
 
 
+def is_pytz(tzinfo):
+    """Whether the time zone requires localize() and normalize().
+
+    pytz requires these funtions to be used in order to correctly use the
+    time zones after operations.
+    """
+    return hasattr(tzinfo , "localize")
+
+
 def localize(tzinfo, dt):
     """Make the datetime dt local to tzinfo.
 
     Indirection for pytz's localize function with support for zoneinfo.ZoneInfo."""
-    if hasattr(tzinfo , "localize"):
-        # seems like a pytz timezone
+    if is_pytz(tzinfo):
         return tzinfo.localize(dt)
     return dt.astimezone(tzinfo)
 
@@ -143,6 +152,7 @@ class Repetition:
 
     def __repr__(self):
         return "{}({{'UID':{}...}}, {}, {})".format(self.__class__.__name__, self.source.get("UID"), self.start, self.stop)
+
 
 class RepeatedEvent:
     """An event with repetitions created from an ical event."""
@@ -250,7 +260,7 @@ class RepeatedEvent:
         # NOTE: If in the following line, we get an error, datetime and date
         # may still be mixed because RDATE, EXDATE, start and rule.
         for start in self.rule.between(span_start, span_stop, inc=True):
-            if isinstance(start, datetime.datetime) and start.tzinfo is not None:
+            if isinstance(start, datetime.datetime) and is_pytz(start.tzinfo):
                 # update the time zone in case of summer/winter time change
                 start = localize(start.tzinfo, start.replace(tzinfo=None))
             if self._unify_exdate(start) in self.exdates_utc:
