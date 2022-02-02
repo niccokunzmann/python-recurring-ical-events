@@ -8,3 +8,4 @@ __pycache__
 .vscode/
 ENV2
 *.swp
+env-2

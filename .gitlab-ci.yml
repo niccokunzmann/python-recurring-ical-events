@@ -1,0 +1,212 @@
+# This file is a template, and might need editing before it works on your project.
+# To contribute improvements to CI/CD templates, please follow the Development guide at:
+# https://docs.gitlab.com/ee/development/cicd/templates.html
+# This specific template is located at:
+# https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Python.gitlab-ci.yml
+
+# Official language image. Look for the different tagged releases at:
+# https://hub.docker.com/r/library/python/tags/
+image: python:latest
+
+variables:
+  # Change pip's cache directory to be inside the project directory since we can
+  # only cache local items.
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+# Pip's cache doesn't store the python packages
+# https://pip.pypa.io/en/stable/reference/pip_install/#caching
+#
+# If you want to also cache the installed packages, you have to install
+# them in a virtualenv and cache it as well.
+cache:
+  paths:
+    - .cache/pip
+
+stages:
+  - build
+  - test
+  - deploy
+
+build-package:
+  stage: build
+  script:
+    - 'export PATH="$PATH:/root/.local/bin"'
+    - python --version  # For debugging
+    # install from the zip file to see if files were forgotten
+    - python setup.py sdist --dist-dir=dist --formats=zip
+    - pip install --user --upgrade pip
+    # download packages once and cache them for the others
+    - pip install --user -r test-requirements.txt -r requirements.txt virtualenv wheel
+  artifacts:
+    paths:
+      - sdist
+    untracked: true
+
+# --------------------------- tests
+
+.run-tests:
+  needs:
+    - build-package
+  stage: test
+  variables:
+    - PIP_ARGS=""
+  before_script:
+    - 'export PATH="$PATH:/root/.local/bin"'
+    - pip install --user --upgrade pip
+    # install the package in a virtual env
+    - pip install --user virtualenv
+    - virtualenv ENV
+    - source ENV/bin/activate
+    # install package from build step
+    - pip install dist/*.zip
+    # test that the example works without the test dependencies
+    - python example.py
+    # install test requirements
+    - pip install -r test-requirements.txt pytest-cov $PIP_ARGS
+    # Debug and check the default time zone
+    - python3 -c 'import time; time.tzset(); print(time.strftime("%X %x %Z"))'
+  script:
+    - test/test_code_quality.sh
+    # using coverage see
+    # - https://docs.gitlab.com/ee/user/project/merge_requests/test_coverage_visualization.html#python-example
+    # - https://gitlab.com/gitlab-org/gitlab/-/issues/285086
+    - coverage run -m pytest --x-wr-timezone=all
+    - coverage report
+    - coverage xml
+  artifacts:
+    reports:
+      cobertura: coverage.xml
+
+
+.env1:
+  variables:
+    - TZ=Europe/Berlin
+
+.env2:
+  variables:
+    - TZ=Australia/Sydney
+
+.zoneinfo-backports:
+  variables:
+    - PIP_ARGS="backports.zoneinfo"
+
+# ----- tests
+
+test-python-2.7-env1:
+  image: python:2.7
+  extends:
+  - .run-tests
+  - .env1
+
+test-python-2.7-env2:
+  image: python:2.7
+  extends:
+  - .run-tests
+  - .env2
+
+test-python-3.7-env1:
+  image: python:3.7
+  extends:
+  - .run-tests
+  - .env1
+  - .zoneinfo-backports
+
+test-python-3.7-env2:
+  image: python:3.7
+  extends:
+  - .run-tests
+  - .env2
+  - .zoneinfo-backports
+
+test-python-3.8-env1:
+  image: python:3.8
+  extends:
+  - .run-tests
+  - .env1
+  - .zoneinfo-backports
+
+test-python-3.8-env2:
+  image: python:3.8
+  extends:
+  - .run-tests
+  - .env2
+  - .zoneinfo-backports
+
+test-python-3.9-env1:
+  image: python:3.9
+  extends:
+  - .run-tests
+  - .env1
+
+test-python-3.9-env2:
+  image: python:3.9
+  extends:
+  - .run-tests
+  - .env2
+
+test-python-3.10-env1:
+  image: python:3.10
+  extends:
+  - .run-tests
+  - .env1
+
+test-python-3.10-env2:
+  image: python:3.10
+  extends:
+  - .run-tests
+  - .env2
+
+
+# --------------------------- deploy
+
+deploy-package:
+  # use python3.9 because piwheels.org build for this version
+  image: python:3.9
+  stage: deploy
+  needs:
+    - test-python-2.7-env1
+    - test-python-2.7-env2
+    - test-python-3.7-env1
+    - test-python-3.7-env2
+    - test-python-3.8-env1
+    - test-python-3.8-env2
+    - test-python-3.9-env1
+    - test-python-3.9-env2
+    - test-python-3.10-env1
+    - test-python-3.10-env2
+  before_script:
+    - 'export PATH="$PATH:/root/.local/bin"'
+    - pip install --user --upgrade pip
+    # add piwheels so we can build on raspberry pi
+    - pip config set global.extra-index-url 'https://www.piwheels.org/simple'
+    - pip config list
+    - pip install --user wheel twine
+  script:
+    - PACKAGE_VERSION=`python setup.py --version`
+    - TAG_NAME=v$PACKAGE_VERSION
+    - echo "Package version $PACKAGE_VERSION with possible tag name $TAG_NAME on $CI_COMMIT_TAG"
+    # test that the tag represents the version
+    # see https://docs.gitlab.com/ee/ci/variables/predefined_variables.html
+    - '( if [ -n "$CI_COMMIT_TAG" ]; then if [ $TAG_NAME != $CI_COMMIT_TAG ]; then echo "This tag is for the wrong version. Got \"$CI_COMMIT_TAG\" expected \"$TAG_NAME\"."; exit 1; fi; fi; )'
+    # remove old files
+    - rm -rf dist/*
+    # build new files
+    - python setup.py bdist_wheel sdist
+    # You will have to set the variables TWINE_USERNAME and TWINE_PASSWORD
+    # You can use a token specific to your project by setting the user name to 
+    # __token__ and the password to the token given to you by the PyPI project.
+    # sources:
+    #   - https://shambu2k.hashnode.dev/gitlab-to-pypi
+    #   - http://blog.octomy.org/2020/11/deploying-python-pacakges-to-pypi-using.html?m=1
+    # Also, set the tags as protected to allow the secrets to be used.
+    # see https://docs.gitlab.com/ee/user/project/protected_tags.html
+    - twine check dist/*
+    - twine upload dist/*
+  artifacts:
+    paths:
+      - dist/*
+  only:
+    # run only on tags with a certain name
+    # see http://stackoverflow.com/questions/52830653/ddg#52859379
+    - /^v[0-9]+\.[0-9]+\.[0-9a-z]+/
+
