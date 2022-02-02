@@ -77,7 +77,6 @@ build-package:
     reports:
       cobertura: coverage.xml
 
-
 .env1:
   variables:
     - TZ=Europe/Berlin
@@ -86,9 +85,9 @@ build-package:
   variables:
     - TZ=Australia/Sydney
 
-.zoneinfo-backports:
-  variables:
-    - PIP_ARGS="backports.zoneinfo"
+#.zoneinfo-backports:
+#  variables:
+#    - PIP_ARGS="backports.zoneinfo tzinfo"
 
 # ----- tests
 
@@ -109,28 +108,28 @@ test-python-3.7-env1:
   extends:
   - .run-tests
   - .env1
-  - .zoneinfo-backports
+#  - .zoneinfo-backports
 
 test-python-3.7-env2:
   image: python:3.7
   extends:
   - .run-tests
   - .env2
-  - .zoneinfo-backports
+#  - .zoneinfo-backports
 
 test-python-3.8-env1:
   image: python:3.8
   extends:
   - .run-tests
   - .env1
-  - .zoneinfo-backports
+#  - .zoneinfo-backports
 
 test-python-3.8-env2:
   image: python:3.8
   extends:
   - .run-tests
   - .env2
-  - .zoneinfo-backports
+#  - .zoneinfo-backports
 
 test-python-3.9-env1:
   image: python:3.9
@@ -155,7 +154,6 @@ test-python-3.10-env2:
   extends:
   - .run-tests
   - .env2
-
 
 # --------------------------- deploy
 
