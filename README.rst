@@ -227,6 +227,10 @@ how to go about it.
 Changelog
 ---------
 
+- v1.0.1b
+    - Add support for ``zoneinfo.ZoneInfo`` time zones, see `Issue 57 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/57>`_.
+    - Migrate from Travis CI to Gitlab CI.
+    - Add code coverage on Gitlab.
 - v1.0.0b
     - Remove Python 2 support, see `Issue 64 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/64>`_.
     - Remove support for Python 3.5 and 3.6.
