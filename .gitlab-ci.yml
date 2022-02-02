@@ -49,7 +49,7 @@ build-package:
     - build-package
   stage: test
   variables:
-    - PIP_ARGS: ""
+    PIP_ARGS: ""
   before_script:
     - 'export PATH="$PATH:/root/.local/bin"'
     - pip install --user --upgrade pip
@@ -79,15 +79,15 @@ build-package:
 
 .env1:
   variables:
-    - TZ: Europe/Berlin
+    TZ: Europe/Berlin
 
 .env2:
   variables:
-    - TZ: Australia/Sydney
+    TZ: Australia/Sydney
 
 #.zoneinfo-backports:
 #  variables:
-#    - PIP_ARGS: "backports.zoneinfo tzinfo"
+#    PIP_ARGS: "backports.zoneinfo tzinfo"
 
 # ----- tests
 
