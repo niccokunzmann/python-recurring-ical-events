@@ -9,3 +9,5 @@ __pycache__
 ENV2
 *.swp
 env-2
+/htmlcov
+.coverage
