@@ -21,6 +21,7 @@ from collections import defaultdict
 from icalendar.prop import vDDDTypes
 
 if sys.version_info[0] == 2:
+    # Python2 has no ZoneInfo. We can assume that pytz is used.
     _EPOCH = datetime.datetime.utcfromtimestamp(0)
     _EPOCH_TZINFO = pytz.UTC.localize(_EPOCH)
     def timestamp(dt):
@@ -47,7 +48,9 @@ def convert_to_datetime(date, tzinfo):
     if isinstance(date, datetime.datetime):
         if date.tzinfo is None:
             if tzinfo is not None:
-                return tzinfo.localize(date)
+                if is_pytz(tzinfo):
+                    return tzinfo.localize(date)
+                return date.replace(tzinfo=tzinfo)
         elif tzinfo is None:
             return date.replace(tzinfo=None)
         return date
@@ -96,10 +99,30 @@ def make_comparable(dates):
             break
     return [convert_to_datetime(date, tzinfo) for date in dates]
 
+
 def compare_greater(date1, date2):
     """Compare two dates if date1 > date2 and make them comparable before."""
     date1, date2 = make_comparable((date1, date2))
     return date1 > date2
+
+
+def is_pytz(tzinfo):
+    """Whether the time zone requires localize() and normalize().
+
+    pytz requires these funtions to be used in order to correctly use the
+    time zones after operations.
+    """
+    return hasattr(tzinfo , "localize")
+
+
+def localize(tzinfo, dt):
+    """Make the datetime dt local to tzinfo.
+
+    Indirection for pytz's localize function with support for zoneinfo.ZoneInfo."""
+    if is_pytz(tzinfo):
+        return tzinfo.localize(dt)
+    return dt.astimezone(tzinfo)
+
 
 class Repetition:
     """A repetition of an event."""
@@ -131,6 +154,7 @@ class Repetition:
 
     def __repr__(self):
         return "{}({{'UID':{}...}}, {}, {})".format(self.__class__.__name__, self.source.get("UID"), self.start, self.stop)
+
 
 class RepeatedEvent:
     """An event with repetitions created from an ical event."""
@@ -172,7 +196,7 @@ class RepeatedEvent:
 
     def create_rule_with_start(self, rule_string):
         try:
-            return rrulestr(rule_string, dtstart=self.start)
+            return self.rrulestr(rule_string)
         except ValueError:
             # string: FREQ=WEEKLY;UNTIL=20191023;BYDAY=TH;WKST=SU
             # start: 2019-08-01 14:00:00+01:00
@@ -195,8 +219,32 @@ class RepeatedEvent:
                 assert len(until_string) == 15
                 until_string += "Z" # https://stackoverflow.com/a/49991809
             new_rule_string = rule_list[0] + rule_list[1][date_end_index:] + ";UNTIL=" + until_string
-            return rrulestr(new_rule_string, dtstart=self.start)
+            return self.rrulestr(new_rule_string)
 
+    def rrulestr(self, rule_string):
+        """Return an rrulestr with a start."""
+        rule = rrulestr(rule_string, dtstart=self.start)
+        rule.string = rule_string
+        return rule
+
+    _until = UNTIL_NOT_SET = "NOT_SET"
+    def get_rrule_until(self):
+        """Return the UNTIL datetime of the rrule or None is absent."""
+        if self._until is not self.UNTIL_NOT_SET:
+            return self._until
+        self._until = None
+        if self.rrule is None:
+            return None
+        rule_list = self.rrule.string.split(";UNTIL=")
+        if len(rule_list) == 1:
+            return None
+        assert len(rule_list) == 2, "There should be only one UNTIL."
+        date_end_index = rule_list[1].find(";")
+        if date_end_index == -1:
+            date_end_index = len(rule_list[1])
+        until_string = rule_list[1][:date_end_index]
+        self._until = vDDDTypes.from_ical(until_string)
+        return self._until
 
     def make_all_dates_comparable(self):
         """Make sure we can use all dates with eachother.
@@ -238,9 +286,14 @@ class RepeatedEvent:
         # NOTE: If in the following line, we get an error, datetime and date
         # may still be mixed because RDATE, EXDATE, start and rule.
         for start in self.rule.between(span_start, span_stop, inc=True):
-            if isinstance(start, datetime.datetime) and start.tzinfo is not None:
+            if isinstance(start, datetime.datetime) and is_pytz(start.tzinfo):
                 # update the time zone in case of summer/winter time change
-                start = start.tzinfo.localize(start.replace(tzinfo=None))
+                start = localize(start.tzinfo, start.replace(tzinfo=None))
+                # We could now well be out of bounce of the end of the UNTIL
+                # value. This is tested by test/test_issue_20_exdate_ignored.py.
+                until = self.get_rrule_until()
+                if until is not None and start > until and start not in self.rdates:
+                    continue
             if self._unify_exdate(start) in self.exdates_utc:
                 continue
             stop = start + self.duration
@@ -274,6 +327,10 @@ class RepeatedEvent:
             return repetition
 
 
+DATE_MIN = (1970, 1, 1)
+DATE_MAX = (2038, 1, 1)
+
+
 class UnfoldableCalendar:
     '''A calendar that can unfold its events at a certain time.'''
 
@@ -304,8 +361,8 @@ class UnfoldableCalendar:
 
         I personally do not recommend to use this because
         this method is not documented and you may end up with lots of events most of which you may not use anyway."""
-        # TODO: test MAX and MIN values
-        return self.between((1000, 1, 1), (3000, 1, 1))
+        # MAX and MIN values may change in the future
+        return self.between(DATE_MIN, DATE_MAX)
 
     _DELTAS = [
         datetime.timedelta(days=1),
@@ -342,7 +399,7 @@ class UnfoldableCalendar:
             return self.between((year, month, 1), (year, month + 1, 1))
         dt = self.to_datetime(date)
         return self.between(dt, dt + self._DELTAS[len(date) - 3])
-    
+
     def between(self, start, stop):
         """Return events at a time between start (inclusive) and end (inclusive)"""
         span_start = self.to_datetime(start)

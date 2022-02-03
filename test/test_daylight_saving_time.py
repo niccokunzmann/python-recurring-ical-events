@@ -11,4 +11,7 @@ berlin = timezone("Europe/Berlin")
 def test_daylight_saving_events(calendars, date, time):
     """Test the event 7uartkcnhf0elbvs8md0itrf6c@google.com."""
     event = calendars.daylight_saving_time.at(date)[0]
-    assert event["DTSTART"].dt == time
+    expected_time = calendars.consistent_tz(time)
+    print(event["UID"])
+    print(event["DTEND"].dt)
+    assert event["DTSTART"].dt == expected_time
