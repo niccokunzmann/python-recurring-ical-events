@@ -7,7 +7,6 @@ import pytest
 from icalendar import Calendar, Event, vDDDTypes
 import recurring_ical_events
 import sys
-from importlib.util import find_spec as module_exists
 import pytz
 
 
@@ -38,6 +37,7 @@ def test_zoneinfo_must_be_installed_if_it_is_possible():
     python_version = sys.version_info[:2]
     if python_version < (3, 7):
         return # no zoneinfo
+    from importlib.util import find_spec as module_exists
     if python_version <= (3, 8):
         assert module_exists("backports.zoneinfo"), "zoneinfo should be installed with pip install backports.zoneinfo"
     else:
