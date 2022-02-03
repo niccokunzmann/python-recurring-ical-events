@@ -35,10 +35,6 @@ else:
         """Return the time stamp of a datetime"""
         return dt.timestamp() 
 
-def is_event(component):
-    """Return whether a component is a calendar event."""
-    return isinstance(component, icalendar.cal.Event)
-
 def convert_to_date(date):
     """converts a date or datetime to a date"""
     return datetime.date(date.year, date.month, date.day)
@@ -113,15 +109,6 @@ def is_pytz(tzinfo):
     time zones after operations.
     """
     return hasattr(tzinfo , "localize")
-
-
-def localize(tzinfo, dt):
-    """Make the datetime dt local to tzinfo.
-
-    Indirection for pytz's localize function with support for zoneinfo.ZoneInfo."""
-    if is_pytz(tzinfo):
-        return tzinfo.localize(dt)
-    return dt.astimezone(tzinfo)
 
 
 class Repetition:
@@ -288,7 +275,7 @@ class RepeatedEvent:
         for start in self.rule.between(span_start, span_stop, inc=True):
             if isinstance(start, datetime.datetime) and is_pytz(start.tzinfo):
                 # update the time zone in case of summer/winter time change
-                start = localize(start.tzinfo, start.replace(tzinfo=None))
+                start = start.tzinfo.localize(start.replace(tzinfo=None))
                 # We could now well be out of bounce of the end of the UNTIL
                 # value. This is tested by test/test_issue_20_exdate_ignored.py.
                 until = self.get_rrule_until()
