@@ -1,9 +1,9 @@
 Recurring ICal events for Python
 ================================
 
-.. image:: https://app.travis-ci.com/niccokunzmann/python-recurring-ical-events.svg?branch=master
-   :target: https://app.travis-ci.com/github/niccokunzmann/python-recurring-ical-events
-   :alt: Travis Build and Tests Status
+.. image:: https://img.shields.io/gitlab/pipeline-status/niccokunzmann/python-recurring-ical-events?branch=master
+   :target: https://gitlab.com/niccokunzmann/python-recurring-ical-events/-/jobs
+   :alt: Gitlab CI build and test status
 
 .. image:: https://badge.fury.io/py/recurring-ical-events.svg
    :target: https://pypi.python.org/pypi/recurring-ical-events
@@ -200,7 +200,7 @@ To release new versions,
 1. edit the Changelog Section
 2. edit setup.py, the ``__version__`` variable
 3. create a commit and push it
-4. Wait for `Travis <https://app.travis-ci.com/github/niccokunzmann/python-recurring-ical-events>`_ to finish the build.
+4. Wait for `Gitlab CI <https://gitlab.com/niccokunzmann/python-recurring-ical-events/-/jobs>`_ to finish the build.
 5. run
     .. code-block:: shell
 
