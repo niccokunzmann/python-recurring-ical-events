@@ -281,9 +281,7 @@ class UnfoldableCalendar:
         """Create an unfoldable calendar from a given calendar."""
         assert calendar.get("CALSCALE", "GREGORIAN") == "GREGORIAN", "Only Gregorian calendars are supported." # https://www.kanzaki.com/docs/ical/calscale.html
         self.repetitions = []
-        for event in calendar.walk():
-            if not is_event(event):
-                continue
+        for event in calendar.walk("VEVENT"):
             self.repetitions.append(RepeatedEvent(event, keep_recurrence_attributes))
 
     @staticmethod

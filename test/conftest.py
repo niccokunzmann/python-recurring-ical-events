@@ -60,9 +60,9 @@ class ReversedCalendars(ICSCalendars):
         """Calendar traversing events in reversed order."""
         calendar = ICSCalendars.get_calendar(self, content)
         _walk = calendar.walk
-        def walk():
+        def walk(*args, **kw):
             """Return properties in reversed order."""
-            return reversed(_walk())
+            return reversed(_walk(*args, **kw))
         calendar.walk = walk
         return of(calendar)
 
