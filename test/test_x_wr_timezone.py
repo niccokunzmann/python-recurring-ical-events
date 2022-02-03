@@ -9,8 +9,8 @@ from recurring_ical_events import timestamp
 
 tz_london = timezone("Europe/London")
 
-c1_t_UTC = datetime.datetime(2013, 8, 3, 19, tzinfo=UTC)
-c1_t_London = datetime.datetime(2013, 8, 3, 19, tzinfo=tz_london) - datetime.timedelta(seconds=60)
+c1_t_UTC = UTC.localize(datetime.datetime(2013, 8, 3, 19))
+c1_t_London = tz_london.localize(datetime.datetime(2013, 8, 3, 20))
 
 hour_1 = datetime.timedelta(hours=1)
 hour_2 = hour_1 + hour_1

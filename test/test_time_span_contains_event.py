@@ -3,7 +3,7 @@ import pytest
 from datetime import datetime, date
 from pytz import timezone, utc
 
-berlin = timezone("Europe/Berlin")
+berlin = timezone("Europe/Berlin").localize
 
 @pytest.mark.parametrize(
     "span_start,span_stop,event_start,event_stop,result,message", [
@@ -21,9 +21,9 @@ berlin = timezone("Europe/Berlin")
     (date(2019, 1, 3), date(2019, 1, 4), date(2019, 1, 2), date(2019, 1, 3), False, "date is before span"),
     (date(2019, 1, 4), date(2019, 1, 4), datetime(2019, 1, 2, 1), datetime(2019, 1, 4), False, "datetime is before date span start"),
     (date(2019, 1, 4), date(2019, 1, 5), datetime(2019, 1, 4, 1), datetime(2019, 1, 4, 2), True, "datetime is in date span end"),
-    (datetime(2019, 1, 1, 1, tzinfo=berlin), datetime(2019, 1, 4, 2, tzinfo=berlin), datetime(2019, 1, 4, 1, 10), datetime(2019, 1, 4, 1, 20), True, "without time zone is put into time zone"),
-    (datetime(2019, 1, 1, 1, tzinfo=berlin), datetime(2019, 1, 1, 2, tzinfo=berlin), datetime(2019, 1, 1, 0, tzinfo=utc), datetime(2019, 1, 1, 1, tzinfo=utc), True, "comparing times from different time zones 1"),
-    (datetime(2019, 1, 1, 4, tzinfo=berlin), datetime(2019, 1, 1, 5, tzinfo=berlin), datetime(2019, 1, 1, 0, tzinfo=utc), datetime(2019, 1, 1, 1, tzinfo=utc), False, "comparing times from different time zones 2"),
+    (berlin(datetime(2019, 1, 1, 1)), berlin(datetime(2019, 1, 4, 2)), datetime(2019, 1, 4, 1, 10), datetime(2019, 1, 4, 1, 20), True, "without time zone is put into time zone"),
+    (berlin(datetime(2019, 1, 1, 1)), berlin(datetime(2019, 1, 1, 2)), datetime(2019, 1, 1, 0, tzinfo=utc), datetime(2019, 1, 1, 1, tzinfo=utc), True, "comparing times from different time zones 1"),
+    (berlin(datetime(2019, 1, 1, 4)), berlin(datetime(2019, 1, 1, 5)), datetime(2019, 1, 1, 0, tzinfo=utc), datetime(2019, 1, 1, 1, tzinfo=utc), False, "comparing times from different time zones 2"),
 # The end of the VEVENT is exclusive, see RFC5545
 #    Note that the "DTEND" property is
 #    set to July 9th, 2007, since the "DTEND" property specifies the
