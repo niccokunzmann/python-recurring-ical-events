@@ -48,8 +48,6 @@ build-package:
   needs:
     - build-package
   stage: test
-  variables:
-    PIP_ARGS: ""
   before_script:
     - 'export PATH="$PATH:/root/.local/bin"'
     - pip install --user --upgrade pip
@@ -62,7 +60,7 @@ build-package:
     # test that the example works without the test dependencies
     - python example.py
     # install test requirements
-    - pip install -r test-requirements.txt pytest-cov $PIP_ARGS
+    - pip install -r test-requirements.txt
     # Debug and check the default time zone
     - python3 -c 'import time; time.tzset(); print(time.strftime("%X %x %Z"))'
   script:
@@ -85,10 +83,6 @@ build-package:
   variables:
     TZ: Australia/Sydney
 
-.zoneinfo-backports:
-  variables:
-    PIP_ARGS: "-r backports-requirements.txt"
-
 # ----- tests
 
 test-python-2.7-env1:
@@ -108,28 +102,24 @@ test-python-3.7-env1:
   extends:
   - .run-tests
   - .env1
-  - .zoneinfo-backports
 
 test-python-3.7-env2:
   image: python:3.7
   extends:
   - .run-tests
   - .env2
-  - .zoneinfo-backports
 
 test-python-3.8-env1:
   image: python:3.8
   extends:
   - .run-tests
   - .env1
-  - .zoneinfo-backports
 
 test-python-3.8-env2:
   image: python:3.8
   extends:
   - .run-tests
   - .env2
-  - .zoneinfo-backports
 
 test-python-3.9-env1:
   image: python:3.9
