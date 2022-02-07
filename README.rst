@@ -282,6 +282,7 @@ Related Projects
 
 - `icalevents <https://github.com/irgangla/icalevents>`_ - another library for roughly the same use-case
 - `Open Web Calendar <https://github.com/niccokunzmann/open-web-calendar>`_ - a web calendar to embed into websites which uses this library
+- `icspy <https://icspy.readthedocs.io/>`_ - to create your own calendar events
 
 Research
 --------
