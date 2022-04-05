@@ -1,4 +1,5 @@
 icalendar
 pytz
 python-dateutil>=2.8.1
-x-wr-timezone < 1.0.0
+x-wr-timezone < 1.0.0 
+x-wr-timezone >= 0.0.5
