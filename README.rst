@@ -227,6 +227,8 @@ how to go about it.
 Changelog
 ---------
 
+- v1.0.2b
+    - Add support for ``X-WR-TIMEZONE`` calendars which contain events without an explicit time zone, see `Issue 86 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/86>`_.
 - v1.0.1b
     - Add support for ``zoneinfo.ZoneInfo`` time zones, see `Issue 57 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/57>`_.
     - Migrate from Travis CI to Gitlab CI.
