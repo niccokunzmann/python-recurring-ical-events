@@ -35,6 +35,7 @@ Let's put our expertise together and build a tool that can solve this!
 * `RDATE <https://www.kanzaki.com/docs/ical/rdate.html>`_ (DONE)
 * `DURATION <https://www.kanzaki.com/docs/ical/duration.html>`_ (DONE)
 * `EXDATE <https://www.kanzaki.com/docs/ical/exdate.html>`_ (DONE)
+* `X-WR-TIMEZONE` compatibilty (DONE)
 
 Not included:
 
@@ -278,6 +279,7 @@ Libraries Used
 - `python-dateutil <https://pypi.org/project/python-dateutil/>`_ - to compute the recurrences of events using ``rrule``
 - `icalendar`_ - the library used to parse ICS files
 - `pytz <https://pypi.org/project/pytz/>`_ - for timezones
+- `x-wr-timezone <https://github.com/niccokunzmann/x-wr-timezone>`_ for handling the non-standard ``X-WR-TIMEZONE`` property.
 
 Related Projects
 ----------------
