@@ -288,6 +288,16 @@ Related Projects
 - `Open Web Calendar <https://github.com/niccokunzmann/open-web-calendar>`_ - a web calendar to embed into websites which uses this library
 - `icspy <https://icspy.readthedocs.io/>`_ - to create your own calendar events
 
+Media
+-----
+
+Nicco Kunzmann talked about this library at the
+FOSSASIA 2022 Summit:
+
+.. image:: https://niccokunzmann.github.io/ical-talk-fossasia-2022/youtube.png
+   :target: https://youtu.be/8l3opDdg92I?t=10369
+   :alt: Talk about this library at the FOSSASIA 2022 Summit
+
 Research
 --------
 
