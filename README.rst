@@ -13,6 +13,10 @@ Recurring ICal events for Python
    :target: https://pypi.python.org/pypi/recurring-ical-events#downloads
    :alt: Downloads from Pypi
 
+.. image:: https://img.shields.io/opencollective/all/open-web-calendar?label=support%20on%20open%20collective
+   :target: https://opencollective.com/open-web-calendar/
+   :alt: Support on Open Collective
+
 
 ICal has some complexity to it:
 Events can be repeated, removed from the feed and edited later on.
