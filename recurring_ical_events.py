@@ -119,12 +119,21 @@ class Repetition:
     ]
 
     def __init__(self, source, start, stop, keep_recurrence_attributes=False):
+        """Create an event repetition.
+
+        - source - the icalendar Event
+        - start - the start date/datetime
+        - stop - the end date/datetime
+        - keep_recurrence_attributes - whether to copy or delete attributes
+            mentioned in ATTRIBUTES_TO_DELETE_ON_COPY
+        """
         self.source = source
         self.start = start
         self.stop = stop
         self.keep_recurrence_attributes = keep_recurrence_attributes
 
     def as_vevent(self):
+        """Create a shallow copy of the source event and modify some attributes."""
         revent = self.source.copy()
         revent["DTSTART"] = vDDDTypes(self.start)
         revent["DTEND"] = vDDDTypes(self.stop)
@@ -137,16 +146,23 @@ class Repetition:
         return revent
 
     def is_in_span(self, span_start, span_stop):
+        """Return whether the event is in the span."""
         return time_span_contains_event(span_start, span_stop, self.start, self.stop)
 
     def __repr__(self):
+        """Debug representation with more info."""
         return "{}({{'UID':{}...}}, {}, {})".format(self.__class__.__name__, self.source.get("UID"), self.start, self.stop)
 
 
 class RepeatedEvent:
-    """An event with repetitions created from an ical event."""
+    """An event with repetitions created from an icalendar event."""
 
     def __init__(self, event, keep_recurrence_attributes=False):
+        """Create an event which may have repetitions in it.
+
+        - event - the icalendar Event
+        - keep_recurrence_attributes whether to copy or delete attributes in repetitions.
+        """
         self.event = event
         self.start = self.original_start = event["DTSTART"].dt
         self.end = self.original_end = self._get_event_end()
@@ -182,6 +198,10 @@ class RepeatedEvent:
         rule.rdate(self.start)
 
     def create_rule_with_start(self, rule_string):
+        """Helper to create an rrule from a rule_string starting at the start of the event.
+
+        Since the creation is a bit more complex, this function handles special cases.
+        """
         try:
             return self.rrulestr(rule_string)
         except ValueError:
@@ -209,7 +229,7 @@ class RepeatedEvent:
             return self.rrulestr(new_rule_string)
 
     def rrulestr(self, rule_string):
-        """Return an rrulestr with a start."""
+        """Return an rrulestr with a start. This might fail."""
         rule = rrulestr(rule_string, dtstart=self.start)
         rule.string = rule_string
         return rule
@@ -264,6 +284,7 @@ class RepeatedEvent:
         return dt
 
     def within_days(self, span_start, span_stop):
+        """Yield event Repetitions between the start (inclusive) and end (exclusive) of the time span."""
         # make dates comparable, rrule converts them to datetimes
         span_start = convert_to_datetime(span_start, self.tzinfo)
         span_stop = convert_to_datetime(span_stop, self.tzinfo)
@@ -292,12 +313,20 @@ class RepeatedEvent:
             )
 
     def convert_to_original_type(self, date):
+        """Convert a date back if this is possible.
+
+        Dates may get converted to datetimes to make calculations possible.
+        This reverts the process where possible so that Repetitions end
+        up with the type (date/datetime) that was specified in the icalendar
+        Event.
+        """
         if not isinstance(self.original_start, datetime.datetime) and \
                 not isinstance(self.original_end, datetime.datetime):
             return convert_to_date(date)
         return date
 
     def _get_event_end(self):
+        """Calculate the end of the event based on DTSTART, DTEND and DURATION."""
         end = self.event.get("DTEND")
         if end is not None:
             return end.dt
@@ -307,14 +336,18 @@ class RepeatedEvent:
         return self.event["DTSTART"].dt
 
     def is_recurrence(self):
+        """Whether this is a recurrence/modification of an event."""
         return "RECURRENCE-ID" in self.event
 
     def as_single_event(self):
+        """Return as a singe event with no recurrences."""
         for repetition in self.within_days(self.start, self.start):
             return repetition
 
 
+# The minimum value accepted as date (pytz + zoneinfo)
 DATE_MIN = (1970, 1, 1)
+# The maximum value accepted as date (pytz + zoneinfo)
 DATE_MAX = (2038, 1, 1)
 
 

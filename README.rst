@@ -10,7 +10,7 @@ Recurring ICal events for Python
    :alt: Python Package Version on Pypi
 
 .. image:: https://img.shields.io/pypi/dm/recurring-ical-events.svg
-   :target: https://pypi.python.org/pypi/recurring-ical-events#downloads
+   :target: https://pypi.org/project/recurring-ical-events/#files
    :alt: Downloads from Pypi
 
 .. image:: https://img.shields.io/opencollective/all/open-web-calendar?label=support%20on%20open%20collective
