@@ -59,6 +59,11 @@ jobs:
     environment:
       name: PyPI
       url: https://pypi.org/project/recurring-ical-events/
+    # after using the environment, we need to make the secrets available
+    # see https://docs.github.com/en/actions/security-guides/encrypted-secrets#example-using-bash
+    env:
+      TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
+      TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
