@@ -198,18 +198,23 @@ Development
 -----------
 
 1. Optional: Install virtualenv and Python3 and create a virtual environment.
-    .. code-block:: shell
 
-        virtualenv -p python3 ENV
-        source ENV/bin/activate
+   .. code-block:: shell
+
+       virtualenv -p python3 ENV
+       source ENV/bin/activate
+
 2. Install the packages.
-    .. code-block:: shell
 
-        pip install -r requirements.txt -r test-requirements.txt
+   .. code-block:: shell
+
+       pip install -r requirements.txt -r test-requirements.txt
+
 3. Run the tests
-    .. code-block:: shell
 
-        pytest
+   .. code-block:: shell
+
+       pytest
 
 New Releases
 ------------
@@ -221,9 +226,11 @@ To release new versions,
 3. create a commit and push it
 4. Wait for `Gitlab CI <https://gitlab.com/niccokunzmann/python-recurring-ical-events/-/jobs>`_ to finish the build.
 5. run
-    .. code-block:: shell
 
-        python3 setup.py tag_and_deploy
+   .. code-block:: shell
+
+       python3 setup.py tag_and_deploy
+
 6. notify the issues about their release
 
 Testing
@@ -247,49 +254,82 @@ Changelog
 ---------
 
 - v1.0.2b
-    - Add support for ``X-WR-TIMEZONE`` calendars which contain events without an explicit time zone, see `Issue 86 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/86>`_.
+
+  - Add support for ``X-WR-TIMEZONE`` calendars which contain events without an explicit time zone, see `Issue 86 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/86>`_.
+  
 - v1.0.1b
-    - Add support for ``zoneinfo.ZoneInfo`` time zones, see `Issue 57 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/57>`_.
-    - Migrate from Travis CI to Gitlab CI.
-    - Add code coverage on Gitlab.
+
+  - Add support for ``zoneinfo.ZoneInfo`` time zones, see `Issue 57 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/57>`_.
+  - Migrate from Travis CI to Gitlab CI.
+  - Add code coverage on Gitlab.
+
 - v1.0.0b
-    - Remove Python 2 support, see `Issue 64 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/64>`_.
-    - Remove support for Python 3.5 and 3.6.
-    - Note: These deprecated Python versions may still work. We just do not claim they do.
-    - ``X-WR-TIMEZONE`` support, see `Issue 71 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/71>`_.
+
+  - Remove Python 2 support, see `Issue 64 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/64>`_.
+  - Remove support for Python 3.5 and 3.6.
+  - Note: These deprecated Python versions may still work. We just do not claim they do.
+  - ``X-WR-TIMEZONE`` support, see `Issue 71 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/71>`_.
+
 - v0.2.4b
-    - Events with a duration of 0 seconds are correctly returned.
-    - ``between()`` and ``at()`` take the same kind of arguments. These arguments are documented.
+
+  - Events with a duration of 0 seconds are correctly returned.
+  - ``between()`` and ``at()`` take the same kind of arguments. These arguments are documented.
+
 - v0.2.3b
-    - ``between()`` and ``at()`` allow arguments with time zones now when calendar events do not have time zones, reported in `Issue 61 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/61>`_ and `Issue 52 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/52>`_.
+
+  - ``between()`` and ``at()`` allow arguments with time zones now when calendar events do not have time zones, reported in `Issue 61 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/61>`_ and `Issue 52 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/52>`_.
+
 - v0.2.2b
-    - Check that ``at()`` does not return an event starting at the next day, see `Issue 44 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/44>`_.
+
+  - Check that ``at()`` does not return an event starting at the next day, see `Issue 44 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/44>`_.
+
 - v0.2.1b
-    - Check that recurring events are removed if they are modified to leave the requested time span, see `Issue 62 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/62>`_.
+
+  - Check that recurring events are removed if they are modified to leave the requested time span, see `Issue 62 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/62>`_.
+
 - v0.2.0b
-    - Add ability to keep the recurrence attributes (RRULE, RDATE, EXDATE) on the event copies instead of stripping them. See `Pull Request 54 <https://github.com/niccokunzmann/python-recurring-ical-events/pull/54>`_.
+
+  - Add ability to keep the recurrence attributes (RRULE, RDATE, EXDATE) on the event copies instead of stripping them. See `Pull Request 54 <https://github.com/niccokunzmann/python-recurring-ical-events/pull/54>`_.
+
 - v0.1.21b
-    - Fix issue with repetitions over DST boundary. See `Issue 48 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/48>`_.
+
+  - Fix issue with repetitions over DST boundary. See `Issue 48 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/48>`_.
+
 - v0.1.20b
-    - Fix handling of modified recurrences with lower sequence number than their base event `Pull Request 45 <https://github.com/niccokunzmann/python-recurring-ical-events/pull/45>`_
+
+  - Fix handling of modified recurrences with lower sequence number than their base event `Pull Request 45 <https://github.com/niccokunzmann/python-recurring-ical-events/pull/45>`_
+
 - v0.1.19b
-    - Benchmark using `@mrx23dot <https://github.com/mrx23dot>`_'s script and speed up recurrence calculation by factor 4, see `Issue 42 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/42>`_.
+
+  - Benchmark using `@mrx23dot <https://github.com/mrx23dot>`_'s script and speed up recurrence calculation by factor 4, see `Issue 42 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/42>`_.
+
 - v0.1.18b
-    - Handle `Issue 28 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/28>`__ so that EXDATEs match as expected.
-    - Handle `Issue 27 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/27>`_ so that parsing some rrule UNTIL values does not crash.
+
+  - Handle `Issue 28 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/28>`__ so that EXDATEs match as expected.
+  - Handle `Issue 27 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/27>`_ so that parsing some rrule UNTIL values does not crash.
+
 - v0.1.17b
-    - Handle `Issue 28 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/28>`__ where passed arguments lead to errors where it is expected to work.
+
+  - Handle `Issue 28 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/28>`__ where passed arguments lead to errors where it is expected to work.
+
 - v0.1.16b
-    - Events with an empty RRULE are handled like events without an RRULE.
-    - Remove fixed dependency versions, see `Issue 14 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/14>`_
+
+  - Events with an empty RRULE are handled like events without an RRULE.
+  - Remove fixed dependency versions, see `Issue 14 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/14>`_
+
 - v0.1.15b
-    - Repeated events also include subcomponents. `Issue 6 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/6>`_
+
+  - Repeated events also include subcomponents. `Issue 6 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/6>`_
+
 - v0.1.14b
-    - Fix compatibility `issue 20 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/20>`_: EXDATEs of different time zones are now supported.
+
+  - Fix compatibility `issue 20 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/20>`_: EXDATEs of different time zones are now supported.
+
 - v0.1.13b
-    - Remove attributes RDATE, EXDATE, RRULE from repeated events `Issue 23`_
-    - Use vDDDTypes instead of explicit date/datetime type `Pull Request 19 <https://github.com/niccokunzmann/python-recurring-ical-events/pull/19>`_
-    - Start Changelog
+
+  - Remove attributes RDATE, EXDATE, RRULE from repeated events `Issue 23`_
+  - Use vDDDTypes instead of explicit date/datetime type `Pull Request 19 <https://github.com/niccokunzmann/python-recurring-ical-events/pull/19>`_
+  - Start Changelog
 
 Libraries Used
 --------------
@@ -320,12 +360,15 @@ Research
 --------
 
 - `RFC 5545 <https://tools.ietf.org/html/rfc5545>`_
-- `RFC 7986 <https://tools.ietf.org/html/rfc7986>`_ - an update to RFC 5545. It does not change any properties useful for scheduling events.
+- `RFC 7986 <https://tools.ietf.org/html/rfc7986>`_ -- an update to RFC 5545. It does not change any properties useful for scheduling events.
 - `Stackoverflow question this is created for <https://stackoverflow.com/questions/30913824/ical-library-to-iterate-recurring-events-with-specific-instances>`_
 - `<https://github.com/oberron/annum>`_
+
   - `<https://stackoverflow.com/questions/28829261/python-ical-get-events-for-a-day-including-recurring-ones#28829401>`_
+
 - `<https://stackoverflow.com/questions/20268204/ical-get-date-from-recurring-event-by-rrule-and-dtstart>`_
 - `<https://github.com/collective/icalendar/issues/162>`_
 - `<https://stackoverflow.com/questions/46471852/ical-parsing-reoccuring-events-in-python>`_
 - RDATE `<https://stackoverflow.com/a/46709850/1320237>`_
-    - `<https://tools.ietf.org/html/rfc5545#section-3.8.5.2>`_
+
+  - `<https://tools.ietf.org/html/rfc5545#section-3.8.5.2>`_
