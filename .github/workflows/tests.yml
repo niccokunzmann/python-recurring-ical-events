@@ -54,6 +54,9 @@ jobs:
     needs:
     - run-tests
     runs-on: ubuntu-latest
+    # This environment stores the TWINE_USERNAME and TWINE_PASSWORD
+    # see https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment
+    environment: PyPI
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
@@ -90,5 +93,11 @@ jobs:
         #   - http://blog.octomy.org/2020/11/deploying-python-pacakges-to-pypi-using.html?m=1
         # Also, set the tags as protected to allow the secrets to be used.
         # see https://docs.gitlab.com/ee/user/project/protected_tags.html
+        if [ -z "$TWINE_USERNAME" ]; then
+          echo "WARNING: TWINE_USERNAME not set!"
+        fi
+        if [ -z "$TWINE_PASSWORD" ]; then
+          echo "WARNING: TWINE_PASSWORD not set!"
+        fi
         twine check dist/*
         twine upload dist/*
