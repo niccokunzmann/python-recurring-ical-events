@@ -1,8 +1,8 @@
 Recurring ICal events for Python
 ================================
 
-.. image:: https://img.shields.io/gitlab/pipeline-status/niccokunzmann/python-recurring-ical-events?branch=master
-   :target: https://gitlab.com/niccokunzmann/python-recurring-ical-events/-/jobs
+.. image:: https://github.com/niccokunzmann/python-recurring-ical-events/actions/workflows/tests.yml/badge.svg
+   :target: https://github.com/niccokunzmann/python-recurring-ical-events/actions/workflows/tests.yml
    :alt: Gitlab CI build and test status
 
 .. image:: https://badge.fury.io/py/recurring-ical-events.svg
