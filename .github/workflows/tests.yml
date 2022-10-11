@@ -4,9 +4,9 @@ on:
   push:
     branches:
     - master
+    tags:
+    - v*
   pull_request:
-  tags:
-  - v*
   workflow_dispatch:
 
 jobs:

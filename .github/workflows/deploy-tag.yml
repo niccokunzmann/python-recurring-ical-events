@@ -1,8 +1,9 @@
 name: tests
 
 on:
-  tags:
-  - v*
+  push:
+    tags:
+    - v*
   workflow_run:
     workflows:
     - tests
