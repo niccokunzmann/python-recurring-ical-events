@@ -24,19 +24,19 @@ jobs:
         python -m pip install --upgrade pip
         pip install wheel twine
     - name: Test
-      run:
-      - PACKAGE_VERSION=`python setup.py --version`
-      - TAG_NAME=v$PACKAGE_VERSION
-      - echo "Package version $PACKAGE_VERSION with possible tag name $TAG_NAME on $CI_COMMIT_TAG"
+      run: |
+        PACKAGE_VERSION=`python setup.py --version`
+        TAG_NAME=v$PACKAGE_VERSION
+        echo "Package version $PACKAGE_VERSION with possible tag name $TAG_NAME on $CI_COMMIT_TAG"
         # test that the tag represents the version
         # see https://docs.gitlab.com/ee/ci/variables/predefined_variables.html
-      - '( if [ -n "$CI_COMMIT_TAG" ]; then if [ $TAG_NAME != $CI_COMMIT_TAG ]; then echo "This tag is for the wrong version. Got \"$CI_COMMIT_TAG\" expected \"$TAG_NAME\"."; exit 1; fi; fi; )'
+        '( if [ -n "$CI_COMMIT_TAG" ]; then if [ $TAG_NAME != $CI_COMMIT_TAG ]; then echo "This tag is for the wrong version. Got \"$CI_COMMIT_TAG\" expected \"$TAG_NAME\"."; exit 1; fi; fi; )'
         # remove old files
-      - rm -rf dist/*
+        rm -rf dist/*
     - name: build
-      run:
+      run: |
         # build new files
-      - python setup.py bdist_wheel sdist
+        python setup.py bdist_wheel sdist
         # You will have to set the variables TWINE_USERNAME and TWINE_PASSWORD
         # You can use a token specific to your project by setting the user name to 
         # __token__ and the password to the token given to you by the PyPI project.
@@ -45,5 +45,5 @@ jobs:
         #   - http://blog.octomy.org/2020/11/deploying-python-pacakges-to-pypi-using.html?m=1
         # Also, set the tags as protected to allow the secrets to be used.
         # see https://docs.gitlab.com/ee/user/project/protected_tags.html
-      - twine check dist/*
-      - twine upload dist/*
+        twine check dist/*
+        twine upload dist/*
