@@ -48,3 +48,44 @@ jobs:
         test/test_code_quality.sh
         tox -e ${{ matrix.config[1] }}
 
+  deploy-tag-to-pypi:
+    # only deploy on tags, see https://stackoverflow.com/a/58478262/1320237
+    #if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: "3.9"
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install wheel twine
+    - name: Check the tag
+      run: |
+        PACKAGE_VERSION=`python setup.py --version`
+        TAG_NAME=v$PACKAGE_VERSION
+        echo "Package version $PACKAGE_VERSION with possible tag name $TAG_NAME on $CI_COMMIT_TAG"
+        # test that the tag represents the version
+        # see https://docs.gitlab.com/ee/ci/variables/predefined_variables.html
+        # see https://docs.github.com/en/actions/learn-github-actions/environment-variables
+        if [ "$TAG_NAME" != "$GITHUB_REF_NAME" ]; then
+          echo "ERROR: This tag is for the wrong version. Got \"$CI_COMMIT_TAG\" expected \"$TAG_NAME\"."
+          exit 1
+        fi
+    - name: remove old files
+      run: rm -rf dist/*
+    - name: build distribution files
+      run: python setup.py bdist_wheel sdist
+    - name: deploy to pypi
+        # You will have to set the variables TWINE_USERNAME and TWINE_PASSWORD
+        # You can use a token specific to your project by setting the user name to 
+        # __token__ and the password to the token given to you by the PyPI project.
+        # sources:
+        #   - https://shambu2k.hashnode.dev/gitlab-to-pypi
+        #   - http://blog.octomy.org/2020/11/deploying-python-pacakges-to-pypi-using.html?m=1
+        # Also, set the tags as protected to allow the secrets to be used.
+        # see https://docs.gitlab.com/ee/user/project/protected_tags.html
+        twine check dist/*
+        twine upload dist/*
