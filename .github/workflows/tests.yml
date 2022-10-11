@@ -79,6 +79,7 @@ jobs:
     - name: build distribution files
       run: python setup.py bdist_wheel sdist
     - name: deploy to pypi
+      run: |
         # You will have to set the variables TWINE_USERNAME and TWINE_PASSWORD
         # You can use a token specific to your project by setting the user name to 
         # __token__ and the password to the token given to you by the PyPI project.
