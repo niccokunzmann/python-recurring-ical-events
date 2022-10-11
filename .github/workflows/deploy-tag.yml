@@ -1,9 +1,6 @@
 name: deploy-tag
 
 on:
-  push:
-    tags:
-    - v*
   workflow_run:
     workflows:
     - tests
@@ -11,7 +8,8 @@ on:
     - completed
 
 jobs:
-  build:
+  release:
+    if: "$GITHUB_REF_TYPE" == "tag"
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -31,12 +29,8 @@ jobs:
         # test that the tag represents the version
         # see https://docs.gitlab.com/ee/ci/variables/predefined_variables.html
         # see https://docs.github.com/en/actions/learn-github-actions/environment-variables
-        if [ "$GITHUB_REF_TYPE" != "tag" ]; then
-          echo "expected tag but got $GITHUB_REF_TYPE"
-          exit 1
-        fi
         if [ "$TAG_NAME" != "$GITHUB_REF_NAME" ]; then
-          echo "This tag is for the wrong version. Got \"$CI_COMMIT_TAG\" expected \"$TAG_NAME\"."
+          echo "ERROR: This tag is for the wrong version. Got \"$CI_COMMIT_TAG\" expected \"$TAG_NAME\"."
           exit 1
         fi
         # remove old files
