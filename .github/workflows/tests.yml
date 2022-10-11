@@ -2,8 +2,11 @@ name: tests
 
 on:
   push:
-    branches: [ master ]
+    branches:
+    - master
   pull_request:
+  tags:
+  - v*
   workflow_dispatch:
 
 jobs:
@@ -12,10 +15,10 @@ jobs:
       matrix:
         config:
         # [Python version, tox env]
-        - ["3.7",   "py37"]
-        - ["3.8",   "py38"]
-        - ["3.9",   "py39"]
-        - ["3.10",  "py310"]
+        - ["3.7",   "py37",  "Europe/Berlin"]
+        - ["3.8",   "py38",  "Australia/Sydney"]
+        - ["3.9",   "py39",  "UTC"]
+        - ["3.10",  "py310", "Asia/Singapore"]
 
     runs-on: ubuntu-latest
     name: ${{ matrix.config[1] }}
@@ -38,4 +41,10 @@ jobs:
         python -m pip install --upgrade pip
         pip install tox
     - name: Test
-      run: tox -e ${{ matrix.config[1] }}
+      run: |
+        export TZ="{{ matrix.config[2] }}"
+        # Debug and check the default time zone
+        python3 -c 'import time; time.tzset(); print(time.strftime("%X %x %Z"))'
+        test/test_code_quality.sh
+        tox -e ${{ matrix.config[1] }}
+
