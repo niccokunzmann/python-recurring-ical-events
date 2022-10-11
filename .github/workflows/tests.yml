@@ -56,7 +56,9 @@ jobs:
     runs-on: ubuntu-latest
     # This environment stores the TWINE_USERNAME and TWINE_PASSWORD
     # see https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment
-    environment: PyPI
+    environment:
+      name: PyPI
+      url: https://pypi.org/project/recurring-ical-events/
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
