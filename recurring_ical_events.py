@@ -360,6 +360,10 @@ class UnfoldableCalendar:
         self.repetitions = []
         for event in calendar.walk("VEVENT"):
             self.repetitions.append(RepeatedEvent(event, keep_recurrence_attributes))
+        for event in calendar.walk("VTODO"):
+            self.repetitions.append(RepeatedTodo(event, keep_recurrence_attributes))
+        for event in calendar.walk("VJOURNAL"):
+            self.repetitions.append(RepeatedJournal(event, keep_recurrence_attributes))
 
     @staticmethod
     def to_datetime(date):
