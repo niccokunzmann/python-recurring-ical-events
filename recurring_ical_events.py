@@ -118,7 +118,7 @@ class Repetition:
         "RRULE", "RDATE", "EXDATE"
     ]
 
-    def __init__(self, source, start, stop, keep_recurrence_attributes=False):
+    def __init__(self, source, start, stop, keep_recurrence_attributes=False, end_prop='DTEND'):
         """Create an event repetition.
 
         - source - the icalendar Event
@@ -130,13 +130,14 @@ class Repetition:
         self.source = source
         self.start = start
         self.stop = stop
+        self.end_prop = end_prop
         self.keep_recurrence_attributes = keep_recurrence_attributes
 
     def as_vevent(self):
         """Create a shallow copy of the source event and modify some attributes."""
         revent = self.source.copy()
         revent["DTSTART"] = vDDDTypes(self.start)
-        revent["DTEND"] = vDDDTypes(self.stop)
+        revent[self.end_prop] = vDDDTypes(self.stop)
         if not self.keep_recurrence_attributes:
             for attribute in self.ATTRIBUTES_TO_DELETE_ON_COPY:
                 if attribute in revent:
@@ -156,6 +157,8 @@ class Repetition:
 
 class RepeatedEvent:
     """An event with repetitions created from an icalendar event."""
+
+    end_prop='DTEND'
 
     def __init__(self, event, keep_recurrence_attributes=False):
         """Create an event which may have repetitions in it.
@@ -310,6 +313,7 @@ class RepeatedEvent:
                 self.convert_to_original_type(start),
                 self.convert_to_original_type(stop),
                 self.keep_recurrence_attributes,
+                self.end_prop
             )
 
     def convert_to_original_type(self, date):
@@ -326,8 +330,8 @@ class RepeatedEvent:
         return date
 
     def _get_event_end(self):
-        """Calculate the end of the event based on DTSTART, DTEND and DURATION."""
-        end = self.event.get("DTEND")
+        """Calculate the end of the event based on DTSTART, DTEND/DUE and DURATION."""
+        end = self.event.get(self.end_prop)
         if end is not None:
             return end.dt
         duration = self.event.get("DURATION")
@@ -344,6 +348,11 @@ class RepeatedEvent:
         for repetition in self.within_days(self.start, self.start):
             return repetition
 
+class RepeatedTodo(RepeatedEvent):
+    end_prop = 'DUE'
+
+class RepeatedJournal(RepeatedEvent):
+    end_prop = None
 
 # The minimum value accepted as date (pytz + zoneinfo)
 DATE_MIN = (1970, 1, 1)
