@@ -167,7 +167,7 @@ class RepeatedEvent:
         - keep_recurrence_attributes whether to copy or delete attributes in repetitions.
         """
         self.event = event
-        self.start = self.original_start = event["DTSTART"].dt
+        self.start = self.original_start = self._get_event_start()
         self.end = self.original_end = self._get_event_end()
         self.keep_recurrence_attributes = keep_recurrence_attributes
         self.exdates = []
@@ -329,15 +329,45 @@ class RepeatedEvent:
             return convert_to_date(date)
         return date
 
+    def _get_event_start(self):
+        """Calculate the end of the event/task/journal based on DTSTART, DTEND/DUE and DURATION."""
+        ## easy case - DTSTART set (it should be set for events and journals)
+        start = self.event.get('DTSTART')
+        if start is not None:
+            return start.dt
+        ## Tasks may have DUE set, but no DTSTART.
+        ## Let's assume 0 duration and return the DUE
+        due = self.event.get(self.end_prop)
+        if due is not None:
+            return due.dt
+        ## Assume infinite time span if neither is given
+        ## (see the comments under _get_event_end)
+        return datetime.date(*DATE_MIN)
+
     def _get_event_end(self):
-        """Calculate the end of the event based on DTSTART, DTEND/DUE and DURATION."""
+        """Calculate the end of the event/task/journal based on DTSTART, DTEND/DUE and DURATION."""
+        ## Easy case - DTEND/DUE is set
         end = self.event.get(self.end_prop)
         if end is not None:
             return end.dt
+        ## DURATION can be specified instead of DTEND/DUE
         duration = self.event.get("DURATION")
         if duration is not None:
             return self.event["DTSTART"].dt + duration.dt
-        return self.event["DTSTART"].dt
+        ## According to the RFC, a VEVENT without an end/duration
+        ## is to be considered to have zero duration.  Assuming the
+        ## same applies to VTODO.
+        dtstart = self.event.get("DTSTART")
+        if dtstart:
+            return dtstart.dt
+        ## The RFC says this about VTODO:
+        ## > A "VTODO" calendar component without the "DTSTART" and "DUE" (or
+        ## > "DURATION") properties specifies a to-do that will be associated
+        ## > with each successive calendar date, until it is completed.
+        ## It can be interpreted in different ways, though probably it may
+        ## be considered equivalent with a DTSTART in the infinite past and DUE
+        ## in the infinite future?
+        return datetime.date(*DATE_MAX)
 
     def is_recurrence(self):
         """Whether this is a recurrence/modification of an event."""
