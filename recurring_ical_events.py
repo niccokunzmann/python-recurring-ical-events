@@ -348,6 +348,7 @@ class RepeatedEvent:
         for repetition in self.within_days(self.start, self.start):
             return repetition
 
+## TODO: we should probably have a proper base class, RepeatedEvent should be a sibling of RepeatedTodo and RepeatedJournal, not a parent
 class RepeatedTodo(RepeatedEvent):
     end_prop = 'DUE'
 
