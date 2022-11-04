@@ -3,7 +3,7 @@ from recurring_ical_events import DATE_MAX
 
 testdata_parametrized = pytest.mark.parametrize("ical_file", [
     "issue_97_simple_todo",
-#    "issue_97_simple_journal",
+    "issue_97_simple_journal",
 #    "issue_97_todo_nodtstart",
 ])
 
