@@ -353,7 +353,7 @@ class RepeatedTodo(RepeatedEvent):
     end_prop = 'DUE'
 
 class RepeatedJournal(RepeatedEvent):
-    end_prop = None
+    end_prop = ''
 
 # The minimum value accepted as date (pytz + zoneinfo)
 DATE_MIN = (1970, 1, 1)
