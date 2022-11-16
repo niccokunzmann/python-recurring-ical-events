@@ -253,6 +253,10 @@ how to go about it.
 Changelog
 ---------
 
+- v1.1.0b
+
+  - Add repeated TODOs and Journals. See `Pull Request 100 <https://github.com/niccokunzmann/python-recurring-ical-events/pull/100>`_ and `Issue 97 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/97>`_.
+
 - v1.0.3b
 
   - Remove syntax anomalies in README.
