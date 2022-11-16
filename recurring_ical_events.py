@@ -377,8 +377,8 @@ class RepeatedTodo(RepeatedObject):
 
     def _get_object_end(self):
         """Return DUE or DTSTART+DURATION or something"""
-        ## Easy case - DTEND/DUE is set
-        end = self.object.get(self.end_prop)
+        ## Easy case - DUE is set
+        end = self.object.get('DUE')
         if end is not None:
             return end.dt
         
