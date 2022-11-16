@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Example Corp.//CalDAV Client//EN
+BEGIN:VJOURNAL
+UID:19920901T130000Z-123409@host.com
+DTSTAMP:19920901T130000Z
+DTSTART:19920420
+SUMMARY:Yearly Income Tax Report
+DESCRIPTION:We made it this year too.  Probably.  What's the point of a recurring journal entry?  Journals are supposed to describe past events, aren't they?
+RRULE:FREQ=YEARLY
+CLASS:CONFIDENTIAL
+CATEGORIES:FAMILY,FINANCE
+PRIORITY:1
+END:VJOURNAL
+END:VCALENDAR

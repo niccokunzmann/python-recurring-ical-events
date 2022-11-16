@@ -118,7 +118,7 @@ class Repetition:
         "RRULE", "RDATE", "EXDATE"
     ]
 
-    def __init__(self, source, start, stop, keep_recurrence_attributes=False):
+    def __init__(self, source, start, stop, keep_recurrence_attributes=False, end_prop='DTEND'):
         """Create an event repetition.
 
         - source - the icalendar Event
@@ -130,13 +130,14 @@ class Repetition:
         self.source = source
         self.start = start
         self.stop = stop
+        self.end_prop = end_prop
         self.keep_recurrence_attributes = keep_recurrence_attributes
 
     def as_vevent(self):
         """Create a shallow copy of the source event and modify some attributes."""
         revent = self.source.copy()
         revent["DTSTART"] = vDDDTypes(self.start)
-        revent["DTEND"] = vDDDTypes(self.stop)
+        revent[self.end_prop] = vDDDTypes(self.stop)
         if not self.keep_recurrence_attributes:
             for attribute in self.ATTRIBUTES_TO_DELETE_ON_COPY:
                 if attribute in revent:
@@ -153,29 +154,28 @@ class Repetition:
         """Debug representation with more info."""
         return "{}({{'UID':{}...}}, {}, {})".format(self.__class__.__name__, self.source.get("UID"), self.start, self.stop)
 
+class RepeatedComponent:
+    """Base class for RepeatedEvent, RepeatedJournal and RepeatedTodo"""
+    
+    def __init__(self, component, keep_recurrence_attributes=False):
+        """Create an component which may have repetitions in it.
 
-class RepeatedEvent:
-    """An event with repetitions created from an icalendar event."""
-
-    def __init__(self, event, keep_recurrence_attributes=False):
-        """Create an event which may have repetitions in it.
-
-        - event - the icalendar Event
+        - component - the icalendar component
         - keep_recurrence_attributes whether to copy or delete attributes in repetitions.
         """
-        self.event = event
-        self.start = self.original_start = event["DTSTART"].dt
-        self.end = self.original_end = self._get_event_end()
+        self.component = component
+        self.start = self.original_start = self._get_component_start()
+        self.end = self.original_end = self._get_component_end()
         self.keep_recurrence_attributes = keep_recurrence_attributes
         self.exdates = []
         self.exdates_utc = set()
-        exdates = event.get("EXDATE", [])
+        exdates = component.get("EXDATE", [])
         for exdates in ((exdates,) if not isinstance(exdates, list) else exdates):
             for exdate in exdates.dts:
                 self.exdates.append(exdate.dt)
                 self.exdates_utc.add(self._unify_exdate(exdate.dt))
         self.rdates = []
-        rdates = event.get("RDATE", [])
+        rdates = component.get("RDATE", [])
         for rdates in ((rdates,) if not isinstance(rdates, list) else rdates):
             for rdate in rdates.dts:
                 self.rdates.append(rdate.dt)
@@ -184,7 +184,7 @@ class RepeatedEvent:
 
         self.duration = self.end - self.start
         self.rule = rule = rruleset(cache=True)
-        _rule = event.get("RRULE", None)
+        _rule = component.get("RRULE", None)
         if _rule:
             self.rrule = self.create_rule_with_start(_rule.to_ical().decode())
             rule.rrule(self.rrule)
@@ -198,7 +198,7 @@ class RepeatedEvent:
         rule.rdate(self.start)
 
     def create_rule_with_start(self, rule_string):
-        """Helper to create an rrule from a rule_string starting at the start of the event.
+        """Helper to create an rrule from a rule_string starting at the start of the component.
 
         Since the creation is a bit more complex, this function handles special cases.
         """
@@ -284,12 +284,12 @@ class RepeatedEvent:
         return dt
 
     def within_days(self, span_start, span_stop):
-        """Yield event Repetitions between the start (inclusive) and end (exclusive) of the time span."""
+        """Yield component Repetitions between the start (inclusive) and end (exclusive) of the time span."""
         # make dates comparable, rrule converts them to datetimes
         span_start = convert_to_datetime(span_start, self.tzinfo)
         span_stop = convert_to_datetime(span_stop, self.tzinfo)
         if compare_greater(span_start, self.start):
-            # do not exclude an event if it spans across the time span
+            # do not exclude an component if it spans across the time span
             span_start -= self.duration
         # NOTE: If in the following line, we get an error, datetime and date
         # may still be mixed because RDATE, EXDATE, start and rule.
@@ -306,10 +306,11 @@ class RepeatedEvent:
                 continue
             stop = start + self.duration
             yield Repetition(
-                self.event,
+                self.component,
                 self.convert_to_original_type(start),
                 self.convert_to_original_type(stop),
                 self.keep_recurrence_attributes,
+                self.end_prop
             )
 
     def convert_to_original_type(self, date):
@@ -318,26 +319,16 @@ class RepeatedEvent:
         Dates may get converted to datetimes to make calculations possible.
         This reverts the process where possible so that Repetitions end
         up with the type (date/datetime) that was specified in the icalendar
-        Event.
+        component.
         """
         if not isinstance(self.original_start, datetime.datetime) and \
                 not isinstance(self.original_end, datetime.datetime):
             return convert_to_date(date)
         return date
 
-    def _get_event_end(self):
-        """Calculate the end of the event based on DTSTART, DTEND and DURATION."""
-        end = self.event.get("DTEND")
-        if end is not None:
-            return end.dt
-        duration = self.event.get("DURATION")
-        if duration is not None:
-            return self.event["DTSTART"].dt + duration.dt
-        return self.event["DTSTART"].dt
-
     def is_recurrence(self):
         """Whether this is a recurrence/modification of an event."""
-        return "RECURRENCE-ID" in self.event
+        return "RECURRENCE-ID" in self.component
 
     def as_single_event(self):
         """Return as a singe event with no recurrences."""
@@ -345,6 +336,94 @@ class RepeatedEvent:
             return repetition
 
 
+class RepeatedEvent(RepeatedComponent):
+    """An event with repetitions created from an icalendar event."""
+    end_prop = 'DTEND'
+
+    def _get_component_start(self):
+        """Return DTSTART"""
+        ## Arguably, it may be considered a feature that this breaks if no DTSTART is set
+        return self.component['DTSTART'].dt
+    
+    def _get_component_end(self):
+        """Yield DTEND or calculate the end of the event based on DTSTART and DURATION."""
+        ## an even may have DTEND or DURATION, but not both
+        end = self.component.get("DTEND")
+        if end is not None:
+            return end.dt
+        duration = self.component.get("DURATION")
+        if duration is not None:
+            return self.component["DTSTART"].dt + duration.dt
+        return self.component["DTSTART"].dt
+
+class RepeatedTodo(RepeatedComponent):
+    end_prop = 'DUE'
+
+    def _get_component_start(self):
+        """Return DTSTART if it set, do not panic if it's not set."""
+        ## easy case - DTSTART set
+        start = self.component.get('DTSTART')
+        if start is not None:
+            return start.dt
+        ## Tasks may have DUE set, but no DTSTART.
+        ## Let's assume 0 duration and return the DUE
+        due = self.component.get('DUE')
+        if due is not None:
+            return due.dt
+        
+        ## Assume infinite time span if neither is given
+        ## (see the comments under _get_event_end)
+        return datetime.date(*DATE_MIN)
+
+    def _get_component_end(self):
+        """Return DUE or DTSTART+DURATION or something"""
+        ## Easy case - DUE is set
+        end = self.component.get('DUE')
+        if end is not None:
+            return end.dt
+        
+        dtstart = self.component.get("DTSTART")
+        
+        ## DURATION can be specified instead of DUE.
+        duration = self.component.get("DURATION")
+        ## It is no requirement that DTSTART is set.
+        ## Perhaps duration is a time estimate rather than an indirect
+        ## way to set DUE.
+        if duration is not None and dtstart is not None:
+            return self.component["DTSTART"].dt + duration.dt
+        
+        ## According to the RFC, a VEVENT without an end/duration
+        ## is to be considered to have zero duration.  Assuming the
+        ## same applies to VTODO.
+        if dtstart:
+            return dtstart.dt
+        
+        ## The RFC says this about VTODO:
+        ## > A "VTODO" calendar component without the "DTSTART" and "DUE" (or
+        ## > "DURATION") properties specifies a to-do that will be associated
+        ## > with each successive calendar date, until it is completed.
+        ## It can be interpreted in different ways, though probably it may
+        ## be considered equivalent with a DTSTART in the infinite past and DUE
+        ## in the infinite future?
+        return datetime.date(*DATE_MAX)
+
+class RepeatedJournal(RepeatedComponent):
+    end_prop = ''
+
+    def _get_component_start(self):
+        """Return DTSTART if it set, do not panic if it's not set."""
+        ## according to the specification, DTSTART in a VJOURNAL is optional
+        dtstart = self.component.get("DTSTART")
+        if dtstart is not None:
+            return dtstart.dt
+        return datetime.date(*DATE_MIN)
+
+    ## VJOURNAL cannot have a DTEND.  We should consider a VJOURNAL to
+    ## describe one day if DTSTART is a date, and we can probably
+    ## consider it to have zero duration if a timestamp is given.
+    _get_component_end = _get_component_start
+
+    
 # The minimum value accepted as date (pytz + zoneinfo)
 DATE_MIN = (1970, 1, 1)
 # The maximum value accepted as date (pytz + zoneinfo)
@@ -360,6 +439,10 @@ class UnfoldableCalendar:
         self.repetitions = []
         for event in calendar.walk("VEVENT"):
             self.repetitions.append(RepeatedEvent(event, keep_recurrence_attributes))
+        for event in calendar.walk("VTODO"):
+            self.repetitions.append(RepeatedTodo(event, keep_recurrence_attributes))
+        for event in calendar.walk("VJOURNAL"):
+            self.repetitions.append(RepeatedJournal(event, keep_recurrence_attributes))
 
     @staticmethod
     def to_datetime(date):
