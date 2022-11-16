@@ -19,7 +19,7 @@ Recurring ICal events for Python
 
 
 ICal has some complexity to it:
-Events can be repeated, removed from the feed and edited later on.
+Events, TODOs and Journal entries can be repeated, removed from the feed and edited later on.
 This tool takes care of these circumstances.
 
 Let's put our expertise together and build a tool that can solve this!
