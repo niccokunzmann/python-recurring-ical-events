@@ -39,5 +39,4 @@ assignees: ''
     https://github.com/niccokunzmann/python-recurring-ical-events/blob/f4a90b211f30bf0522f03514ba50eb69826f0fdb/test/calendars/issue-15-duplicated-events.ics#L1
 - [ ] add a test, example:
     https://github.com/niccokunzmann/python-recurring-ical-events/blob/f4a90b211f30bf0522f03514ba50eb69826f0fdb/test/test_issue_15.py#L21
-- [ ] implement the test
-- [ ] fix the test
+- [ ] fix the bug and ensure the test code passes
