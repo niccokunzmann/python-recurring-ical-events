@@ -152,6 +152,29 @@ However, these attributes may differ from the source event:
   They are **not** included in repeated events, see `Issue 23 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/23>`_.
   To change this, use ``of(calendar, keep_recurrence_attributes=True)``.
 
+Different Components, not just Events
+*************************************
+
+By default the ``recurring_ical_events`` only selects events as the name already implies.
+However, there are different components available in a calendar.
+You can select which components you like to have returned by passing ``components`` to the ``of`` function:
+
+.. code:: Python
+
+    of(a_calendar, components=["VEVENT"])
+
+Here is a template code for choosing the supported types of components:
+
+.. code:: Python
+
+   events = recurring_ical_events.of(calendar).between(...)
+   journals = recurring_ical_events.of(calendar, components=["VJOURNAL"]).between(...)
+   todos = recurring_ical_events.of(calendar, components=["VTODO"]).between(...)
+   all = recurring_ical_events.of(calendar, components=["VTODO", "VEVENT", "VJOURNAL"]).between(...)
+
+If a type of component is not listed here, it can be added.
+Please create an issue for this in the source code repository.
+
 Speed
 *****
 
@@ -252,6 +275,11 @@ how to go about it.
 
 Changelog
 ---------
+
+- v2.0.0b
+
+  - Only return ``VEVENT`` by default. Add ``of(... ,components=...)`` parameter to select which kinds of components should be returned. See `Issue 101 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/101>`_.
+  - Remove ``beta`` indicator. This library works okay: Feature requests come in, not so much bug reports.
 
 - v1.1.0b
 
