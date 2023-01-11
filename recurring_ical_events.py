@@ -429,20 +429,29 @@ DATE_MIN = (1970, 1, 1)
 # The maximum value accepted as date (pytz + zoneinfo)
 DATE_MAX = (2038, 1, 1)
 
+class UnsupportedComponent(ValueError):
+    """This error is raised when a component is not supported, yet."""
+
 
 class UnfoldableCalendar:
     '''A calendar that can unfold its events at a certain time.'''
+    
+    recurrence_calculators = {
+        "VEVENT": RepeatedEvent,
+        "VTODO": RepeatedTodo,
+        "VJOURNAL": RepeatedJournal,
+    }
 
-    def __init__(self, calendar, keep_recurrence_attributes=False):
+    def __init__(self, calendar, keep_recurrence_attributes=False, components=["VEVENT"]):
         """Create an unfoldable calendar from a given calendar."""
         assert calendar.get("CALSCALE", "GREGORIAN") == "GREGORIAN", "Only Gregorian calendars are supported." # https://www.kanzaki.com/docs/ical/calscale.html
         self.repetitions = []
-        for event in calendar.walk("VEVENT"):
-            self.repetitions.append(RepeatedEvent(event, keep_recurrence_attributes))
-        for event in calendar.walk("VTODO"):
-            self.repetitions.append(RepeatedTodo(event, keep_recurrence_attributes))
-        for event in calendar.walk("VJOURNAL"):
-            self.repetitions.append(RepeatedJournal(event, keep_recurrence_attributes))
+        for component_name in components:
+            if component_name not in self.recurrence_calculators:
+                raise UnsupportedComponent(f"\"{component_name}\" is an unknown name for a component. I only know these: {', '.join(self.recurrence_calculators)}.")
+            for event in calendar.walk(component_name):
+                recurrence_calculator = self.recurrence_calculators[component_name]
+                self.repetitions.append(recurrence_calculator(event, keep_recurrence_attributes))
 
     @staticmethod
     def to_datetime(date):
@@ -566,8 +575,13 @@ class UnfoldableCalendar:
 
         return events
 
-def of(a_calendar, keep_recurrence_attributes=False):
-    """Unfold recurring events of a_calendar"""
+def of(a_calendar, keep_recurrence_attributes=False, components=["VEVENT"]):
+    """Unfold recurring events of a_calendar
+    
+    - a_calendar is an icalendar VCALENDAR component or something like that.
+    - keep_recurrence_attributes - whether to keep attributes that are only used to calculate the recurrence.
+    - components is a list of component type names of which the recurrences should be returned.
+    """
     a_calendar = x_wr_timezone.to_standard(a_calendar)
-    return UnfoldableCalendar(a_calendar, keep_recurrence_attributes)
+    return UnfoldableCalendar(a_calendar, keep_recurrence_attributes, components)
 

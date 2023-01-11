@@ -26,9 +26,12 @@ CALENDARS_FOLDER = os.path.join(HERE, "calendars")
 time.tzset()
 
 class ICSCalendars:
-    """A collection of parsed ICS calendars"""
+    """A collection of parsed ICS calendars
+    
+    components is the argument to pass to the of function"""
 
     Calendar = icalendar.Calendar
+    components = None
 
     def get_calendar(self, content):
         """Return the calendar given the content."""
@@ -45,6 +48,12 @@ class ICSCalendars:
         """Make the datetime consistent with the time zones used in these calendars."""
         assert dt.tzinfo is None or "pytz" in dt.tzinfo.__class__.__module__, "We need pytz time zones for now."
         return dt
+        
+    def _of(self, calendar):
+        """Return the calendar but also with selected components."""
+        if self.components is None:
+            return of(calendar)
+        return of(calendar, components=self.components)
 
 for calendar_file in os.listdir(CALENDARS_FOLDER):
     calendar_path = os.path.join(CALENDARS_FOLDER, calendar_file)
@@ -61,7 +70,7 @@ class Calendars(ICSCalendars):
     """Collection of calendars from recurring_ical_events"""
 
     def get_calendar(self, content):
-        return of(ICSCalendars.get_calendar(self, content))
+        return self._of(ICSCalendars.get_calendar(self, content))
 
 class ReversedCalendars(ICSCalendars):
     """All test should run in reversed item order.
@@ -78,7 +87,7 @@ class ReversedCalendars(ICSCalendars):
             """Return properties in reversed order."""
             return reversed(_walk(*args, **kw))
         calendar.walk = walk
-        return of(calendar)
+        return self._of(calendar)
 
 
 class ZoneInfoConverter(CalendarWalker):
@@ -105,7 +114,7 @@ class ZoneInfoCalendars(ICSCalendars):
         zoneinfo_calendar = self.changer.walk(calendar)
 #        if zoneinfo_calendar is calendar:
 #            pytest.skip("ZoneInfo not in use. Already tested..")
-        return of(zoneinfo_calendar)
+        return self._of(zoneinfo_calendar)
 
     def consistent_tz(self, dt):
         """To make the time zones consistent with this one, convert them to zoneinfo."""
