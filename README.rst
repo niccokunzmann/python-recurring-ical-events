@@ -276,6 +276,11 @@ how to go about it.
 Changelog
 ---------
 
+- v2.0.0b
+
+  - Only return ``VEVENT`` by default. Add ``of(... ,components=...)`` parameter to select which kinds of components should be returned. See `Issue 101 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/101>`_.
+  - Remove ``beta`` indicator. This library works okay: Feature requests come in, not so much bug reports.
+
 - v1.1.0b
 
   - Add repeated TODOs and Journals. See `Pull Request 100 <https://github.com/niccokunzmann/python-recurring-ical-events/pull/100>`_ and `Issue 97 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/97>`_.
