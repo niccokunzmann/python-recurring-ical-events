@@ -186,6 +186,13 @@ class RepeatedComponent:
         self.rule = rule = rruleset(cache=True)
         _rule = component.get("RRULE", None)
         if _rule:
+            # We don't support multiple RRULE yet, but we can support cases
+            # where the same RRULE is erroneously repeated
+            if isinstance(_rule, list):
+                if len(_rule) > 0 and all(part == _rule[0] for part in _rule):
+                    _rule = _rule[0]
+                else:
+                    raise ValueError("Don't yet support multiple distinct RRULE properties")
             self.rrule = self.create_rule_with_start(_rule.to_ical().decode())
             rule.rrule(self.rrule)
         else:
