@@ -237,13 +237,13 @@ class RepeatedComponent:
 
     def rrulestr(self, rule_string):
         """Return an rrulestr with a start. This might fail."""
-        rule = rrulestr(rule_string, dtstart=self.start)
+        rule = rrulestr(rule_string, dtstart=self.start, cache=True)
         rule.string = rule_string
         return rule
 
     _until = UNTIL_NOT_SET = "NOT_SET"
     def get_rrule_until(self):
-        """Return the UNTIL datetime of the rrule or None is absent."""
+        """Return the UNTIL datetime of the rrule or None if absent."""
         if self._until is not self.UNTIL_NOT_SET:
             return self._until
         self._until = None
