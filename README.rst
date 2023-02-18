@@ -276,6 +276,10 @@ how to go about it.
 Changelog
 ---------
 
+- v2.0.1
+
+  - Fixed crasher with duplicate RRULE. See `Pull Request 104 <https://github.com/niccokunzmann/python-recurring-ical-events/pull/104>`_
+
 - v2.0.0b
 
   - Only return ``VEVENT`` by default. Add ``of(... ,components=...)`` parameter to select which kinds of components should be returned. See `Issue 101 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/101>`_.

@@ -186,6 +186,13 @@ class RepeatedComponent:
         self.rule = rule = rruleset(cache=True)
         _rule = component.get("RRULE", None)
         if _rule:
+            # We don't support multiple RRULE yet, but we can support cases
+            # where the same RRULE is erroneously repeated
+            if isinstance(_rule, list):
+                if len(_rule) > 0 and all(part == _rule[0] for part in _rule):
+                    _rule = _rule[0]
+                else:
+                    raise ValueError("Don't yet support multiple distinct RRULE properties")
             self.rrule = self.create_rule_with_start(_rule.to_ical().decode())
             rule.rrule(self.rrule)
         else:
@@ -230,7 +237,7 @@ class RepeatedComponent:
 
     def rrulestr(self, rule_string):
         """Return an rrulestr with a start. This might fail."""
-        rule = rrulestr(rule_string, dtstart=self.start)
+        rule = rrulestr(rule_string, dtstart=self.start, cache=True)
         rule.string = rule_string
         rule.until = until = self._get_rrule_until(rule)
         if is_pytz(self.start.tzinfo) and rule.until:
@@ -242,7 +249,7 @@ class RepeatedComponent:
         return rule
 
     def _get_rrule_until(self, rrule):
-        """Return the UNTIL datetime of the rrule or None is absent."""
+        """Return the UNTIL datetime of the rrule or None if absent."""
         rule_list = rrule.string.split(";UNTIL=")
         if len(rule_list) == 1:
             return None
