@@ -232,17 +232,18 @@ class RepeatedComponent:
         """Return an rrulestr with a start. This might fail."""
         rule = rrulestr(rule_string, dtstart=self.start)
         rule.string = rule_string
+        rule.until = until = self._get_rrule_until(rule)
+        if is_pytz(self.start.tzinfo) and rule.until:
+            # when starting in a time zone that is one hour off to the end,
+            # we might miss the last occurence
+            # see issue 107 and test/test_issue_107_omitting_last_event.py
+            rule = rule.replace(until=rule.until + datetime.timedelta(hours=1))
+            rule.until = until
         return rule
 
-    _until = UNTIL_NOT_SET = "NOT_SET"
-    def get_rrule_until(self):
+    def _get_rrule_until(self, rrule):
         """Return the UNTIL datetime of the rrule or None is absent."""
-        if self._until is not self.UNTIL_NOT_SET:
-            return self._until
-        self._until = None
-        if self.rrule is None:
-            return None
-        rule_list = self.rrule.string.split(";UNTIL=")
+        rule_list = rrule.string.split(";UNTIL=")
         if len(rule_list) == 1:
             return None
         assert len(rule_list) == 2, "There should be only one UNTIL."
@@ -250,8 +251,8 @@ class RepeatedComponent:
         if date_end_index == -1:
             date_end_index = len(rule_list[1])
         until_string = rule_list[1][:date_end_index]
-        self._until = vDDDTypes.from_ical(until_string)
-        return self._until
+        until = vDDDTypes.from_ical(until_string)
+        return until
 
     def make_all_dates_comparable(self):
         """Make sure we can use all dates with eachother.
@@ -299,8 +300,7 @@ class RepeatedComponent:
                 start = start.tzinfo.localize(start.replace(tzinfo=None))
                 # We could now well be out of bounce of the end of the UNTIL
                 # value. This is tested by test/test_issue_20_exdate_ignored.py.
-                until = self.get_rrule_until()
-                if until is not None and start > until and start not in self.rdates:
+                if self.rrule is not None and self.rrule.until is not None and start > self.rrule.until and start not in self.rdates:
                     continue
             if self._unify_exdate(start) in self.exdates_utc:
                 continue

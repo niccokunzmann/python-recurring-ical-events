@@ -5,6 +5,7 @@ Using a calendar application, I created a weekly event series in Pacific Standar
 Upon further investigation, it seems to just be an issue for a recurring event series that begin in standard time but end in daylight savings time.
 
 see https://github.com/niccokunzmann/python-recurring-ical-events/issues/107
+see also test_issue_20_exdate_ignored.py - same problem with pytz
 """
 import datetime
 
