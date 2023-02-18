@@ -276,6 +276,10 @@ how to go about it.
 Changelog
 ---------
 
+- v2.0.2
+
+  - Fixed omitting last event of ``RRULE`` with ``UNTIL`` when using ``pytz``, the event starting in winter time and ending in summer time. See `Issue 107 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/107>`_.
+
 - v2.0.1
 
   - Fixed crasher with duplicate RRULE. See `Pull Request 104 <https://github.com/niccokunzmann/python-recurring-ical-events/pull/104>`_
