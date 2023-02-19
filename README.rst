@@ -220,41 +220,24 @@ Consider donating money to open-source as everyone benefits.
 Development
 -----------
 
-1. Optional: Install virtualenv and Python3 and create a virtual environment.
+To run the tests, we use ``tox``.
+``tox`` tests all different Python versions which we want to  be compatible to.
 
-   .. code-block:: shell
+.. code-block:: shell
 
-       virtualenv -p python3 ENV
-       source ENV/bin/activate
+   pip3 install tox
 
-2. Install the packages.
+To run all the tests:
 
-   .. code-block:: shell
+.. code-block:: shell
 
-       pip install -r requirements.txt -r test-requirements.txt
+   tox
 
-3. Run the tests
+To run the tests in a specific Python version:
 
-   .. code-block:: shell
+.. code-block:: shell
 
-       pytest
-
-New Releases
-------------
-
-To release new versions,
-
-1. edit the Changelog Section
-2. edit setup.py, the ``__version__`` variable
-3. create a commit and push it
-4. Wait for `GitHub Actions <https://github.com/niccokunzmann/python-recurring-ical-events/actions>`_ to finish the build.
-5. run
-
-   .. code-block:: shell
-
-       python3 setup.py tag_and_deploy
-
-6. notify the issues about their release
+   tox -e py39
 
 Testing
 *******
@@ -272,6 +255,23 @@ generate the desired output, you can add it to the ``test/calendars``
 folder and write tests for what you expect.
 If you like, `open an issue <https://github.com/niccokunzmann/python-recurring-ical-events/issues>`_ first, e.g. to discuss the changes and
 how to go about it.
+
+New Releases
+------------
+
+To release new versions,
+
+1. edit the Changelog Section
+2. edit setup.py, the ``__version__`` variable
+3. create a commit and push it
+4. Wait for `GitHub Actions <https://github.com/niccokunzmann/python-recurring-ical-events/actions>`_ to finish the build.
+5. run
+
+   .. code-block:: shell
+
+       python3 setup.py tag_and_deploy
+
+6. notify the issues about their release
 
 Changelog
 ---------
