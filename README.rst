@@ -53,6 +53,16 @@ Installation
 
     pip install recurring-ical-events
 
+Support
+-------
+
+- `Support using GitHub Sponsors <https://github.com/sponsors/niccokunzmann>`_
+- `Support using Open Collective <https://opencollective.com/open-web-calendar/>`_
+- `Support using thanks.dev <https://thanks.dev>`_
+
+We accept donations to sustain our work, once or regular.
+Consider donating money to open-source as everyone benefits.
+
 Example
 -------
 
@@ -202,20 +212,6 @@ The version numbers are handeled this way: ``a.b.c`` example: ``0.1.12``
 
 So, I recommend to version-fix this library to stay with the same ``a``
 while ``b`` and ``c`` can change.
-
-Support
--------
-
-.. image:: https://img.shields.io/opencollective/all/open-web-calendar?label=support%20on%20open%20collective
-   :target: https://opencollective.com/open-web-calendar/
-   :alt: Support on Open Collective
-
-This library is part of the
-`Open Web Calendar Collective <https://opencollective.com/open-web-calendar/>`_.
-We accept donations to sustain our work, once or regular.
-Open Collective makes it easy for you to give and
-for us to receive.
-Consider donating money to open-source as everyone benefits.
 
 Development
 -----------
