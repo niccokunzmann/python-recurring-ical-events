@@ -147,7 +147,7 @@ For examples, see ``at(a_date)`` above.
 
     events = recurring_ical_events.of(an_icalendar_object).between(start, end)
 
-The resulting ``events`` are in a list of `icalendar events <https://icalendar.readthedocs.io/en/latest/api.html#icalendar.cal.Event>`_, see below.
+The resulting ``events`` are in a list of `icalendar events`_, see below.
 
 ``events`` as list
 ******************
