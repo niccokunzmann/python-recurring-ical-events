@@ -152,7 +152,7 @@ The resulting ``events`` are in a list of `icalendar events`_, see below.
 ``events`` as list
 ******************
 
-The result of both ``between(start, end)`` and ``at(a_date)`` is a list of `icalendar events <https://icalendar.readthedocs.io/en/latest/api.html#icalendar.cal.Event>`_.
+The result of both ``between(start, end)`` and ``at(a_date)`` is a list of `icalendar events`_.
 By default, all attributes of the event with repetitions are copied, like ``UID`` and ``SUMMARY``.
 However, these attributes may differ from the source event:
 
