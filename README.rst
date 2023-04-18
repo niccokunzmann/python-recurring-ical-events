@@ -101,7 +101,7 @@ Usage
 -----
 
 The `icalendar <https://pypi.org/project/icalendar/>`_ module is responsible for parsing and converting calendars.
-The `recurring_ical_events <https://pypi.org/project/recurring-ical-events/>`_ module uses such a calendar and creates all repetitions of its events within a time span.
+The `recurring_ical_events <https://pypi.org/project/recurring-ical-events/>`_ module uses such a `calendar`_ and creates all repetitions of its events within a time span.
 
 To import this module, write 
 
@@ -134,7 +134,7 @@ The start and end are inclusive. As an example: if an event is longer than one d
     
     events = recurring_ical_events.of(an_icalendar_object).at(a_date)
 
-The resulting ``events`` are a list of icalendar events, see below.
+The resulting ``events`` are a list of `icalendar events <https://icalendar.readthedocs.io/en/latest/api.html#icalendar.cal.Event>`_, see below.
 
 ``between(start, end)``
 ***********************
@@ -147,18 +147,18 @@ For examples, see ``at(a_date)`` above.
 
     events = recurring_ical_events.of(an_icalendar_object).between(start, end)
 
-The resulting ``events`` are in a list, see below.
+The resulting ``events`` are in a list of `icalendar events <https://icalendar.readthedocs.io/en/latest/api.html#icalendar.cal.Event>`_, see below.
 
 ``events`` as list
 ******************
 
-The result of both ``between(start, end)`` and ``at(a_date)`` is a list of `icalendar`_ events.
-By default, all attributes of the event with repetitions are copied, like UID and SUMMARY.
+The result of both ``between(start, end)`` and ``at(a_date)`` is a list of `icalendar events <https://icalendar.readthedocs.io/en/latest/api.html#icalendar.cal.Event>`_.
+By default, all attributes of the event with repetitions are copied, like ``UID`` and ``SUMMARY``.
 However, these attributes may differ from the source event:
 
-* **DTSTART** which is the start of the event instance. (always present)
-* **DTEND** which is the end of the event instance. (always present)
-* **RDATE**, **EXDATE**, **RRULE** are the rules to create event repetitions.
+* ``DTSTART`` which is the start of the event instance. (always present)
+* ``DTEND`` which is the end of the event instance. (always present)
+* ``RDATE``, ``EXDATE``, ``RRULE`` are the rules to create event repetitions.
   They are **not** included in repeated events, see `Issue 23 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/23>`_.
   To change this, use ``of(calendar, keep_recurrence_attributes=True)``.
 
@@ -166,7 +166,7 @@ Different Components, not just Events
 *************************************
 
 By default the ``recurring_ical_events`` only selects events as the name already implies.
-However, there are different components available in a calendar.
+However, there are different `components <https://icalendar.readthedocs.io/en/latest/api.html#icalendar.cal.Component>`_ available in a `calendar <https://icalendar.readthedocs.io/en/latest/api.html#icalendar.cal.Calendar>`_.
 You can select which components you like to have returned by passing ``components`` to the ``of`` function:
 
 .. code:: Python
