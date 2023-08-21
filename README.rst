@@ -57,6 +57,7 @@ Support
 -------
 
 - `Support using GitHub Sponsors <https://github.com/sponsors/niccokunzmann>`_
+- `Fund specific issues using Polar <https://polar.sh/niccokunzmann/python-recurring-ical-events>`_
 - `Support using Open Collective <https://opencollective.com/open-web-calendar/>`_
 - `Support using thanks.dev <https://thanks.dev>`_
 
