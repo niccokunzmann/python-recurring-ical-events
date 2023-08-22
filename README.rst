@@ -17,6 +17,11 @@ Recurring ICal events for Python
    :target: https://opencollective.com/open-web-calendar/
    :alt: Support on Open Collective
 
+.. image:: https://img.shields.io/github/issues/niccokunzmann/python-recurring-ical-events/polar?label=issues%20seek%20funding&color=%23374e96
+   :target: https://polar.sh/niccokunzmann/python-recurring-ical-events
+   :alt: issues seek funding
+
+
 
 ICal has some complexity to it:
 Events, TODOs and Journal entries can be repeated, removed from the feed and edited later on.
