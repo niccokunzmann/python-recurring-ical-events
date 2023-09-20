@@ -1,5 +1,6 @@
-icalendar
-pytz
+icalendar>=5.0.9
+icalendar<6.0.0
+pytz>=2023.3
 python-dateutil>=2.8.1
 x-wr-timezone < 1.0.0 
 x-wr-timezone >= 0.0.5

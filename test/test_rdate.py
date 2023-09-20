@@ -70,19 +70,6 @@ def test_rdate_and_rrule_can_be_excluded_by_exdate(calendars):
     events = calendars.rdate.at("20150705")
     assert len(events) == 0
 
-def test_period_as_rdate(todo):
-    """Test the PERIOD type.
-
-    Value Type:  The default value type for this property is DATE-TIME.
-       The value type can be set to DATE or PERIOD.
-
-    If the "RDATE" property is
-    specified as a PERIOD value the duration of the recurrence
-    instance will be the one specified by the "RDATE" property, and
-    not the duration of the recurrence instance defined by the
-    "DTSTART" property.
-    """
-
 def test_rdate_occurs_multiple_times(calendars):
     """An event can not only have an RDATE once but also many of them."""
     events = calendars.rdate_hackerpublicradio.all()

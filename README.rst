@@ -266,7 +266,7 @@ To release new versions,
 1. edit the Changelog Section
 2. edit setup.py, the ``__version__`` variable
 3. create a commit and push it
-4. Wait for `GitHub Actions <https://github.com/niccokunzmann/python-recurring-ical-events/actions>`_ to finish the build.
+4. wait for `GitHub Actions <https://github.com/niccokunzmann/python-recurring-ical-events/actions>`_ to finish the build
 5. run
 
    .. code-block:: shell
@@ -277,6 +277,12 @@ To release new versions,
 
 Changelog
 ---------
+
+- v2.1.0
+
+  - Added support for PERIOD values in RDATE. See `Issue 113 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/113>`_.
+  - Fixed ``icalendar>=5.0.9`` to support ``RDATE`` of type ``PERIOD`` with a time zone.
+  - Fixed ``pytz>=2023.3`` to assure compatibility.
 
 - v2.0.2
 

@@ -169,6 +169,7 @@ class RepeatedComponent:
         self.keep_recurrence_attributes = keep_recurrence_attributes
         self.exdates = []
         self.exdates_utc = set()
+        self.replace_ends = {}  # DTSTART -> DTEND # for periods
         exdates = component.get("EXDATE", [])
         for exdates in ((exdates,) if not isinstance(exdates, list) else exdates):
             for exdate in exdates.dts:
@@ -178,7 +179,13 @@ class RepeatedComponent:
         rdates = component.get("RDATE", [])
         for rdates in ((rdates,) if not isinstance(rdates, list) else rdates):
             for rdate in rdates.dts:
-                self.rdates.append(rdate.dt)
+                if isinstance(rdate.dt, tuple):
+                    # we have a period as rdate
+                    self.rdates.append(rdate.dt[0])
+                    self.replace_ends[timestamp(rdate.dt[0])] = rdate.dt[1]
+                else:
+                    # we have a date/datetime
+                    self.rdates.append(rdate.dt)
 
         self.make_all_dates_comparable()
 
@@ -242,7 +249,7 @@ class RepeatedComponent:
         rule.until = until = self._get_rrule_until(rule)
         if is_pytz(self.start.tzinfo) and rule.until:
             # when starting in a time zone that is one hour off to the end,
-            # we might miss the last occurence
+            # we might miss the last occurrence
             # see issue 107 and test/test_issue_107_omitting_last_event.py
             rule = rule.replace(until=rule.until + datetime.timedelta(hours=1))
             rule.until = until
@@ -266,7 +273,7 @@ class RepeatedComponent:
 
         Dates may be mixed and we have many of them.
         - date
-        - datetime without timezome
+        - datetime without timezone
         - datetime with timezone
         These three are not comparable but can be converted.
         """
@@ -311,7 +318,7 @@ class RepeatedComponent:
                     continue
             if self._unify_exdate(start) in self.exdates_utc:
                 continue
-            stop = start + self.duration
+            stop = self.replace_ends.get(timestamp(start), start + self.duration)
             yield Repetition(
                 self.component,
                 self.convert_to_original_type(start),
