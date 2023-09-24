@@ -11,7 +11,7 @@ PACKAGE_NAME = "recurring_ical_events"
 HERE = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, HERE)  # for package import
 
-__version__ = "2.0.2"
+__version__ = "2.0.3"
 __author__ = 'Nicco Kunzmann'
 
 
@@ -124,7 +124,6 @@ SETUPTOOLS_METADATA = dict(
         'License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)',
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: Utilities',
-        'Intended Audience :: Developers',
         'Natural Language :: English',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 3',
