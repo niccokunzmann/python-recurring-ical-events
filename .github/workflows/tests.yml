@@ -14,11 +14,12 @@ jobs:
     strategy:
       matrix:
         config:
-        # [Python version, tox env]
+        # [Python version, tox env, timezone]
         - ["3.7",   "py37",  "Europe/Berlin"]
         - ["3.8",   "py38",  "Australia/Sydney"]
         - ["3.9",   "py39",  "UTC"]
         - ["3.10",  "py310", "Asia/Singapore"]
+        - ["3.11",  "py311", "Asia/Singapore"]
 
     runs-on: ubuntu-latest
     name: ${{ matrix.config[1] }}

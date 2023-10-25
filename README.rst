@@ -278,6 +278,10 @@ To release new versions,
 Changelog
 ---------
 
+- v2.1.1
+
+  - Claim and test support for Python 3.11.
+
 - v2.1.0
 
   - Added support for PERIOD values in RDATE. See `Issue 113 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/113>`_.
