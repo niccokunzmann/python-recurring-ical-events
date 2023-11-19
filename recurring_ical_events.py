@@ -19,6 +19,7 @@ import sys
 import x_wr_timezone
 from collections import defaultdict
 from icalendar.prop import vDDDTypes
+from typing import Optional
 
 if sys.version_info[0] == 2:
     # Python2 has no ZoneInfo. We can assume that pytz is used.
@@ -33,7 +34,7 @@ if sys.version_info[0] == 2:
 else:
     def timestamp(dt):
         """Return the time stamp of a datetime"""
-        return dt.timestamp() 
+        return dt.timestamp()
 
 def convert_to_date(date):
     """converts a date or datetime to a date"""
@@ -156,7 +157,7 @@ class Repetition:
 
 class RepeatedComponent:
     """Base class for RepeatedEvent, RepeatedJournal and RepeatedTodo"""
-    
+
     def __init__(self, component, keep_recurrence_attributes=False):
         """Create an component which may have repetitions in it.
 
@@ -209,7 +210,8 @@ class RepeatedComponent:
             rule.exdate(exdate)
         for rdate in self.rdates:
             rule.rdate(rdate)
-        rule.rdate(self.start)
+        if not self.rrule or not self.rrule.until or not compare_greater(self.start, self.rrule.until):
+            rule.rdate(self.start)
 
     def create_rule_with_start(self, rule_string):
         """Helper to create an rrule from a rule_string starting at the start of the component.
@@ -344,7 +346,7 @@ class RepeatedComponent:
         """Whether this is a recurrence/modification of an event."""
         return "RECURRENCE-ID" in self.component
 
-    def as_single_event(self):
+    def as_single_event(self) -> Optional[Repetition]:
         """Return as a singe event with no recurrences."""
         for repetition in self.within_days(self.start, self.start):
             return repetition
@@ -358,7 +360,7 @@ class RepeatedEvent(RepeatedComponent):
         """Return DTSTART"""
         ## Arguably, it may be considered a feature that this breaks if no DTSTART is set
         return self.component['DTSTART'].dt
-    
+
     def _get_component_end(self):
         """Yield DTEND or calculate the end of the event based on DTSTART and DURATION."""
         ## an even may have DTEND or DURATION, but not both
@@ -384,7 +386,7 @@ class RepeatedTodo(RepeatedComponent):
         due = self.component.get('DUE')
         if due is not None:
             return due.dt
-        
+
         ## Assume infinite time span if neither is given
         ## (see the comments under _get_event_end)
         return datetime.date(*DATE_MIN)
@@ -395,9 +397,9 @@ class RepeatedTodo(RepeatedComponent):
         end = self.component.get('DUE')
         if end is not None:
             return end.dt
-        
+
         dtstart = self.component.get("DTSTART")
-        
+
         ## DURATION can be specified instead of DUE.
         duration = self.component.get("DURATION")
         ## It is no requirement that DTSTART is set.
@@ -405,13 +407,13 @@ class RepeatedTodo(RepeatedComponent):
         ## way to set DUE.
         if duration is not None and dtstart is not None:
             return self.component["DTSTART"].dt + duration.dt
-        
+
         ## According to the RFC, a VEVENT without an end/duration
         ## is to be considered to have zero duration.  Assuming the
         ## same applies to VTODO.
         if dtstart:
             return dtstart.dt
-        
+
         ## The RFC says this about VTODO:
         ## > A "VTODO" calendar component without the "DTSTART" and "DUE" (or
         ## > "DURATION") properties specifies a to-do that will be associated
@@ -437,7 +439,7 @@ class RepeatedJournal(RepeatedComponent):
     ## consider it to have zero duration if a timestamp is given.
     _get_component_end = _get_component_start
 
-    
+
 # The minimum value accepted as date (pytz + zoneinfo)
 DATE_MIN = (1970, 1, 1)
 # The maximum value accepted as date (pytz + zoneinfo)
@@ -449,7 +451,7 @@ class UnsupportedComponent(ValueError):
 
 class UnfoldableCalendar:
     '''A calendar that can unfold its events at a certain time.'''
-    
+
     recurrence_calculators = {
         "VEVENT": RepeatedEvent,
         "VTODO": RepeatedTodo,
@@ -570,6 +572,8 @@ class UnfoldableCalendar:
         for event_repetitions in self.repetitions:
             if event_repetitions.is_recurrence():
                 repetition = event_repetitions.as_single_event()
+                if repetition is None:
+                    continue
                 vevent = repetition.as_vevent()
                 add_event(vevent)
                 if not repetition.is_in_span(span_start, span_stop):
@@ -591,11 +595,10 @@ class UnfoldableCalendar:
 
 def of(a_calendar, keep_recurrence_attributes=False, components=["VEVENT"]):
     """Unfold recurring events of a_calendar
-    
+
     - a_calendar is an icalendar VCALENDAR component or something like that.
     - keep_recurrence_attributes - whether to keep attributes that are only used to calculate the recurrence.
     - components is a list of component type names of which the recurrences should be returned.
     """
     a_calendar = x_wr_timezone.to_standard(a_calendar)
     return UnfoldableCalendar(a_calendar, keep_recurrence_attributes, components)
-
