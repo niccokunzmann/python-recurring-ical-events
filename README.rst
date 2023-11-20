@@ -109,7 +109,7 @@ Usage
 The `icalendar <https://pypi.org/project/icalendar/>`_ module is responsible for parsing and converting calendars.
 The `recurring_ical_events <https://pypi.org/project/recurring-ical-events/>`_ module uses such a `calendar`_ and creates all repetitions of its events within a time span.
 
-To import this module, write 
+To import this module, write
 
 .. code:: Python
 
@@ -137,7 +137,7 @@ The start and end are inclusive. As an example: if an event is longer than one d
     a_date = datetime.date(2023) # the first day in 2023
     a_date = datetime.date(2023, 1, 1) # the first day in 2023
     a_date = datetime.datetime.now() # this exact second
-    
+
     events = recurring_ical_events.of(an_icalendar_object).at(a_date)
 
 The resulting ``events`` are a list of `icalendar events <https://icalendar.readthedocs.io/en/latest/api.html#icalendar.cal.Event>`_, see below.
@@ -281,6 +281,7 @@ Changelog
 - v2.1.1
 
   - Claim and test support for Python 3.11.
+  - Support deleting events by setting RRULE UNTIL < DTSTART, see `Issue 117 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/117>`__.
 
 - v2.1.0
 
@@ -313,7 +314,7 @@ Changelog
 - v1.0.2b
 
   - Add support for ``X-WR-TIMEZONE`` calendars which contain events without an explicit time zone, see `Issue 86 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/86>`_.
-  
+
 - v1.0.1b
 
   - Add support for ``zoneinfo.ZoneInfo`` time zones, see `Issue 57 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/57>`_.
