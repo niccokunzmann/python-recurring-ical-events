@@ -24,13 +24,13 @@ jobs:
     runs-on: ubuntu-latest
     name: ${{ matrix.config[1] }}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.config[0] }}
     - name: Pip cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ matrix.config[0] }}-${{ hashFiles('setup.*', 'tox.ini') }}
@@ -66,9 +66,9 @@ jobs:
       TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
       TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: "3.9"
     - name: Install dependencies
@@ -94,7 +94,7 @@ jobs:
     - name: deploy to pypi
       run: |
         # You will have to set the variables TWINE_USERNAME and TWINE_PASSWORD
-        # You can use a token specific to your project by setting the user name to 
+        # You can use a token specific to your project by setting the user name to
         # __token__ and the password to the token given to you by the PyPI project.
         # sources:
         #   - https://shambu2k.hashnode.dev/gitlab-to-pypi
