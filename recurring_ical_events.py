@@ -318,7 +318,7 @@ class RepeatedComponent:
                 # value. This is tested by test/test_issue_20_exdate_ignored.py.
                 if self.rrule is not None and self.rrule.until is not None and start > self.rrule.until and start not in self.rdates:
                     continue
-            if self._unify_exdate(start) in self.exdates_utc:
+            if self._unify_exdate(start) in self.exdates_utc or start.date() in self.exdates_utc:
                 continue
             stop = self.replace_ends.get(timestamp(start), start + self.duration)
             yield Repetition(
