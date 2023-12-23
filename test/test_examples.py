@@ -73,3 +73,10 @@ def test_german_holidays(calendars):
     holidays = calendars.Germany_Holidays.at(2020)
     assert len(holidays) == 17
 
+
+def test_exdate_date(calendars):
+    """The EXDATE can be a date, too.
+
+    See https://github.com/niccokunzmann/python-recurring-ical-events/pull/121
+    """
+    assert calendars.date_exclude.at("20231216") == []
