@@ -278,6 +278,10 @@ To release new versions,
 Changelog
 ---------
 
+- v2.1.2
+
+  - Fix RRULE with EXDATE as DATE, see `PR 121 <https://github.com/niccokunzmann/python-recurring-ical-events/pull/121>`__ by Jan Grasnick and `PR 122 <https://github.com/niccokunzmann/python-recurring-ical-events/pull/122>`__.
+
 - v2.1.1
 
   - Claim and test support for Python 3.11.
