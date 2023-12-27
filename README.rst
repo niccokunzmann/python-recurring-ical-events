@@ -278,7 +278,7 @@ To release new versions,
 Changelog
 ---------
 
-- v2.1.3
+- v2.1.3 (unreleased)
 
   - Test and support Python 3.12.
 
