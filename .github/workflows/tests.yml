@@ -19,7 +19,8 @@ jobs:
         - ["3.8",   "py38",  "Australia/Sydney"]
         - ["3.9",   "py39",  "UTC"]
         - ["3.10",  "py310", "Asia/Singapore"]
-        - ["3.11",  "py311", "Asia/Singapore"]
+        - ["3.11",  "py311", "Pacific/Bougainville"]
+        - ["3.12",  "py312", "Europe/London"]
 
     runs-on: ubuntu-latest
     name: ${{ matrix.config[1] }}
