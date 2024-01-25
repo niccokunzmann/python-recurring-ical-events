@@ -41,7 +41,7 @@ METADATA = dict(
     author=__author__,
     author_email='niccokunzmann@rambler.ru',
     description='A Python module which repeats ICalendar events by RRULE, RDATE and EXDATE.',
-    license='LGPLv3+',
+    license='LGPL-3.0-or-later',
     url='https://github.com/niccokunzmann/python-recurring-ical-events',
     keywords='icalendar',
 )
