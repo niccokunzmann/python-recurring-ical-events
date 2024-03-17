@@ -281,6 +281,8 @@ Changelog
 - v2.1.3 (unreleased)
 
   - Test and support Python 3.12.
+  - Change SPDX license header.
+  - Fix RRULE with negative COUNT, see `Issue 128 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/128>`_
 
 - v2.1.2
 
