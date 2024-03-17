@@ -20,6 +20,7 @@ import x_wr_timezone
 from collections import defaultdict
 from icalendar.prop import vDDDTypes
 from typing import Optional
+import re
 
 if sys.version_info[0] == 2:
     # Python2 has no ZoneInfo. We can assume that pytz is used.
@@ -36,9 +37,14 @@ else:
         """Return the time stamp of a datetime"""
         return dt.timestamp()
 
+
+NEGATIVE_RRULE_COUNT_REGEX = re.compile(r"COUNT=-\d+;?")
+
+
 def convert_to_date(date):
     """converts a date or datetime to a date"""
     return datetime.date(date.year, date.month, date.day)
+
 
 def convert_to_datetime(date, tzinfo):
     """converts a date to a datetime"""
@@ -54,6 +60,7 @@ def convert_to_datetime(date, tzinfo):
     elif isinstance(date, datetime.date):
         return datetime.datetime(date.year, date.month, date.day, tzinfo=tzinfo)
     return date
+
 
 def time_span_contains_event(span_start, span_stop, event_start, event_stop, comparable=False):
     """Return whether an event should is included within a time span.
@@ -246,6 +253,7 @@ class RepeatedComponent:
 
     def rrulestr(self, rule_string):
         """Return an rrulestr with a start. This might fail."""
+        rule_string = NEGATIVE_RRULE_COUNT_REGEX.sub("", rule_string) # Issue 128
         rule = rrulestr(rule_string, dtstart=self.start, cache=True)
         rule.string = rule_string
         rule.until = until = self._get_rrule_until(rule)
