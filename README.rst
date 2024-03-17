@@ -278,7 +278,7 @@ To release new versions,
 Changelog
 ---------
 
-- v2.1.3 (unreleased)
+- v2.1.3
 
   - Test and support Python 3.12.
   - Change SPDX license header.
