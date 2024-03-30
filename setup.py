@@ -74,7 +74,7 @@ class TagAndDeployCommand(Command):
     user_options = []
     name = "tag_and_deploy"
     remote = "origin"
-    branch = "master"
+    branch = "main"
 
     def initialize_options(self):
         pass
