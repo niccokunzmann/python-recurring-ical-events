@@ -291,6 +291,10 @@ To release new versions,
 Changelog
 ---------
 
+- v2.2.0
+
+  - Add ``after()`` method to iterate over upcoming events.
+
 - v2.1.3
 
   - Test and support Python 3.12.
