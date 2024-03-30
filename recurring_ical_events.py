@@ -630,14 +630,12 @@ class UnfoldableCalendar:
         time_span = datetime.timedelta(days=1)
         min_time_span = datetime.timedelta(minutes=15)
         earliest_end = self.to_datetime(earliest_end)
-        print()
         done = False
         returned_events = set() # (UID, recurrence-id)
         def cmp_event(event1, event2):
             """cmp for events"""
             return cmp(event1["DTSTART"].dt, event2["DTSTART"].dt)
         while not done:
-            print(f"after {earliest_end} + {time_span}")
             try:
                 next_end = earliest_end + time_span
             except OverflowError:
@@ -648,8 +646,6 @@ class UnfoldableCalendar:
                 done = True
             events = self.between(earliest_end, next_end)
             events.sort(key=functools.cmp_to_key(cmp_event)) # see https://docs.python.org/3/howto/sorting.html#comparison-functions
-            for event in events:
-                print("event: ", event["DTSTART"].to_ical())
             for event in events:
                 event_id = self._get_event_id(event)
                 if event_id not in returned_events:
