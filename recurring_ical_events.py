@@ -452,6 +452,7 @@ class RepeatedJournal(RepeatedComponent):
 DATE_MIN = (1970, 1, 1)
 # The maximum value accepted as date (pytz + zoneinfo)
 DATE_MAX = (2038, 1, 1)
+DATE_MAX_DT = datetime.date(*DATE_MAX)
 
 class UnsupportedComponent(ValueError):
     """This error is raised when a component is not supported, yet."""
@@ -600,6 +601,28 @@ class UnfoldableCalendar:
                 pass
 
         return events
+
+    def after(self, earliest_end : datetime.datetime):
+        """Return an iterator over the next events that happen during or after the earliest_end."""
+        time_span = datetime.timedelta(days=1)
+        print()
+        done = False
+        while not done:
+            print(r"after {earliest_end} + {time_span}")
+            try:
+                next_end = earliest_end + time_span
+            except OverflowError:
+                # We ran to the end
+                next_end = DATE_MAX_DT
+                done = True
+            events = self.between(earliest_end, next_end)
+            events.sort(key=lambda event: event["DTSTART"])
+            for event in events:
+                yield event
+            # prepare next query
+            time_span = time_span / 2 if events else time_span * 2 # binary search to improve speed
+            earliest_end = next_end
+
 
 def of(a_calendar, keep_recurrence_attributes=False, components=["VEVENT"]):
     """Unfold recurring events of a_calendar
