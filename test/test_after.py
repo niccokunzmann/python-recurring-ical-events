@@ -28,3 +28,40 @@ def test_no_event_is_returned_twice():
 def test_input_with_time_zone():
     """When the earlied_end has a time zone."""
     pytest.skip("TODO")
+
+
+def test_todo_with_no_dtstart():
+    pytest.skip("TODO")
+
+
+@pytest.mark.parametrize(
+    "date,count",
+    [
+        ("20200113", 10),
+        ("20200114", 9),
+        ("20200115", 8),
+        ("20200116", 7),
+        ("20200117", 6),
+        ("20200118", 5),
+        ("20200119", 4),
+        ("20200120", 3),
+        ("20200121", 2),
+        ("20200122", 1),
+        ("20200123", 0),
+    ]
+)
+def test_get_events_in_series(calendars, date, count):
+    """Get a few events in a series."""
+    events = list(calendars.event_10_times.after(date))
+    assert len(events) == count, f"{count} events expected"
+
+
+def test_zero_size_event_is_included(calendars):
+    """If a zero size event happens exactly at the earliest_end, then it is included."""
+    event = list(calendars.zero_size_event.after("20190304T080000Z"))[0]
+    assert event["DTSTART"].to_ical() == b"20190304T080000"
+
+
+def test_zero_size_event_is_excluded_one_second_later(calendars):
+    """If a zero size event happens exactly at the earliest_end, then it is included."""
+    assert not list(calendars.zero_size_event.after("20190304T080001Z"))

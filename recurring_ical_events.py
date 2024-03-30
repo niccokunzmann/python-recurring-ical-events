@@ -602,9 +602,10 @@ class UnfoldableCalendar:
 
         return events
 
-    def after(self, earliest_end : datetime.datetime):
+    def after(self, earliest_end):
         """Return an iterator over the next events that happen during or after the earliest_end."""
         time_span = datetime.timedelta(days=1)
+        earliest_end = self.to_datetime(earliest_end)
         print()
         done = False
         while not done:
