@@ -21,6 +21,8 @@ from collections import defaultdict
 from icalendar.prop import vDDDTypes
 from typing import Optional
 import re
+import functools
+
 
 if sys.version_info[0] == 2:
     # Python2 has no ZoneInfo. We can assume that pytz is used.
@@ -108,6 +110,19 @@ def compare_greater(date1, date2):
     """Compare two dates if date1 > date2 and make them comparable before."""
     date1, date2 = make_comparable((date1, date2))
     return date1 > date2
+
+
+def cmp(date1, date2):
+    """Compare two dates, like cmp().
+    Returns:
+        -1 if date1 < date2
+         0 if date1 = date2
+         1 if date1 > date2
+    """
+    # credits: https://www.geeksforgeeks.org/python-cmp-function/
+    # see https://stackoverflow.com/a/22490617/1320237
+    date1, date2 = make_comparable((date1, date2))
+    return (date1 > date2) - (date1 < date2)
 
 
 def is_pytz(tzinfo):
@@ -452,6 +467,7 @@ class RepeatedJournal(RepeatedComponent):
 DATE_MIN = (1970, 1, 1)
 # The maximum value accepted as date (pytz + zoneinfo)
 DATE_MAX = (2038, 1, 1)
+DATE_MAX_DT = datetime.date(*DATE_MAX)
 
 class UnsupportedComponent(ValueError):
     """This error is raised when a component is not supported, yet."""
@@ -600,6 +616,45 @@ class UnfoldableCalendar:
                 pass
 
         return events
+
+    @staticmethod
+    def _get_event_id(event):
+        """Return a tuple that identifies the event.
+
+        => (name, UID, recurrence-id)
+        """
+        return event.name, event.get("UID"), event.get("RECURRENCE-ID", event.get("DTSTART")).dt
+
+    def after(self, earliest_end):
+        """Return an iterator over the next events that happen during or after the earliest_end."""
+        time_span = datetime.timedelta(days=1)
+        min_time_span = datetime.timedelta(minutes=15)
+        earliest_end = self.to_datetime(earliest_end)
+        done = False
+        returned_events = set() # (UID, recurrence-id)
+        def cmp_event(event1, event2):
+            """cmp for events"""
+            return cmp(event1["DTSTART"].dt, event2["DTSTART"].dt)
+        while not done:
+            try:
+                next_end = earliest_end + time_span
+            except OverflowError:
+                # We ran to the end
+                next_end = DATE_MAX_DT
+                if compare_greater(earliest_end, next_end):
+                    return # we might run too far
+                done = True
+            events = self.between(earliest_end, next_end)
+            events.sort(key=functools.cmp_to_key(cmp_event)) # see https://docs.python.org/3/howto/sorting.html#comparison-functions
+            for event in events:
+                event_id = self._get_event_id(event)
+                if event_id not in returned_events:
+                    yield event
+                    returned_events.add(event_id)
+            # prepare next query
+            time_span = max(time_span / 2 if events else time_span * 2, min_time_span) # binary search to improve speed
+            earliest_end = next_end
+
 
 def of(a_calendar, keep_recurrence_attributes=False, components=["VEVENT"]):
     """Unfold recurring events of a_calendar

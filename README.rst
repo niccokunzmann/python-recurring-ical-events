@@ -168,6 +168,19 @@ However, these attributes may differ from the source event:
   They are **not** included in repeated events, see `Issue 23 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/23>`_.
   To change this, use ``of(calendar, keep_recurrence_attributes=True)``.
 
+Iteration with ``after``
+************************
+
+If the resulting events should be ordered, ``after(earliest_end)`` can be used.
+The result is an iterator that returns the events in order.
+
+.. code:: Python
+
+    for event in recurring_ical_events.of(an_icalendar_object).after(datetime.datetime.now()):
+        print(event["DTSTART"]) # The start is ordered
+
+
+
 Different Components, not just Events
 *************************************
 
@@ -277,6 +290,10 @@ To release new versions,
 
 Changelog
 ---------
+
+- v2.2.0
+
+  - Add ``after()`` method to iterate over upcoming events.
 
 - v2.1.3
 
