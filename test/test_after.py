@@ -1,6 +1,7 @@
 """Test getting events in a specific order."""
 import datetime
 import pytest
+import pytz
 
 
 def test_a_calendar_with_no_event_has_no_events(calendars):
@@ -20,14 +21,13 @@ def test_different_time_zones():
     pytest.skip("TODO")
 
 
-def test_no_event_is_returned_twice():
+def test_no_event_is_returned_twice(calendars):
     """Long events should not be returned several times."""
-    pytest.skip("TODO")
-
-
-def test_input_with_time_zone():
-    """When the earlied_end has a time zone."""
-    pytest.skip("TODO")
+    i = 1
+    for event in calendars.after_many_events_in_order.after("20240324"):
+        assert event["SUMMARY"] == f"event {i}"
+        i += 1
+    assert i == 8
 
 
 def test_todo_with_no_dtstart():
@@ -48,6 +48,7 @@ def test_todo_with_no_dtstart():
         ("20200121", 2),
         ("20200122", 1),
         ("20200123", 0),
+        (datetime.datetime(2020, 1, 19, 0, 0, 0, tzinfo=pytz.UTC), 4),
     ]
 )
 def test_get_events_in_series(calendars, date, count):
