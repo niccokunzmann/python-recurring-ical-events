@@ -41,6 +41,7 @@ Let's put our expertise together and build a tool that can solve this!
 * events with start date and no end date (DONE)
 * events with start as date and start as datetime (DONE)
 * `RRULE <https://www.kanzaki.com/docs/ical/rrule.html>`_ (DONE)
+* events with multiple RRULE (DONE)
 * `RDATE <https://www.kanzaki.com/docs/ical/rdate.html>`_ (DONE)
 * `DURATION <https://www.kanzaki.com/docs/ical/duration.html>`_ (DONE)
 * `EXDATE <https://www.kanzaki.com/docs/ical/exdate.html>`_ (DONE)
@@ -290,6 +291,10 @@ To release new versions,
 
 Changelog
 ---------
+
+- Incoming
+
+  - Add support for multiple RRULE in events.
 
 - v2.2.0
 

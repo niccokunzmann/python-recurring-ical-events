@@ -213,27 +213,32 @@ class RepeatedComponent:
         self.make_all_dates_comparable()
 
         self.duration = self.end - self.start
-        self.rule = rule = rruleset(cache=True)
-        _rule = component.get("RRULE", None)
-        if _rule:
-            # We don't support multiple RRULE yet, but we can support cases
-            # where the same RRULE is erroneously repeated
-            if isinstance(_rule, list):
-                if len(_rule) > 0 and all(part == _rule[0] for part in _rule):
-                    _rule = _rule[0]
-                else:
-                    raise ValueError("Don't yet support multiple distinct RRULE properties")
-            self.rrule = self.create_rule_with_start(_rule.to_ical().decode())
-            rule.rrule(self.rrule)
-        else:
-            self.rrule = None
+        self.rule = rruleset(cache=True)
+        _component_rules = component.get("RRULE", None)
+        self.until = None
+        if _component_rules:
+            if not isinstance(_component_rules, list):
+                _component_rules = [_component_rules]
+            else:
+                _dedup_rules=[]
+                for _rule in _component_rules:
+                    if _rule not in _dedup_rules:
+                        _dedup_rules.append(_rule)
+                _component_rules = _dedup_rules
+    
+            for _rule in _component_rules:
+                rrule = self.create_rule_with_start(_rule.to_ical().decode())
+                self.rule.rrule(rrule)
+                if rrule.until and (not self.until or compare_greater(rrule.until, self.until)):
+                    self.until = rrule.until
 
         for exdate in self.exdates:
-            rule.exdate(exdate)
+            self.rule.exdate(exdate)
         for rdate in self.rdates:
-            rule.rdate(rdate)
-        if not self.rrule or not self.rrule.until or not compare_greater(self.start, self.rrule.until):
-            rule.rdate(self.start)
+            self.rule.rdate(rdate)
+        
+        if not self.until or not compare_greater(self.start, self.until):
+            self.rule.rdate(self.start)
 
     def create_rule_with_start(self, rule_string):
         """Helper to create an rrule from a rule_string starting at the start of the component.
@@ -339,7 +344,7 @@ class RepeatedComponent:
                 start = start.tzinfo.localize(start.replace(tzinfo=None))
                 # We could now well be out of bounce of the end of the UNTIL
                 # value. This is tested by test/test_issue_20_exdate_ignored.py.
-                if self.rrule is not None and self.rrule.until is not None and start > self.rrule.until and start not in self.rdates:
+                if self.until is not None and start > self.until and start not in self.rdates:
                     continue
             if self._unify_exdate(start) in self.exdates_utc or start.date() in self.exdates_utc:
                 continue
