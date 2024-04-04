@@ -4,6 +4,7 @@ By default, it should be events.
 If a component is not supported, an error is raised.
 """
 import pytest
+from recurring_ical_events import UnsupportedComponent
 
 
 @pytest.mark.parametrize("components,count,calendar,message", [
@@ -39,7 +40,7 @@ def test_components_and_their_count(calendars, components, count, calendar, mess
 ])
 def test_unsupported_component_raises_error(component, calendars):
     """If a component is not recognized, we want to inform the user."""
-    with pytest.raises(ValueError) as error:
+    with pytest.raises(UnsupportedComponent) as error:
         calendars.components = [component]
         calendars.rdate
     assert f"\"{component}\"" in str(error)

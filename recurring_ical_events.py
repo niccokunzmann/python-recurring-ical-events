@@ -23,6 +23,38 @@ from typing import Optional
 import re
 import functools
 
+class RecurringIcalEventsError(Exception):
+    """Base exception for errors of recurring-ical-events library"""
+
+    default_message = "An error occurred during recurring iCal events process."
+
+    def __init__(self, *args, **kwargs):
+        for kwarg, kwarg_val in kwargs.items():
+            setattr(self, kwarg, kwarg_val)
+        
+        if not hasattr(self, "message"):
+            if args and isinstance(args[0], str):
+                self.message = args[0]
+            else:
+                self.message = self.default_message
+
+        self.message = self.message.format(**kwargs)
+        super().__init__(self.message)
+
+
+class PeriodEndBeforeStart(RecurringIcalEventsError):
+    """An end date start before a start date"""
+    
+    default_message = "The period end date {end} is before period start date {start}"
+
+class BadRuleStringFormat(RecurringIcalEventsError):
+    """An iCal rule string is badly formatted"""
+    default_message = 'Bad rule string format. {detail}\n"{rule_string}"'
+
+class UnsupportedComponent(RecurringIcalEventsError):
+    """This error is raised when a component is not supported, yet."""
+
+
 
 if sys.version_info[0] == 2:
     # Python2 has no ZoneInfo. We can assume that pytz is used.
@@ -82,8 +114,10 @@ def time_span_contains_event(span_start, span_stop, event_start, event_stop, com
         span_start, span_stop, event_start, event_stop = make_comparable((
             span_start, span_stop, event_start, event_stop
         ))
-    assert event_start <= event_stop, "the event must start before it ends"
-    assert span_start <= span_stop, "the time span must start before it ends"
+    if event_start > event_stop:
+        raise PeriodEndBeforeStart("the event must start before it ends (start: {start} end: {end})", start=event_start, end=event_stop)
+    if span_start > span_stop:
+        raise PeriodEndBeforeStart("the time span must start before it ends (start: {start} end: {end})", start=span_start, end=span_stop)
     if event_start == event_stop:
         if span_start == span_stop:
             return event_start == span_start
@@ -252,7 +286,8 @@ class RepeatedComponent:
             # start: 2019-08-01 14:00:00+01:00
             # ValueError: RRULE UNTIL values must be specified in UTC when DTSTART is timezone-aware
             rule_list = rule_string.split(";UNTIL=")
-            assert len(rule_list) == 2
+            if len(rule_list) != 2:
+                raise BadRuleStringFormat(detail="UNTIL parameter is missing", rule_string=rule_string) from None
             date_end_index = rule_list[1].find(";")
             if date_end_index == -1:
                 date_end_index = len(rule_list[1])
@@ -266,7 +301,8 @@ class RepeatedComponent:
                 # we assume the start is timezone aware but the until value is not, see the comment above
                 if len(until_string) == 8:
                     until_string += "T000000"
-                assert len(until_string) == 15
+                if len(until_string) != 15:
+                    raise BadRuleStringFormat(detail="UNTIL parameter bad format", rule_string=rule_string) from None
                 until_string += "Z" # https://stackoverflow.com/a/49991809
             new_rule_string = rule_list[0] + rule_list[1][date_end_index:] + ";UNTIL=" + until_string
             return self.rrulestr(new_rule_string)
@@ -290,7 +326,8 @@ class RepeatedComponent:
         rule_list = rrule.string.split(";UNTIL=")
         if len(rule_list) == 1:
             return None
-        assert len(rule_list) == 2, "There should be only one UNTIL."
+        if len(rule_list) != 2:
+            raise BadRuleStringFormat(detail="There should be only one UNTIL", rule_string=rrule)
         date_end_index = rule_list[1].find(";")
         if date_end_index == -1:
             date_end_index = len(rule_list[1])
@@ -474,10 +511,6 @@ DATE_MIN = (1970, 1, 1)
 DATE_MAX = (2038, 1, 1)
 DATE_MAX_DT = datetime.date(*DATE_MAX)
 
-class UnsupportedComponent(ValueError):
-    """This error is raised when a component is not supported, yet."""
-
-
 class UnfoldableCalendar:
     '''A calendar that can unfold its events at a certain time.'''
 
@@ -489,11 +522,18 @@ class UnfoldableCalendar:
 
     def __init__(self, calendar, keep_recurrence_attributes=False, components=["VEVENT"]):
         """Create an unfoldable calendar from a given calendar."""
-        assert calendar.get("CALSCALE", "GREGORIAN") == "GREGORIAN", "Only Gregorian calendars are supported." # https://www.kanzaki.com/docs/ical/calscale.html
+        if calendar.get("CALSCALE", "GREGORIAN") != "GREGORIAN":
+            # https://www.kanzaki.com/docs/ical/calscale.html
+            raise RecurringIcalEventsError("Only Gregorian calendars are supported.")
+
         self.repetitions = []
         for component_name in components:
             if component_name not in self.recurrence_calculators:
-                raise UnsupportedComponent(f"\"{component_name}\" is an unknown name for a component. I only know these: {', '.join(self.recurrence_calculators)}.")
+                raise UnsupportedComponent(
+                    '"{component_name}" is an unknown name for a component. I only know these: {allowed_components}.', 
+                    component_name=component_name, 
+                    allowed_components=', '.join(self.recurrence_calculators)
+                )
             for event in calendar.walk(component_name):
                 recurrence_calculator = self.recurrence_calculators[component_name]
                 self.repetitions.append(recurrence_calculator(event, keep_recurrence_attributes))
@@ -541,7 +581,8 @@ class UnfoldableCalendar:
         if isinstance(date, int):
             date = (date,)
         if isinstance(date, str):
-            assert len(date) == 8 and date.isdigit(), "format yyyymmdd expected"
+            if len(date) != 8 or not date.isdigit():
+                raise RecurringIcalEventsError('format yyyymmdd expected "{date}"', date=date)
             date = (int(date[:4], 10), int(date[4:6], 10), int(date[6:]))
         if isinstance(date, datetime.datetime):
             return self.between(date, date)
