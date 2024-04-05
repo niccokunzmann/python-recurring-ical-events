@@ -235,7 +235,7 @@ Development
 Code style
 **********
 
-Please install pre-commit before git commit.  It will ensure that the code is formatted and linted as expected using `ruff <https://docs.astral.sh/ruff/>`_.
+Please install `pre-commit <https://pre-commit.com/>`_ before git commit.  It will ensure that the code is formatted and linted as expected using `ruff <https://docs.astral.sh/ruff/>`_.
 
 .. code-block:: shell
 
