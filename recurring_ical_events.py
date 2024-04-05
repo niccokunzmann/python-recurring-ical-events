@@ -10,6 +10,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""Calculate repetitions of icalendar components.
+"""
 import icalendar
 import datetime
 import pytz
@@ -22,6 +24,54 @@ from icalendar.prop import vDDDTypes
 from typing import Optional
 import re
 import functools
+
+
+class InvalidCalendar(ValueError):
+    """Exception thrown for bad icalendar content."""
+
+    def __init__(self, message:str):
+        """Create a new error with a message."""
+        self._message = message
+        super().__init__(self.message)
+
+    @property
+    def message(self) -> str:
+        """The error message."""
+        return self._message
+
+
+class PeriodEndBeforeStart(InvalidCalendar):
+    """An event or component starts before it ends."""
+
+    def __init__(self, message, start, end):
+        """Create a new PeriodEndBeforeStart error."""
+        super().__init__(message)
+        self._start = start
+        self._end = end
+
+    @property
+    def start(self):
+        """The start of the component's period."""
+        return self._start
+
+    @property
+    def end(self):
+        """The end of the component's period."""
+        return self._end
+
+
+class BadRuleStringFormat(InvalidCalendar):
+    """An iCal rule string is badly formatted."""
+
+    def __init__(self, message:str, rule:str):
+        """Create an error with a bad rule string."""
+        super().__init__(message + ": " + rule)
+        self._rule = rule
+
+    @property
+    def rule(self) -> str:
+        """The malformed rule string"""
+        return self._rule
 
 
 if sys.version_info[0] == 2:
@@ -77,13 +127,17 @@ def time_span_contains_event(span_start, span_stop, event_start, event_stop, com
 
     This is an essential function of the module. It should be tested in
     test/test_time_span_contains_event.py.
+
+    This raises a PeriodEndBeforeStart exception if a start is after an end.
     """
     if not comparable:
         span_start, span_stop, event_start, event_stop = make_comparable((
             span_start, span_stop, event_start, event_stop
         ))
-    assert event_start <= event_stop, "the event must start before it ends"
-    assert span_start <= span_stop, "the time span must start before it ends"
+    if event_start > event_stop:
+        raise PeriodEndBeforeStart(f"the event must start before it ends (start: {event_start} end: {event_stop})", event_start, event_stop)
+    if span_start > span_stop:
+        raise PeriodEndBeforeStart(f"the time span must start before it ends (start: {span_start} end: {span_stop})", span_start, span_stop)
     if event_start == event_stop:
         if span_start == span_stop:
             return event_start == span_start
@@ -177,6 +231,7 @@ class Repetition:
         """Debug representation with more info."""
         return "{}({{'UID':{}...}}, {}, {})".format(self.__class__.__name__, self.source.get("UID"), self.start, self.stop)
 
+
 class RepeatedComponent:
     """Base class for RepeatedEvent, RepeatedJournal and RepeatedTodo"""
 
@@ -225,7 +280,7 @@ class RepeatedComponent:
                     if _rule not in _dedup_rules:
                         _dedup_rules.append(_rule)
                 _component_rules = _dedup_rules
-    
+
             for _rule in _component_rules:
                 rrule = self.create_rule_with_start(_rule.to_ical().decode())
                 self.rule.rrule(rrule)
@@ -236,7 +291,7 @@ class RepeatedComponent:
             self.rule.exdate(exdate)
         for rdate in self.rdates:
             self.rule.rdate(rdate)
-        
+
         if not self.until or not compare_greater(self.start, self.until):
             self.rule.rdate(self.start)
 
@@ -252,7 +307,8 @@ class RepeatedComponent:
             # start: 2019-08-01 14:00:00+01:00
             # ValueError: RRULE UNTIL values must be specified in UTC when DTSTART is timezone-aware
             rule_list = rule_string.split(";UNTIL=")
-            assert len(rule_list) == 2
+            if len(rule_list) != 2:
+                raise BadRuleStringFormat("UNTIL parameter is missing", rule_string) from None
             date_end_index = rule_list[1].find(";")
             if date_end_index == -1:
                 date_end_index = len(rule_list[1])
@@ -266,7 +322,8 @@ class RepeatedComponent:
                 # we assume the start is timezone aware but the until value is not, see the comment above
                 if len(until_string) == 8:
                     until_string += "T000000"
-                assert len(until_string) == 15
+                if len(until_string) != 15:
+                    raise BadRuleStringFormat("UNTIL parameter has a bad format", rule_string) from None
                 until_string += "Z" # https://stackoverflow.com/a/49991809
             new_rule_string = rule_list[0] + rule_list[1][date_end_index:] + ";UNTIL=" + until_string
             return self.rrulestr(new_rule_string)
@@ -290,7 +347,8 @@ class RepeatedComponent:
         rule_list = rrule.string.split(";UNTIL=")
         if len(rule_list) == 1:
             return None
-        assert len(rule_list) == 2, "There should be only one UNTIL."
+        if len(rule_list) != 2:
+            raise BadRuleStringFormat("There should be only one UNTIL", rrule)
         date_end_index = rule_list[1].find(";")
         if date_end_index == -1:
             date_end_index = len(rule_list[1])
@@ -474,12 +532,14 @@ DATE_MIN = (1970, 1, 1)
 DATE_MAX = (2038, 1, 1)
 DATE_MAX_DT = datetime.date(*DATE_MAX)
 
-class UnsupportedComponent(ValueError):
-    """This error is raised when a component is not supported, yet."""
-
-
 class UnfoldableCalendar:
-    '''A calendar that can unfold its events at a certain time.'''
+    '''A calendar that can unfold its events at a certain time.
+
+    Functions like at(), between() and after() can be used to query the
+    selected components. If any malformed icalendar information is found,
+    an InvalidCalendar exception is raised. For other bad arguments, you
+    should expect a ValueError.
+    '''
 
     recurrence_calculators = {
         "VEVENT": RepeatedEvent,
@@ -489,11 +549,16 @@ class UnfoldableCalendar:
 
     def __init__(self, calendar, keep_recurrence_attributes=False, components=["VEVENT"]):
         """Create an unfoldable calendar from a given calendar."""
-        assert calendar.get("CALSCALE", "GREGORIAN") == "GREGORIAN", "Only Gregorian calendars are supported." # https://www.kanzaki.com/docs/ical/calscale.html
+        if calendar.get("CALSCALE", "GREGORIAN") != "GREGORIAN":
+            # https://www.kanzaki.com/docs/ical/calscale.html
+            raise InvalidCalendar("Only Gregorian calendars are supported.")
+
         self.repetitions = []
         for component_name in components:
             if component_name not in self.recurrence_calculators:
-                raise UnsupportedComponent(f"\"{component_name}\" is an unknown name for a component. I only know these: {', '.join(self.recurrence_calculators)}.")
+                raise ValueError(
+                    f'"{component_name}" is an unknown name for a recurring component. I only know these: {", ".join(self.recurrence_calculators)}.',
+                )
             for event in calendar.walk(component_name):
                 recurrence_calculator = self.recurrence_calculators[component_name]
                 self.repetitions.append(recurrence_calculator(event, keep_recurrence_attributes))
@@ -541,7 +606,8 @@ class UnfoldableCalendar:
         if isinstance(date, int):
             date = (date,)
         if isinstance(date, str):
-            assert len(date) == 8 and date.isdigit(), "format yyyymmdd expected"
+            if len(date) != 8 or not date.isdigit():
+                raise ValueError(f'Format yyyymmdd expected for {repr(date)}.')
             date = (int(date[:4], 10), int(date[4:6], 10), int(date[6:]))
         if isinstance(date, datetime.datetime):
             return self.between(date, date)
@@ -661,7 +727,7 @@ class UnfoldableCalendar:
             earliest_end = next_end
 
 
-def of(a_calendar, keep_recurrence_attributes=False, components=["VEVENT"]):
+def of(a_calendar, keep_recurrence_attributes=False, components=["VEVENT"]) -> UnfoldableCalendar:
     """Unfold recurring events of a_calendar
 
     - a_calendar is an icalendar VCALENDAR component or something like that.
@@ -670,3 +736,9 @@ def of(a_calendar, keep_recurrence_attributes=False, components=["VEVENT"]):
     """
     a_calendar = x_wr_timezone.to_standard(a_calendar)
     return UnfoldableCalendar(a_calendar, keep_recurrence_attributes, components)
+
+
+__all__ = [
+    "of", "InvalidCalendar", "PeriodEndBeforeStart",
+    "BadRuleStringFormat", "is_pytz", "DATE_MIN", "DATE_MAX",
+    "UnfoldableCalendar"]

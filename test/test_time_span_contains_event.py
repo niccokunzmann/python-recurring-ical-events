@@ -1,4 +1,4 @@
-from recurring_ical_events import time_span_contains_event
+from recurring_ical_events import PeriodEndBeforeStart, time_span_contains_event
 import pytest
 from datetime import datetime, date
 from pytz import timezone, utc
@@ -64,3 +64,25 @@ def test_time_span_inclusion(
     assert time_span_contains_event(
         span_start, span_stop, event_start, event_stop,
         ) == result, message
+
+@pytest.mark.parametrize(
+    "span_start,span_stop,event_start,event_stop,exception_message", [
+    (1, 2, 1, 2, None),
+    (1, 1, 1, 1, None),
+    (1, 2, 2, 1, r"^the event"),
+    (2, 1, 1, 2, r"^the time span"),
+    (date(2024,4,4), date(2024,4,4), date(2024,4,4), date(2024,4,4), None),
+    (date(2024,4,4), date(2024,4,5), date(2024,4,4), date(2024,4,5), None),
+    (date(2024,4,4), date(2024,4,5), date(2024,4,5), date(2024,4,4), r"^the event"),
+    (date(2024,4,5), date(2024,4,4), date(2024,4,4), date(2024,4,5), r"^the time span"),
+    (datetime(2024,4,4), datetime(2024,4,4), datetime(2024,4,4), datetime(2024,4,4), None),
+    (datetime(2024,4,4), datetime(2024,4,5), datetime(2024,4,4), datetime(2024,4,5), None),
+    (datetime(2024,4,4), datetime(2024,4,5), datetime(2024,4,5), datetime(2024,4,4), r"^the event"),
+    (datetime(2024,4,5), datetime(2024,4,4), datetime(2024,4,4), datetime(2024,4,5), r"^the time span"),
+])
+def test_time_span_end_before_start_raise_exception(span_start, span_stop, event_start, event_stop, exception_message):
+    if exception_message:
+        with pytest.raises(PeriodEndBeforeStart, match=exception_message):
+            time_span_contains_event(span_start, span_stop, event_start, event_stop)
+    else:
+        time_span_contains_event(span_start, span_stop, event_start, event_stop)
