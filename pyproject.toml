@@ -13,10 +13,12 @@ ignore = [
     "D1",      # Missing docstring
     "D2",      # docstrings stuffs
     "D4",      # docstrings stuffs
+    "EM10",    # Exception string usage
     "ERA001",  # Found commented-out code
     "FBT002",  # Boolean default positional argument in function definition
     "FIX",     # TODO comments
     "ISC001",  # Implicitly concatenated string literals on one line (to avoid with formatter)
+    "N818",    # Exception name {name} should be named with an Error suffix
     "PLR091",  # Too many things (complexity, arguments, branches, etc...)
     "PLR2004", # Magic value used in comparison, consider replacing {value} with a constant variable
     "RUF012",  # Mutable class attributes should be annotated with typing.ClassVar
