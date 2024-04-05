@@ -10,46 +10,34 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-import icalendar
+from __future__ import annotations
+
+import contextlib
 import datetime
-import pytz
-from dateutil.rrule import rrulestr, rruleset, rrule, DAILY
-import dateutil.parser
-import sys
-import x_wr_timezone
-from collections import defaultdict
-from icalendar.prop import vDDDTypes
-from typing import Optional
-import re
 import functools
+import re
+from collections import defaultdict
+
+import x_wr_timezone
+from dateutil.rrule import rruleset, rrulestr
+from icalendar.prop import vDDDTypes
 
 
-if sys.version_info[0] == 2:
-    # Python2 has no ZoneInfo. We can assume that pytz is used.
-    _EPOCH = datetime.datetime.utcfromtimestamp(0)
-    _EPOCH_TZINFO = pytz.UTC.localize(_EPOCH)
-    def timestamp(dt):
-        """Return the time stamp of a datetime"""
-        # from https://stackoverflow.com/a/35337826
-        if dt.tzinfo:
-            return (dt - _EPOCH_TZINFO).total_seconds()
-        return (dt - _EPOCH).total_seconds()
-else:
-    def timestamp(dt):
-        """Return the time stamp of a datetime"""
-        return dt.timestamp()
+def timestamp(dt):
+    """Return the time stamp of a datetime"""
+    return dt.timestamp()
 
 
 NEGATIVE_RRULE_COUNT_REGEX = re.compile(r"COUNT=-\d+;?")
 
 
 def convert_to_date(date):
-    """converts a date or datetime to a date"""
+    """Converts a date or datetime to a date"""
     return datetime.date(date.year, date.month, date.day)
 
 
 def convert_to_datetime(date, tzinfo):
-    """converts a date to a datetime"""
+    """Converts a date to a datetime"""
     if isinstance(date, datetime.datetime):
         if date.tzinfo is None:
             if tzinfo is not None:
@@ -59,12 +47,18 @@ def convert_to_datetime(date, tzinfo):
         elif tzinfo is None:
             return date.replace(tzinfo=None)
         return date
-    elif isinstance(date, datetime.date):
+    if isinstance(date, datetime.date):
         return datetime.datetime(date.year, date.month, date.day, tzinfo=tzinfo)
     return date
 
 
-def time_span_contains_event(span_start, span_stop, event_start, event_stop, comparable=False):
+def time_span_contains_event(
+    span_start,
+    span_stop,
+    event_start,
+    event_stop,
+    comparable=False,
+):
     """Return whether an event should is included within a time span.
 
     - span_start and span_stop define the time span
@@ -79,9 +73,9 @@ def time_span_contains_event(span_start, span_stop, event_start, event_stop, com
     test/test_time_span_contains_event.py.
     """
     if not comparable:
-        span_start, span_stop, event_start, event_stop = make_comparable((
-            span_start, span_stop, event_start, event_stop
-        ))
+        span_start, span_stop, event_start, event_stop = make_comparable(
+            (span_start, span_stop, event_start, event_stop),
+        )
     assert event_start <= event_stop, "the event must start before it ends"
     assert span_start <= span_stop, "the time span must start before it ends"
     if event_start == event_stop:
@@ -114,10 +108,13 @@ def compare_greater(date1, date2):
 
 def cmp(date1, date2):
     """Compare two dates, like cmp().
-    Returns:
+
+    Returns
+    -------
         -1 if date1 < date2
          0 if date1 = date2
          1 if date1 > date2
+
     """
     # credits: https://www.geeksforgeeks.org/python-cmp-function/
     # see https://stackoverflow.com/a/22490617/1320237
@@ -131,17 +128,22 @@ def is_pytz(tzinfo):
     pytz requires these funtions to be used in order to correctly use the
     time zones after operations.
     """
-    return hasattr(tzinfo , "localize")
+    return hasattr(tzinfo, "localize")
 
 
 class Repetition:
     """A repetition of an event."""
 
-    ATTRIBUTES_TO_DELETE_ON_COPY = [
-        "RRULE", "RDATE", "EXDATE"
-    ]
+    ATTRIBUTES_TO_DELETE_ON_COPY = ["RRULE", "RDATE", "EXDATE"]
 
-    def __init__(self, source, start, stop, keep_recurrence_attributes=False, end_prop='DTEND'):
+    def __init__(
+        self,
+        source,
+        start,
+        stop,
+        keep_recurrence_attributes=False,
+        end_prop="DTEND",
+    ):
         """Create an event repetition.
 
         - source - the icalendar Event
@@ -175,7 +177,13 @@ class Repetition:
 
     def __repr__(self):
         """Debug representation with more info."""
-        return "{}({{'UID':{}...}}, {}, {})".format(self.__class__.__name__, self.source.get("UID"), self.start, self.stop)
+        return "{}({{'UID':{}...}}, {}, {})".format(
+            self.__class__.__name__,
+            self.source.get("UID"),
+            self.start,
+            self.stop,
+        )
+
 
 class RepeatedComponent:
     """Base class for RepeatedEvent, RepeatedJournal and RepeatedTodo"""
@@ -184,7 +192,8 @@ class RepeatedComponent:
         """Create an component which may have repetitions in it.
 
         - component - the icalendar component
-        - keep_recurrence_attributes whether to copy or delete attributes in repetitions.
+        - keep_recurrence_attributes whether to copy or delete attributes
+          in repetitions.
         """
         self.component = component
         self.start = self.original_start = self._get_component_start()
@@ -194,13 +203,13 @@ class RepeatedComponent:
         self.exdates_utc = set()
         self.replace_ends = {}  # DTSTART -> DTEND # for periods
         exdates = component.get("EXDATE", [])
-        for exdates in ((exdates,) if not isinstance(exdates, list) else exdates):
+        for exdates in (exdates,) if not isinstance(exdates, list) else exdates:
             for exdate in exdates.dts:
                 self.exdates.append(exdate.dt)
                 self.exdates_utc.add(self._unify_exdate(exdate.dt))
         self.rdates = []
         rdates = component.get("RDATE", [])
-        for rdates in ((rdates,) if not isinstance(rdates, list) else rdates):
+        for rdates in (rdates,) if not isinstance(rdates, list) else rdates:
             for rdate in rdates.dts:
                 if isinstance(rdate.dt, tuple):
                     # we have a period as rdate
@@ -220,29 +229,32 @@ class RepeatedComponent:
             if not isinstance(_component_rules, list):
                 _component_rules = [_component_rules]
             else:
-                _dedup_rules=[]
+                _dedup_rules = []
                 for _rule in _component_rules:
                     if _rule not in _dedup_rules:
                         _dedup_rules.append(_rule)
                 _component_rules = _dedup_rules
-    
+
             for _rule in _component_rules:
                 rrule = self.create_rule_with_start(_rule.to_ical().decode())
                 self.rule.rrule(rrule)
-                if rrule.until and (not self.until or compare_greater(rrule.until, self.until)):
+                if rrule.until and (
+                    not self.until or compare_greater(rrule.until, self.until)
+                ):
                     self.until = rrule.until
 
         for exdate in self.exdates:
             self.rule.exdate(exdate)
         for rdate in self.rdates:
             self.rule.rdate(rdate)
-        
+
         if not self.until or not compare_greater(self.start, self.until):
             self.rule.rdate(self.start)
 
     def create_rule_with_start(self, rule_string):
-        """Helper to create an rrule from a rule_string starting at the start of the component.
+        """Helper to create an rrule from a rule_string
 
+        The rrule is starting at the start of the component.
         Since the creation is a bit more complex, this function handles special cases.
         """
         try:
@@ -250,7 +262,8 @@ class RepeatedComponent:
         except ValueError:
             # string: FREQ=WEEKLY;UNTIL=20191023;BYDAY=TH;WKST=SU
             # start: 2019-08-01 14:00:00+01:00
-            # ValueError: RRULE UNTIL values must be specified in UTC when DTSTART is timezone-aware
+            # ValueError: RRULE UNTIL values must be specified in UTC
+            # when DTSTART is timezone-aware
             rule_list = rule_string.split(";UNTIL=")
             assert len(rule_list) == 2
             date_end_index = rule_list[1].find(";")
@@ -263,17 +276,20 @@ class RepeatedComponent:
                 # remove the Z from the time zone
                 until_string = until_string[:-1]
             else:
-                # we assume the start is timezone aware but the until value is not, see the comment above
+                # we assume the start is timezone aware but the until value
+                # is not, see the comment above
                 if len(until_string) == 8:
                     until_string += "T000000"
                 assert len(until_string) == 15
-                until_string += "Z" # https://stackoverflow.com/a/49991809
-            new_rule_string = rule_list[0] + rule_list[1][date_end_index:] + ";UNTIL=" + until_string
+                until_string += "Z"  # https://stackoverflow.com/a/49991809
+            new_rule_string = (
+                rule_list[0] + rule_list[1][date_end_index:] + ";UNTIL=" + until_string
+            )
             return self.rrulestr(new_rule_string)
 
     def rrulestr(self, rule_string):
         """Return an rrulestr with a start. This might fail."""
-        rule_string = NEGATIVE_RRULE_COUNT_REGEX.sub("", rule_string) # Issue 128
+        rule_string = NEGATIVE_RRULE_COUNT_REGEX.sub("", rule_string)  # Issue 128
         rule = rrulestr(rule_string, dtstart=self.start, cache=True)
         rule.string = rule_string
         rule.until = until = self._get_rrule_until(rule)
@@ -295,8 +311,7 @@ class RepeatedComponent:
         if date_end_index == -1:
             date_end_index = len(rule_list[1])
         until_string = rule_list[1][:date_end_index]
-        until = vDDDTypes.from_ical(until_string)
-        return until
+        return vDDDTypes.from_ical(until_string)
 
     def make_all_dates_comparable(self):
         """Make sure we can use all dates with eachother.
@@ -308,8 +323,10 @@ class RepeatedComponent:
         These three are not comparable but can be converted.
         """
         self.tzinfo = None
-        dates = [self.start, self.end] + self.exdates + self.rdates
-        self.is_all_dates = not any(isinstance(date, datetime.datetime) for date in dates)
+        dates = [self.start, self.end, *self.exdates, *self.rdates]
+        self.is_all_dates = not any(
+            isinstance(date, datetime.datetime) for date in dates
+        )
         for date in dates:
             if isinstance(date, datetime.datetime) and date.tzinfo is not None:
                 self.tzinfo = date.tzinfo
@@ -318,10 +335,13 @@ class RepeatedComponent:
 
         self.end = convert_to_datetime(self.end, self.tzinfo)
         self.rdates = [convert_to_datetime(rdate, self.tzinfo) for rdate in self.rdates]
-        self.exdates = [convert_to_datetime(exdate, self.tzinfo) for exdate in self.exdates]
+        self.exdates = [
+            convert_to_datetime(exdate, self.tzinfo) for exdate in self.exdates
+        ]
 
     def _unify_exdate(self, dt):
-        """Return a unique string for the datetime which is used to
+        """
+        Return a unique string for the datetime which is used to
         compare it with exdates.
         """
         if isinstance(dt, datetime.datetime):
@@ -329,7 +349,10 @@ class RepeatedComponent:
         return dt
 
     def within_days(self, span_start, span_stop):
-        """Yield component Repetitions between the start (inclusive) and end (exclusive) of the time span."""
+        """
+        Yield component Repetitions between the start (inclusive)
+        and end (exclusive) of the time span.
+        """
         # make dates comparable, rrule converts them to datetimes
         span_start = convert_to_datetime(span_start, self.tzinfo)
         span_stop = convert_to_datetime(span_stop, self.tzinfo)
@@ -341,12 +364,19 @@ class RepeatedComponent:
         for start in self.rule.between(span_start, span_stop, inc=True):
             if isinstance(start, datetime.datetime) and is_pytz(start.tzinfo):
                 # update the time zone in case of summer/winter time change
-                start = start.tzinfo.localize(start.replace(tzinfo=None))
+                start = start.tzinfo.localize(start.replace(tzinfo=None))  # noqa: PLW2901
                 # We could now well be out of bounce of the end of the UNTIL
                 # value. This is tested by test/test_issue_20_exdate_ignored.py.
-                if self.until is not None and start > self.until and start not in self.rdates:
+                if (
+                    self.until is not None
+                    and start > self.until
+                    and start not in self.rdates
+                ):
                     continue
-            if self._unify_exdate(start) in self.exdates_utc or start.date() in self.exdates_utc:
+            if (
+                self._unify_exdate(start) in self.exdates_utc
+                or start.date() in self.exdates_utc
+            ):
                 continue
             stop = self.replace_ends.get(timestamp(start), start + self.duration)
             yield Repetition(
@@ -354,7 +384,7 @@ class RepeatedComponent:
                 self.convert_to_original_type(start),
                 self.convert_to_original_type(stop),
                 self.keep_recurrence_attributes,
-                self.end_prop
+                self.end_prop,
             )
 
     def convert_to_original_type(self, date):
@@ -365,8 +395,10 @@ class RepeatedComponent:
         up with the type (date/datetime) that was specified in the icalendar
         component.
         """
-        if not isinstance(self.original_start, datetime.datetime) and \
-                not isinstance(self.original_end, datetime.datetime):
+        if not isinstance(self.original_start, datetime.datetime) and not isinstance(
+            self.original_end,
+            datetime.datetime,
+        ):
             return convert_to_date(date)
         return date
 
@@ -374,23 +406,29 @@ class RepeatedComponent:
         """Whether this is a recurrence/modification of an event."""
         return "RECURRENCE-ID" in self.component
 
-    def as_single_event(self) -> Optional[Repetition]:
+    def as_single_event(self) -> Repetition | None:
         """Return as a singe event with no recurrences."""
         for repetition in self.within_days(self.start, self.start):
             return repetition
+        return None
 
 
 class RepeatedEvent(RepeatedComponent):
     """An event with repetitions created from an icalendar event."""
-    end_prop = 'DTEND'
+
+    end_prop = "DTEND"
 
     def _get_component_start(self):
         """Return DTSTART"""
-        ## Arguably, it may be considered a feature that this breaks if no DTSTART is set
-        return self.component['DTSTART'].dt
+        # Arguably, it may be considered a feature that this breaks
+        # if no DTSTART is set
+        return self.component["DTSTART"].dt
 
     def _get_component_end(self):
-        """Yield DTEND or calculate the end of the event based on DTSTART and DURATION."""
+        """
+        Yield DTEND or calculate the end of the event based on
+        DTSTART and DURATION.
+        """
         ## an even may have DTEND or DURATION, but not both
         end = self.component.get("DTEND")
         if end is not None:
@@ -400,18 +438,19 @@ class RepeatedEvent(RepeatedComponent):
             return self.component["DTSTART"].dt + duration.dt
         return self.component["DTSTART"].dt
 
+
 class RepeatedTodo(RepeatedComponent):
-    end_prop = 'DUE'
+    end_prop = "DUE"
 
     def _get_component_start(self):
         """Return DTSTART if it set, do not panic if it's not set."""
         ## easy case - DTSTART set
-        start = self.component.get('DTSTART')
+        start = self.component.get("DTSTART")
         if start is not None:
             return start.dt
         ## Tasks may have DUE set, but no DTSTART.
         ## Let's assume 0 duration and return the DUE
-        due = self.component.get('DUE')
+        due = self.component.get("DUE")
         if due is not None:
             return due.dt
 
@@ -422,7 +461,7 @@ class RepeatedTodo(RepeatedComponent):
     def _get_component_end(self):
         """Return DUE or DTSTART+DURATION or something"""
         ## Easy case - DUE is set
-        end = self.component.get('DUE')
+        end = self.component.get("DUE")
         if end is not None:
             return end.dt
 
@@ -451,8 +490,9 @@ class RepeatedTodo(RepeatedComponent):
         ## in the infinite future?
         return datetime.date(*DATE_MAX)
 
+
 class RepeatedJournal(RepeatedComponent):
-    end_prop = ''
+    end_prop = ""
 
     def _get_component_start(self):
         """Return DTSTART if it set, do not panic if it's not set."""
@@ -474,12 +514,13 @@ DATE_MIN = (1970, 1, 1)
 DATE_MAX = (2038, 1, 1)
 DATE_MAX_DT = datetime.date(*DATE_MAX)
 
-class UnsupportedComponent(ValueError):
+
+class UnsupportedComponentError(ValueError):
     """This error is raised when a component is not supported, yet."""
 
 
 class UnfoldableCalendar:
-    '''A calendar that can unfold its events at a certain time.'''
+    """A calendar that can unfold its events at a certain time."""
 
     recurrence_calculators = {
         "VEVENT": RepeatedEvent,
@@ -487,16 +528,31 @@ class UnfoldableCalendar:
         "VJOURNAL": RepeatedJournal,
     }
 
-    def __init__(self, calendar, keep_recurrence_attributes=False, components=["VEVENT"]):
+    def __init__(
+        self,
+        calendar,
+        keep_recurrence_attributes=False,
+        components=None,
+    ):
         """Create an unfoldable calendar from a given calendar."""
-        assert calendar.get("CALSCALE", "GREGORIAN") == "GREGORIAN", "Only Gregorian calendars are supported." # https://www.kanzaki.com/docs/ical/calscale.html
+        assert (
+            calendar.get("CALSCALE", "GREGORIAN") == "GREGORIAN"
+        ), (
+            "Only Gregorian calendars are supported."
+        )  # https://www.kanzaki.com/docs/ical/calscale.html
         self.repetitions = []
+        components = components or ["VEVENT"]
         for component_name in components:
             if component_name not in self.recurrence_calculators:
-                raise UnsupportedComponent(f"\"{component_name}\" is an unknown name for a component. I only know these: {', '.join(self.recurrence_calculators)}.")
+                recurrence_calculators_str = ", ".join(self.recurrence_calculators)
+                raise UnsupportedComponentError(
+                    f'"{component_name}" is an unknown name for a component. I only know these: {recurrence_calculators_str}.',  # noqa: EM102, E501
+                )
             for event in calendar.walk(component_name):
                 recurrence_calculator = self.recurrence_calculators[component_name]
-                self.repetitions.append(recurrence_calculator(event, keep_recurrence_attributes))
+                self.repetitions.append(
+                    recurrence_calculator(event, keep_recurrence_attributes),
+                )
 
     @staticmethod
     def to_datetime(date):
@@ -505,19 +561,21 @@ class UnfoldableCalendar:
             date = (date,)
         if isinstance(date, tuple):
             date += (1,) * (3 - len(date))
-            return datetime.datetime(*date)
-        elif isinstance(date, str):
+            return datetime.datetime(*date)  # noqa: DTZ001
+        if isinstance(date, str):
             # see https://docs.python.org/2/library/datetime.html#strftime-strptime-behavior
             if len(date) == 8:
-                return datetime.datetime.strptime(date, "%Y%m%d")
-            return datetime.datetime.strptime(date, "%Y%m%dT%H%M%SZ")
+                return datetime.datetime.strptime(date, "%Y%m%d")  # noqa: DTZ007
+            return datetime.datetime.strptime(date, "%Y%m%dT%H%M%SZ")  # noqa: DTZ007
         return date
 
     def all(self):
         """Returns all events.
 
         I personally do not recommend to use this because
-        this method is not documented and you may end up with lots of events most of which you may not use anyway."""
+        this method is not documented and you may end up with lots of events
+        most of which you may not use anyway.
+        """
         # MAX and MIN values may change in the future
         return self.between(DATE_MIN, DATE_MAX)
 
@@ -525,7 +583,7 @@ class UnfoldableCalendar:
         datetime.timedelta(days=1),
         datetime.timedelta(hours=1),
         datetime.timedelta(minutes=1),
-        datetime.timedelta(seconds=1)
+        datetime.timedelta(seconds=1),
     ]
 
     def at(self, date):
@@ -541,7 +599,7 @@ class UnfoldableCalendar:
         if isinstance(date, int):
             date = (date,)
         if isinstance(date, str):
-            assert len(date) == 8 and date.isdigit(), "format yyyymmdd expected"
+            assert len(date) == 8 and date.isdigit(), "format yyyymmdd expected"  # noqa: PT018
             date = (int(date[:4], 10), int(date[4:6], 10), int(date[6:]))
         if isinstance(date, datetime.datetime):
             return self.between(date, date)
@@ -562,16 +620,25 @@ class UnfoldableCalendar:
         span_start = self.to_datetime(start)
         span_stop = self.to_datetime(stop)
         events = []
-        events_by_id = defaultdict(dict) # UID (str) : RECURRENCE-ID(datetime) : event (Event)
+        events_by_id = defaultdict(
+            dict,
+        )  # UID (str) : RECURRENCE-ID(datetime) : event (Event)
         default_uid = object()
+
         def add_event(event):
             """Add an event and check if it was edited."""
-            same_events = events_by_id[event.get("UID", default_uid)] # TODO: test what comes first
-            recurrence_id = event.get("RECURRENCE-ID", event["DTSTART"]).dt # TODO: this is still wrong: what if there are different events at the same time?
+            # TODO: test what comes first
+            same_events = events_by_id[event.get("UID", default_uid)]
+            # TODO: this is still wrong: what if there are different events at
+            # the same time?
+            recurrence_id = event.get(
+                "RECURRENCE-ID",
+                event["DTSTART"],
+            ).dt
             if isinstance(recurrence_id, datetime.datetime):
                 recurrence_id = recurrence_id.date()
             other = same_events.get(recurrence_id, None)
-            if other: # TODO: test that this is independet of order
+            if other:  # TODO: test that this is independet of order
                 event_recurrence_id = event.get("RECURRENCE-ID", None)
                 other_recurrence_id = other.get("RECURRENCE-ID", None)
                 if event_recurrence_id is not None and other_recurrence_id is None:
@@ -590,12 +657,13 @@ class UnfoldableCalendar:
 
         span_start_day = span_start
         if isinstance(span_start_day, datetime.datetime):
-            span_start_day = span_start_day.replace(hour=0,minute=0,second=0)
+            span_start_day = span_start_day.replace(hour=0, minute=0, second=0)
         span_stop_day = span_stop
         if isinstance(span_stop_day, datetime.datetime):
-            span_stop_day = span_stop.replace(hour=23,minute=59,second=59)
+            span_stop_day = span_stop.replace(hour=23, minute=59, second=59)
 
-        # repetitions must be considered because the may remove events from the time span
+        # repetitions must be considered because the may remove events from
+        # the time span
         # see https://github.com/niccokunzmann/python-recurring-ical-events/issues/62
         remove_because_not_in_span = []
         for event_repetitions in self.repetitions:
@@ -608,17 +676,18 @@ class UnfoldableCalendar:
                 if not repetition.is_in_span(span_start, span_stop):
                     remove_because_not_in_span.append(vevent)
                 continue
-            for repetition in event_repetitions.within_days(span_start_day, span_stop_day):
+            for repetition in event_repetitions.within_days(
+                span_start_day,
+                span_stop_day,
+            ):
                 if compare_greater(repetition.start, span_stop):
                     break
                 if repetition.is_in_span(span_start, span_stop):
                     add_event(repetition.as_vevent())
 
         for vevent in remove_because_not_in_span:
-            try:
+            with contextlib.suppress(ValueError):
                 events.remove(vevent)
-            except ValueError:
-                pass
 
         return events
 
@@ -628,18 +697,27 @@ class UnfoldableCalendar:
 
         => (name, UID, recurrence-id)
         """
-        return event.name, event.get("UID"), event.get("RECURRENCE-ID", event.get("DTSTART")).dt
+        return (
+            event.name,
+            event.get("UID"),
+            event.get("RECURRENCE-ID", event.get("DTSTART")).dt,
+        )
 
     def after(self, earliest_end):
-        """Return an iterator over the next events that happen during or after the earliest_end."""
+        """
+        Return an iterator over the next events that happen during or after
+        the earliest_end.
+        """
         time_span = datetime.timedelta(days=1)
         min_time_span = datetime.timedelta(minutes=15)
         earliest_end = self.to_datetime(earliest_end)
         done = False
-        returned_events = set() # (UID, recurrence-id)
+        returned_events = set()  # (UID, recurrence-id)
+
         def cmp_event(event1, event2):
-            """cmp for events"""
+            """Cmp for events"""
             return cmp(event1["DTSTART"].dt, event2["DTSTART"].dt)
+
         while not done:
             try:
                 next_end = earliest_end + time_span
@@ -647,26 +725,34 @@ class UnfoldableCalendar:
                 # We ran to the end
                 next_end = DATE_MAX_DT
                 if compare_greater(earliest_end, next_end):
-                    return # we might run too far
+                    return  # we might run too far
                 done = True
             events = self.between(earliest_end, next_end)
-            events.sort(key=functools.cmp_to_key(cmp_event)) # see https://docs.python.org/3/howto/sorting.html#comparison-functions
+            events.sort(
+                key=functools.cmp_to_key(cmp_event),
+            )  # see https://docs.python.org/3/howto/sorting.html#comparison-functions
             for event in events:
                 event_id = self._get_event_id(event)
                 if event_id not in returned_events:
                     yield event
                     returned_events.add(event_id)
             # prepare next query
-            time_span = max(time_span / 2 if events else time_span * 2, min_time_span) # binary search to improve speed
+            time_span = max(
+                time_span / 2 if events else time_span * 2,
+                min_time_span,
+            )  # binary search to improve speed
             earliest_end = next_end
 
 
-def of(a_calendar, keep_recurrence_attributes=False, components=["VEVENT"]):
+def of(a_calendar, keep_recurrence_attributes=False, components=None):
     """Unfold recurring events of a_calendar
 
     - a_calendar is an icalendar VCALENDAR component or something like that.
-    - keep_recurrence_attributes - whether to keep attributes that are only used to calculate the recurrence.
-    - components is a list of component type names of which the recurrences should be returned.
+    - keep_recurrence_attributes - whether to keep attributes that are only used
+      to calculate the recurrence.
+    - components is a list of component type names of which the recurrences
+      should be returned.
     """
+    components = components or ["VEVENT"]
     a_calendar = x_wr_timezone.to_standard(a_calendar)
     return UnfoldableCalendar(a_calendar, keep_recurrence_attributes, components)

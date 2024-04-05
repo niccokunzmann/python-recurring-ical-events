@@ -2,8 +2,10 @@
 
 See https://github.com/niccokunzmann/python-recurring-ical-events/issues/128
 """
-import recurring_ical_events
+
 import pytest
+
+import recurring_ical_events
 
 
 def test_all_events_are_present(calendars):
@@ -12,7 +14,7 @@ def test_all_events_are_present(calendars):
 
 
 @pytest.mark.parametrize(
-    "string,matches",
+    ("string", "matches"),
     [
         ("COUNT=1", False),
         ("COUNT=1;", False),
@@ -20,9 +22,11 @@ def test_all_events_are_present(calendars):
         ("COUNT=-1;", True),
         ("COUNT=-100", True),
         ("COUNT=-100;", True),
-    ]
+    ],
 )
 def test_matching_negative_count(string, matches):
     """Make sure the general replacement pattern works."""
-    actually_matches = recurring_ical_events.NEGATIVE_RRULE_COUNT_REGEX.match(string) is not None
+    actually_matches = (
+        recurring_ical_events.NEGATIVE_RRULE_COUNT_REGEX.match(string) is not None
+    )
     assert actually_matches == matches

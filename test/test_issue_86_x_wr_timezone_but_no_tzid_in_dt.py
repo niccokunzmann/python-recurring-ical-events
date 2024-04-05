@@ -16,6 +16,3 @@ def test_event_can_be_retrieved(calendars):
     assert event["DTSTART"].dt.day == 16
     assert event["DTSTART"].dt.hour == 21
     assert event["DTSTART"].dt.minute == 0
-
-
-

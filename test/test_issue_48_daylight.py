@@ -11,20 +11,26 @@ October to March: UTC+0
 
 """
 
+from datetime import datetime
+
 import pytest
 from pytz import timezone
-from datetime import datetime, date
 
 TZ = timezone("Europe/Lisbon")
-@pytest.mark.parametrize("date,event_name",[
-    (datetime(2020,11,2,11,15,0,0),0),
-    (datetime(2020,11,2,11,31,0,0),"EVENT2"),
-    (datetime(2020,11,2,12,0,0,0),"EVENT2"),
-    (datetime(2020,11,2,12,1,0,0),"EVENT2"),
-    (datetime(2020,11,2,12,59,0,0),"EVENT2"),
-    (datetime(2020,11,2,13,1,0,0),0)
-])
-def test_event_timing(calendars,date,event_name):
+
+
+@pytest.mark.parametrize(
+    ("date", "event_name"),
+    [
+        (datetime(2020, 11, 2, 11, 15, 0, 0), 0),
+        (datetime(2020, 11, 2, 11, 31, 0, 0), "EVENT2"),
+        (datetime(2020, 11, 2, 12, 0, 0, 0), "EVENT2"),
+        (datetime(2020, 11, 2, 12, 1, 0, 0), "EVENT2"),
+        (datetime(2020, 11, 2, 12, 59, 0, 0), "EVENT2"),
+        (datetime(2020, 11, 2, 13, 1, 0, 0), 0),
+    ],
+)
+def test_event_timing(calendars, date, event_name):
     date = TZ.localize(date)
     events = calendars.issue_48_daylight_aware_repeats.at(date)
     if event_name:
