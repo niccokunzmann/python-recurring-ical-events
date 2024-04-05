@@ -1,18 +1,22 @@
 """Test getting events in a specific order."""
+
 import datetime
+
 import pytest
 import pytz
 
 
 def test_a_calendar_with_no_event_has_no_events(calendars):
     """No event"""
-    for event in calendars.no_events.after(datetime.datetime(2024, 3, 30, 12, 0, 0)):
+    for _ in calendars.no_events.after(datetime.datetime(2024, 3, 30, 12, 0, 0)):
         assert False, "No event expected."
 
 
 def test_a_calendar_with_events_before_has_no_events_later(calendars):
     """No event is found."""
-    for event in calendars.event_10_times.after(datetime.datetime(2024, 3, 30, 12, 0, 0)):
+    for _ in calendars.event_10_times.after(
+        datetime.datetime(2024, 3, 30, 12, 0, 0),
+    ):
         assert False, "No event expected."
 
 
@@ -35,7 +39,7 @@ def test_todo_with_no_dtstart():
 
 
 @pytest.mark.parametrize(
-    "date,count",
+    ("date", "count"),
     [
         ("20200113", 10),
         ("20200114", 9),
@@ -49,7 +53,7 @@ def test_todo_with_no_dtstart():
         ("20200122", 1),
         ("20200123", 0),
         (datetime.datetime(2020, 1, 19, 0, 0, 0, tzinfo=pytz.UTC), 4),
-    ]
+    ],
 )
 def test_get_events_in_series(calendars, date, count):
     """Get a few events in a series."""

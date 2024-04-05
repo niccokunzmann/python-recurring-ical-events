@@ -15,13 +15,14 @@ diff test/calendars/issue-27-t1.ics test/calendars/issue-27-t2.ics
 """
 
 start_date = (2020, 4, 25)
-end_date =   (2020, 4, 30)
+end_date = (2020, 4, 30)
+
 
 def print_events(events):
     for event in events:
         start = event["DTSTART"].dt
         duration = event["DTEND"].dt - event["DTSTART"].dt
-        print("start {} duration {}".format(start, duration))
+        print(f"start {start} duration {duration}")
 
 
 def test_until_value_with_UNKNOWN_timezone_works_with_exdate(calendars):
@@ -36,7 +37,3 @@ def test_until_value_with_DEFAULT_timezone_works_with_exdate(calendars):
     events = calendars.issue_27_t2.between(start_date, end_date)
     print_events(events)
     assert len(events) == 2, "two events, exdate matches one"
-
-
-
-

@@ -232,6 +232,16 @@ while ``b`` and ``c`` can change.
 Development
 -----------
 
+Code style
+**********
+
+Please install `pre-commit <https://pre-commit.com/>`_ before git commit.  It will ensure that the code is formatted and linted as expected using `ruff <https://docs.astral.sh/ruff/>`_.
+
+.. code-block:: shell
+
+   pre-commit install
+
+
 To run the tests, we use ``tox``.
 ``tox`` tests all different Python versions which we want to  be compatible to.
 

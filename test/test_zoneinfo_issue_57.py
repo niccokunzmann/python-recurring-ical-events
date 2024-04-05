@@ -2,15 +2,18 @@
 
 See also Issue https://github.com/niccokunzmann/python-recurring-ical-events/issues/57
 """
-from datetime import date, datetime, timedelta
-import pytest
-from icalendar import Calendar, Event, vDDDTypes
-import recurring_ical_events
+
 import sys
+from datetime import datetime, timedelta
+
+import pytest
 import pytz
+from icalendar import Calendar, Event, vDDDTypes
+
+import recurring_ical_events
 
 
-def test_zoneinfo_example_yields_events(ZoneInfo):
+def test_zoneinfo_example_yields_events(ZoneInfo):  # noqa: N803
     """Test that there is no error.
 
     Source code is taken from Issue 57.
@@ -36,20 +39,28 @@ def test_zoneinfo_must_be_installed_if_it_is_possible():
     """Make sure that zoneinfo and tzdata are installed if possible."""
     python_version = sys.version_info[:2]
     if python_version < (3, 7):
-        return # no zoneinfo
+        return  # no zoneinfo
     from importlib.util import find_spec as module_exists
+
     if python_version <= (3, 8):
-        assert module_exists("backports.zoneinfo"), "zoneinfo should be installed with pip install backports.zoneinfo"
+        assert module_exists(
+            "backports.zoneinfo"
+        ), "zoneinfo should be installed with pip install backports.zoneinfo"
     else:
         assert module_exists("zoneinfo"), "We assume that zoneinfo exists."
-    assert module_exists("tzdata"), "tzdata is necessary to test current time zone understanding."
+    assert module_exists(
+        "tzdata"
+    ), "tzdata is necessary to test current time zone understanding."
 
 
-@pytest.mark.parametrize("dt1", [
-    datetime(2019, 4, 24, 19),
-    pytz.timezone("Europe/Berlin").localize(datetime(2019, 4, 24, 19)),
-    pytz.timezone("America/New_York").localize(datetime(2019, 4, 24, 19)),
-])
+@pytest.mark.parametrize(
+    "dt1",
+    [
+        datetime(2019, 4, 24, 19),
+        pytz.timezone("Europe/Berlin").localize(datetime(2019, 4, 24, 19)),
+        pytz.timezone("America/New_York").localize(datetime(2019, 4, 24, 19)),
+    ],
+)
 def test_zoneinfo_consistent_conversion(calendars, dt1):
     """Make sure that the conversion function actually works."""
     dt2 = calendars.consistent_tz(dt1)
@@ -62,14 +73,19 @@ def test_zoneinfo_consistent_conversion(calendars, dt1):
 
 
 ATTRS = "year,month,day,hour,minute,second".split(",")
-@pytest.mark.parametrize("dt,tz,times", [
-    (datetime(2019, 2, 22, 4, 30), "Europe/Berlin", (2019, 2, 22, 4, 30)),
-    (datetime(2019, 2, 22, 4, 30), "UTC", (2019, 2, 22, 4, 30)),
-])
-def test_convert_to_date(dt, tz, times, ZoneInfo):
+
+
+@pytest.mark.parametrize(
+    ("dt", "tz", "times"),
+    [
+        (datetime(2019, 2, 22, 4, 30), "Europe/Berlin", (2019, 2, 22, 4, 30)),
+        (datetime(2019, 2, 22, 4, 30), "UTC", (2019, 2, 22, 4, 30)),
+    ],
+)
+def test_convert_to_date(dt, tz, times, ZoneInfo):  # noqa: N803
     """Check that a datetime conversion takes place properly."""
     new = recurring_ical_events.convert_to_datetime(dt, ZoneInfo(tz))
     converted = ()
-    for attr, value in zip(ATTRS, times):
+    for attr, _ in zip(ATTRS, times):
         converted += (getattr(new, attr),)
     assert converted == times
