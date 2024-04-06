@@ -13,7 +13,7 @@ Recurring ICal events for Python
 .. image:: https://img.shields.io/opencollective/all/open-web-calendar?label=support%20on%20open%20collective
    :target: https://opencollective.com/open-web-calendar/
    :alt: Support on Open Collective
-.. image:: https://img.shields.io/github/issues/niccokunzmann/python-recurring-ical-events/polar?label=issues%20seek%20funding&color=%23374e96
+.. image:: https://img.shields.io/github/issues/niccokunzmann/python-recurring-ical-events?logo=github&label=issues%20seek%20funding&color=%230062ff
    :target: https://polar.sh/niccokunzmann/python-recurring-ical-events
    :alt: issues seek funding
 
