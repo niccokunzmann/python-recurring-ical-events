@@ -604,17 +604,22 @@ class UnfoldableCalendar:
         "VTODO": RepeatedTodo,
         "VJOURNAL": RepeatedJournal,
     }
+    skip_bad_events = False
 
     def __init__(
         self,
         calendar,
         keep_recurrence_attributes=False,
         components=None,
+        skip_bad_events=None,
     ):
         """Create an unfoldable calendar from a given calendar."""
         if calendar.get("CALSCALE", "GREGORIAN") != "GREGORIAN":
             # https://www.kanzaki.com/docs/ical/calscale.html
             raise InvalidCalendar("Only Gregorian calendars are supported.")
+
+        if skip_bad_events is not None:
+            self.skip_bad_events = skip_bad_events
 
         self.repetitions = []
         components = components or ["VEVENT"]
@@ -627,10 +632,11 @@ class UnfoldableCalendar:
                 )
 
             for event in calendar.walk(component_name):
-                recurrence_calculator = self.recurrence_calculators[component_name]
-                self.repetitions.append(
-                    recurrence_calculator(event, keep_recurrence_attributes),
-                )
+                with self.__handle_invalid_calendar_errors:
+                    recurrence_calculator = self.recurrence_calculators[component_name]
+                    self.repetitions.append(
+                        recurrence_calculator(event, keep_recurrence_attributes),
+                    )
 
     @staticmethod
     def to_datetime(date):
@@ -746,23 +752,24 @@ class UnfoldableCalendar:
         # see https://github.com/niccokunzmann/python-recurring-ical-events/issues/62
         remove_because_not_in_span = []
         for event_repetitions in self.repetitions:
-            if event_repetitions.is_recurrence():
-                repetition = event_repetitions.as_single_event()
-                if repetition is None:
+            with self.__handle_invalid_calendar_errors:
+                if event_repetitions.is_recurrence():
+                    repetition = event_repetitions.as_single_event()
+                    if repetition is None:
+                        continue
+                    vevent = repetition.as_vevent()
+                    add_event(vevent)
+                    if not repetition.is_in_span(span_start, span_stop):
+                        remove_because_not_in_span.append(vevent)
                     continue
-                vevent = repetition.as_vevent()
-                add_event(vevent)
-                if not repetition.is_in_span(span_start, span_stop):
-                    remove_because_not_in_span.append(vevent)
-                continue
-            for repetition in event_repetitions.within_days(
-                span_start_day,
-                span_stop_day,
-            ):
-                if compare_greater(repetition.start, span_stop):
-                    break
-                if repetition.is_in_span(span_start, span_stop):
-                    add_event(repetition.as_vevent())
+                for repetition in event_repetitions.within_days(
+                    span_start_day,
+                    span_stop_day,
+                ):
+                    if compare_greater(repetition.start, span_stop):
+                        break
+                    if repetition.is_in_span(span_start, span_stop):
+                        add_event(repetition.as_vevent())
 
         for vevent in remove_because_not_in_span:
             with contextlib.suppress(ValueError):
@@ -822,9 +829,29 @@ class UnfoldableCalendar:
             )  # binary search to improve speed
             earliest_end = next_end
 
+    @property
+    @contextlib.contextmanager
+    def __handle_invalid_calendar_errors(self):
+        """
+        Private context manager which catch `InvalidCalendar` exceptions and
+        silently skip them if `self.skip_bad_events` is `True`
+
+        Usage:
+        with self.__handle_invalid_calendar_errors:
+            ...
+        """
+        try:
+            yield
+        except InvalidCalendar:
+            if not self.skip_bad_events:
+                raise
+
 
 def of(
-    a_calendar, keep_recurrence_attributes=False, components=None
+    a_calendar,
+    keep_recurrence_attributes=False,
+    components=None,
+    skip_bad_events=False,
 ) -> UnfoldableCalendar:
     """Unfold recurring events of a_calendar
 
@@ -836,7 +863,9 @@ def of(
     """
     components = components or ["VEVENT"]
     a_calendar = x_wr_timezone.to_standard(a_calendar)
-    return UnfoldableCalendar(a_calendar, keep_recurrence_attributes, components)
+    return UnfoldableCalendar(
+        a_calendar, keep_recurrence_attributes, components, skip_bad_events
+    )
 
 
 __all__ = [
