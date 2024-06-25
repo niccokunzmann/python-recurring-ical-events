@@ -25,6 +25,19 @@ This tool takes care of these circumstances.
 
 Let's put our expertise together and build a tool that can solve this!
 
+.. image:: https://img.shields.io/badge/RFC_2445-deprecated-red
+   :target: https://datatracker.ietf.org/doc/html/rfc2445#section-4.8.5.2
+   :alt: RFC 2445 is deprecated
+.. image:: https://img.shields.io/badge/RFC_5545-supported-green
+   :target: https://datatracker.ietf.org/doc/html/rfc5545
+   :alt: RFC 5545 is supported
+.. image:: https://img.shields.io/badge/RFC_7529-todo-red
+   :target: https://github.com/niccokunzmann/python-recurring-ical-events/issues/142
+   :alt: RFC 7529 is not implemented
+.. image:: https://img.shields.io/badge/RFC_7953-todo-red
+   :target: https://github.com/niccokunzmann/python-recurring-ical-events/issues/143
+   :alt: RFC 7953 is not implemented
+
 * day light saving time (DONE)
 * recurring events (DONE)
 * recurring events with edits (DONE)
@@ -42,6 +55,7 @@ Let's put our expertise together and build a tool that can solve this!
 * `DURATION <https://www.kanzaki.com/docs/ical/duration.html>`_ (DONE)
 * `EXDATE <https://www.kanzaki.com/docs/ical/exdate.html>`_ (DONE)
 * `X-WR-TIMEZONE` compatibilty (DONE)
+* non-gregorian event repetitions (TODO)
 
 Not included:
 
