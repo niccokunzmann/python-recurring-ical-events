@@ -7,3 +7,4 @@ pytest-cov
 restructuredtext-lint
 pygments
 pytz >= 2023.3
+icalendar >=6.0.0a0
