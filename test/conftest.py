@@ -14,7 +14,6 @@ except ImportError:
         import backports.zoneinfo as _zoneinfo
     except ImportError:
         _zoneinfo = None
-from x_wr_timezone import CalendarWalker
 
 HERE = Path(__file__).parent
 REPO = Path(HERE).parent
@@ -36,8 +35,13 @@ class ICSCalendars:
     Calendar = icalendar.Calendar
     components = None
 
+    def __init__(self, tzp):
+        """Create ICS calendars in a specific timezone."""
+        self.tzp = tzp
+
     def get_calendar(self, content):
         """Return the calendar given the content."""
+        self.tzp()
         return self.Calendar.from_ical(content)
 
     def __getitem__(self, name):
@@ -45,7 +49,7 @@ class ICSCalendars:
 
     @property
     def raw(self):
-        return ICSCalendars()
+        return ICSCalendars(self.tzp)
 
     def consistent_tz(self, dt):
         """Make the datetime consistent with the time zones used in these calendars."""
@@ -59,6 +63,9 @@ class ICSCalendars:
         if self.components is None:
             return of(calendar)
         return of(calendar, components=self.components)
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}({self.tzp.__name__})"
 
 
 for calendar_path in CALENDARS_FOLDER.iterdir():
@@ -99,47 +106,17 @@ class ReversedCalendars(ICSCalendars):
         return self._of(calendar)
 
 
-class ZoneInfoConverter(CalendarWalker):
-    """Visit a calendar and change all time zones to ZoneInfo"""
-
-    def walk_value_datetime(self, dt):
-        """Chnage timezone of datetime to zoneinfo"""
-        py_tz = dt.tzinfo
-        if py_tz is None:
-            return dt
-        name = py_tz.zone  # , py_tz.tzname(dt)
-        new_tz = _zoneinfo.ZoneInfo(name)  # create a zoneinfo from pytz time zone
-        return dt.astimezone(new_tz)
-
-
-class ZoneInfoCalendars(ICSCalendars):
-    """Collection of calendars using zoneinfo.ZoneInfo and not pytz."""
-
-    def __init__(self):
-        assert _zoneinfo is not None, "zoneinfo must exist to use these calendars"
-        self.changer = ZoneInfoConverter()
-
-    def get_calendar(self, content):
-        calendar = ICSCalendars.get_calendar(self, content)
-        zoneinfo_calendar = self.changer.walk(calendar)
-        #        if zoneinfo_calendar is calendar:
-        #            pytest.skip("ZoneInfo not in use. Already tested..")
-        return self._of(zoneinfo_calendar)
-
-    def consistent_tz(self, dt):
-        """To make the time zones consistent with this one, convert them to zoneinfo."""
-        return self.changer.walk_value_datetime(dt)
-
-
-calendar_params = [Calendars, ReversedCalendars]
-if _zoneinfo is not None:
-    calendar_params.append(ZoneInfoCalendars)
+@pytest.fixture(params=[icalendar.use_pytz, icalendar.use_zoneinfo], scope="module")
+def tzp(request):
+    """The timezone provider supported by icalendar."""
+    return request.param
 
 
 # for parametrizing fixtures, see https://docs.pytest.org/en/latest/fixture.html#parametrizing-fixtures
-@pytest.fixture(params=calendar_params, scope="module")
-def calendars(request):
-    return request.param()
+@pytest.fixture(params=[Calendars, ReversedCalendars], scope="module")
+def calendars(request, tzp):
+    """The calendars we can use in the tests."""
+    return request.param(tzp)
 
 
 @pytest.fixture()
@@ -154,11 +131,6 @@ def zoneinfo():
 
     Uses backports.zoneinfo or zoneinfo.
     """
-    if _zoneinfo is None:
-        pytest.skip(
-            "zoneinfo module not given. "
-            "Use pip install backports.zoneinfo to install it.",
-        )
     return _zoneinfo
 
 

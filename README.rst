@@ -326,6 +326,12 @@ To release new versions,
 Changelog
 ---------
 
+- v2.2.2
+
+  - Test support for ``icalendar==6.*``
+  - Remove Python 3.7 from tests and compatibility list
+  - Remove pytz from requirements
+
 - v2.2.1
 
   - Add support for multiple RRULE in events.
