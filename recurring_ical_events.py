@@ -264,8 +264,8 @@ class RepeatedComponent:
           in repetitions.
         """
         self.component = component
-        self.start = self.original_start = self._get_component_start()
-        self.end = self.original_end = self._get_component_end()
+        self.start = self.original_start = self.start_of(component)
+        self.end = self.original_end = self.end_of(component)
         self.keep_recurrence_attributes = keep_recurrence_attributes
         self.exdates = []
         self.exdates_utc = set()
@@ -499,14 +499,23 @@ class RepeatedComponent:
         If the component has no UID, it is assumed to be different from other
         components.
         """
+        return self.id_of(self.component)
+
+    @classmethod
+    def id_of(cls, component):
+        """The ID of this component.
+
+        If the component has no UID, it is assumed to be different from other
+        components.
+        """
         rid = (
-            self.component.get("RECURRENCE-ID").dt
-            if "RECURRENCE-ID" in self.component
-            else self.original_start
+            component.get("RECURRENCE-ID").dt
+            if "RECURRENCE-ID" in component
+            else cls.start_of(component)
         )
         return (
-            self.component.name,
-            self.component.get("UID", id(self.component)),
+            component.name,
+            component.get("UID", id(component)),
             rid,
         )
 
@@ -516,62 +525,66 @@ class RepeatedEvent(RepeatedComponent):
 
     end_prop = "DTEND"
 
-    def _get_component_start(self):
+    @classmethod
+    def start_of(cls, component):
         """Return DTSTART"""
         # Arguably, it may be considered a feature that this breaks
         # if no DTSTART is set
-        return self.component["DTSTART"].dt
+        return component["DTSTART"].dt
 
-    def _get_component_end(self):
+    @classmethod
+    def end_of(cls, component):
         """
         Yield DTEND or calculate the end of the event based on
         DTSTART and DURATION.
         """
         ## an even may have DTEND or DURATION, but not both
-        end = self.component.get("DTEND")
+        end = component.get("DTEND")
         if end is not None:
             return end.dt
-        duration = self.component.get("DURATION")
+        duration = component.get("DURATION")
         if duration is not None:
-            return self.component["DTSTART"].dt + duration.dt
-        return self.component["DTSTART"].dt
+            return component["DTSTART"].dt + duration.dt
+        return component["DTSTART"].dt
 
 
 class RepeatedTodo(RepeatedComponent):
     end_prop = "DUE"
 
-    def _get_component_start(self):
+    @classmethod
+    def start_of(cls, component):
         """Return DTSTART if it set, do not panic if it's not set."""
         ## easy case - DTSTART set
-        start = self.component.get("DTSTART")
+        start = component.get("DTSTART")
         if start is not None:
             return start.dt
         ## Tasks may have DUE set, but no DTSTART.
         ## Let's assume 0 duration and return the DUE
-        due = self.component.get("DUE")
+        due = component.get("DUE")
         if due is not None:
             return due.dt
 
         ## Assume infinite time span if neither is given
         ## (see the comments under _get_event_end)
-        return datetime.date(*DATE_MIN)
+        return DATE_MIN_DT
 
-    def _get_component_end(self):
+    @classmethod
+    def end_of(cls, component):
         """Return DUE or DTSTART+DURATION or something"""
         ## Easy case - DUE is set
-        end = self.component.get("DUE")
+        end = component.get("DUE")
         if end is not None:
             return end.dt
 
-        dtstart = self.component.get("DTSTART")
+        dtstart = component.get("DTSTART")
 
         ## DURATION can be specified instead of DUE.
-        duration = self.component.get("DURATION")
+        duration = component.get("DURATION")
         ## It is no requirement that DTSTART is set.
         ## Perhaps duration is a time estimate rather than an indirect
         ## way to set DUE.
         if duration is not None and dtstart is not None:
-            return self.component["DTSTART"].dt + duration.dt
+            return component["DTSTART"].dt + duration.dt
 
         ## According to the RFC, a VEVENT without an end/duration
         ## is to be considered to have zero duration.  Assuming the
@@ -592,22 +605,24 @@ class RepeatedTodo(RepeatedComponent):
 class RepeatedJournal(RepeatedComponent):
     end_prop = ""
 
-    def _get_component_start(self):
+    @classmethod
+    def start_of(cls, component):
         """Return DTSTART if it set, do not panic if it's not set."""
         ## according to the specification, DTSTART in a VJOURNAL is optional
-        dtstart = self.component.get("DTSTART")
+        dtstart = component.get("DTSTART")
         if dtstart is not None:
             return dtstart.dt
-        return datetime.date(*DATE_MIN)
+        return DATE_MIN_DT
 
     ## VJOURNAL cannot have a DTEND.  We should consider a VJOURNAL to
     ## describe one day if DTSTART is a date, and we can probably
     ## consider it to have zero duration if a timestamp is given.
-    _get_component_end = _get_component_start
+    end_of = start_of
 
 
 # The minimum value accepted as date (pytz + zoneinfo)
 DATE_MIN = (1970, 1, 1)
+DATE_MIN_DT = datetime.date(*DATE_MIN)
 # The maximum value accepted as date (pytz + zoneinfo)
 DATE_MAX = (2038, 1, 1)
 DATE_MAX_DT = datetime.date(*DATE_MAX)
@@ -814,7 +829,7 @@ class UnfoldableCalendar:
 
         => (name, UID, recurrence-id)
         """
-        return self.recurrence_calculators[event.name](event).id
+        return self.recurrence_calculators[event.name].id_of(event)
 
     def after(self, earliest_end):
         """
