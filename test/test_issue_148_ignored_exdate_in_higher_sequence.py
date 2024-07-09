@@ -4,6 +4,8 @@ In case the whole event is edited and receives a new sequence number,
 the exdate should be considered.
 """
 
+from datetime import date
+
 import pytest
 
 
@@ -81,3 +83,14 @@ def test_rdate_and_exdate_are_unedited(calendars, date, count, message):
     events = calendars.issue_148_exdate_and_rdate_unedited.at(date)
     print(events)
     assert len(events) == count, message
+
+
+@pytest.mark.parametrize("index", [1, 2])
+def test_edge_cases(calendars, index):
+    """Check the results of the edge cases."""
+    events = calendars[f"issue_148_edge_case_{index}"].all()
+    assert len(events) == 3
+    starts = [event["DTSTART"].dt for event in events]
+    assert date(2024, 7, 2) in starts
+    assert date(2024, 7, 1) in starts
+    assert date(2024, 7, 29) in starts
