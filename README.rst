@@ -326,6 +326,10 @@ To release new versions,
 Changelog
 ---------
 
+- v2.2.3
+
+  - Fix: Edits of whole event are now considering RDATE and EXDATE, see `Issue 148 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/148>`_
+
 - v2.2.2
 
   - Test support for ``icalendar==6.*``
