@@ -31,4 +31,53 @@ def test_summary_is_modified(calendars, date, summary):
     events = calendars.issue_148_ignored_exdate.at(date)
     assert events
     event = events[0]
+    print(event)
     assert event["SUMMARY"] == summary
+
+
+@pytest.mark.parametrize(
+    ("date", "count", "message"),
+    [
+        ("20240701", 1, "The original event is present"),
+        (
+            "20240715",
+            1,
+            "The formerly excluded event is present after edit - EXDATE removed",
+        ),
+        (
+            "20240717",
+            0,
+            "The formerly added event is removed after edit - RDATE removed",
+        ),
+        (
+            "20240729",
+            0,
+            "The formerly present recurring event is now excluded - EXDATE added",
+        ),
+        ("20240730", 1, "Now, there is a new RDATE - RDATE added"),
+    ],
+)
+def test_rdate_and_exdate_are_updated(calendars, date, count, message):
+    """If we have RDATE and EXDATE present, we would like to update those and
+    not use the old values."""
+    events = calendars.issue_148_exdate_and_rdate_updated.at(date)
+    print(events)
+    assert len(events) == count, message
+
+
+@pytest.mark.parametrize(
+    ("date", "count", "message"),
+    [
+        ("20240701", 1, "The original event is present"),
+        ("20240715", 0, "The formerly excluded event is absent"),
+        ("20240717", 1, "The formerly added event is there"),
+        ("20240729", 1, "The formerly present recurring event is there"),
+        ("20240730", 0, "There is no RDATE, yet"),
+    ],
+)
+def test_rdate_and_exdate_are_unedited(calendars, date, count, message):
+    """If we have RDATE and EXDATE present, we would like to check the the
+    value are used before edit."""
+    events = calendars.issue_148_exdate_and_rdate_unedited.at(date)
+    print(events)
+    assert len(events) == count, message
