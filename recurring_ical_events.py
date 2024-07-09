@@ -319,6 +319,11 @@ class RepeatedComponent:
         if not self.until or not compare_greater(self.start, self.until):
             self.rule.rdate(self.start)
 
+    @property
+    def sequence(self) -> int:
+        """The sequence number in the order of edits. Greater means later."""
+        return int(self.component.get("SEQUENCE", 0))
+
     def create_rule_with_start(self, rule_string):
         """Helper to create an rrule from a rule_string
 
@@ -487,6 +492,24 @@ class RepeatedComponent:
             return repetition
         return None
 
+    @property
+    def id(self):
+        """The ID of this component.
+
+        If the component has no UID, it is assumed to be different from other
+        components.
+        """
+        rid = (
+            self.component.get("RECURRENCE-ID").dt
+            if "RECURRENCE-ID" in self.component
+            else self.original_start
+        )
+        return (
+            self.component.name,
+            self.component.get("UID", id(self.component)),
+            rid,
+        )
+
 
 class RepeatedEvent(RepeatedComponent):
     """An event with repetitions created from an icalendar event."""
@@ -621,7 +644,7 @@ class UnfoldableCalendar:
         if skip_bad_events is not None:
             self.skip_bad_events = skip_bad_events
 
-        self.repetitions = []
+        self.repetitions = {}  # id -> component
         components = components or ["VEVENT"]
         for component_name in components:
             if component_name not in self.recurrence_calculators:
@@ -631,12 +654,22 @@ class UnfoldableCalendar:
                     f"I only know these: {recurrence_calculators_str}."
                 )
 
+            recurrence_calculator = self.recurrence_calculators[component_name]
             for event in calendar.walk(component_name):
                 with self.__handle_invalid_calendar_errors:
-                    recurrence_calculator = self.recurrence_calculators[component_name]
-                    self.repetitions.append(
-                        recurrence_calculator(event, keep_recurrence_attributes),
+                    recurring_component = recurrence_calculator(
+                        event, keep_recurrence_attributes
                     )
+                    rid = self._get_event_id(event)
+                    # TODO: This is a little off: The calendar merges the
+                    #       events but actually that could be done by the
+                    #       components themselves.
+                    if (
+                        rid not in self.repetitions
+                        or recurring_component.sequence > self.repetitions[rid].sequence
+                    ):
+                        # we have to replace a later edit
+                        self.repetitions[rid] = recurring_component
 
     @staticmethod
     def to_datetime(date):
@@ -712,7 +745,6 @@ class UnfoldableCalendar:
 
         def add_event(event):
             """Add an event and check if it was edited."""
-            # TODO: test what comes first
             same_events = events_by_id[event.get("UID", default_uid)]
             # TODO: this is still wrong: what if there are different events at
             # the same time?
@@ -723,7 +755,7 @@ class UnfoldableCalendar:
             if isinstance(recurrence_id, datetime.datetime):
                 recurrence_id = recurrence_id.date()
             other = same_events.get(recurrence_id, None)
-            if other:  # TODO: test that this is independet of order
+            if other:
                 event_recurrence_id = event.get("RECURRENCE-ID", None)
                 other_recurrence_id = other.get("RECURRENCE-ID", None)
                 if event_recurrence_id is not None and other_recurrence_id is None:
@@ -751,7 +783,7 @@ class UnfoldableCalendar:
         # the time span
         # see https://github.com/niccokunzmann/python-recurring-ical-events/issues/62
         remove_because_not_in_span = []
-        for event_repetitions in self.repetitions:
+        for event_repetitions in self.repetitions.values():
             with self.__handle_invalid_calendar_errors:
                 if event_repetitions.is_recurrence():
                     repetition = event_repetitions.as_single_event()
@@ -777,17 +809,12 @@ class UnfoldableCalendar:
 
         return events
 
-    @staticmethod
-    def _get_event_id(event):
+    def _get_event_id(self, event):
         """Return a tuple that identifies the event.
 
         => (name, UID, recurrence-id)
         """
-        return (
-            event.name,
-            event.get("UID"),
-            event.get("RECURRENCE-ID", event.get("DTSTART")).dt,
-        )
+        return self.recurrence_calculators[event.name](event).id
 
     def after(self, earliest_end):
         """
