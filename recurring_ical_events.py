@@ -264,8 +264,8 @@ class RepeatedComponent:
           in repetitions.
         """
         self.component = component
-        self.start = self.original_start = self._get_component_start()
-        self.end = self.original_end = self._get_component_end()
+        self.start = self.original_start = self.start_of(component)
+        self.end = self.original_end = self.end_of(component)
         self.keep_recurrence_attributes = keep_recurrence_attributes
         self.exdates = []
         self.exdates_utc = set()
@@ -318,6 +318,11 @@ class RepeatedComponent:
 
         if not self.until or not compare_greater(self.start, self.until):
             self.rule.rdate(self.start)
+
+    @property
+    def sequence(self) -> int:
+        """The sequence number in the order of edits. Greater means later."""
+        return int(self.component.get("SEQUENCE", 0))
 
     def create_rule_with_start(self, rule_string):
         """Helper to create an rrule from a rule_string
@@ -487,68 +492,99 @@ class RepeatedComponent:
             return repetition
         return None
 
+    @property
+    def id(self):
+        """The ID of this component.
+
+        If the component has no UID, it is assumed to be different from other
+        components.
+        """
+        return self.id_of(self.component)
+
+    @classmethod
+    def id_of(cls, component):
+        """The ID of this component.
+
+        If the component has no UID, it is assumed to be different from other
+        components.
+        """
+        rid = (
+            component.get("RECURRENCE-ID").dt
+            if "RECURRENCE-ID" in component
+            else cls.start_of(component)
+        )
+        return (
+            component.name,
+            component.get("UID", id(component)),
+            rid,
+        )
+
 
 class RepeatedEvent(RepeatedComponent):
     """An event with repetitions created from an icalendar event."""
 
     end_prop = "DTEND"
 
-    def _get_component_start(self):
+    @classmethod
+    def start_of(cls, component):
         """Return DTSTART"""
         # Arguably, it may be considered a feature that this breaks
         # if no DTSTART is set
-        return self.component["DTSTART"].dt
+        return component["DTSTART"].dt
 
-    def _get_component_end(self):
+    @classmethod
+    def end_of(cls, component):
         """
         Yield DTEND or calculate the end of the event based on
         DTSTART and DURATION.
         """
         ## an even may have DTEND or DURATION, but not both
-        end = self.component.get("DTEND")
+        end = component.get("DTEND")
         if end is not None:
             return end.dt
-        duration = self.component.get("DURATION")
+        duration = component.get("DURATION")
         if duration is not None:
-            return self.component["DTSTART"].dt + duration.dt
-        return self.component["DTSTART"].dt
+            return component["DTSTART"].dt + duration.dt
+        return component["DTSTART"].dt
 
 
 class RepeatedTodo(RepeatedComponent):
     end_prop = "DUE"
 
-    def _get_component_start(self):
+    @classmethod
+    def start_of(cls, component):
         """Return DTSTART if it set, do not panic if it's not set."""
         ## easy case - DTSTART set
-        start = self.component.get("DTSTART")
+        start = component.get("DTSTART")
         if start is not None:
             return start.dt
         ## Tasks may have DUE set, but no DTSTART.
         ## Let's assume 0 duration and return the DUE
-        due = self.component.get("DUE")
+        due = component.get("DUE")
         if due is not None:
             return due.dt
 
         ## Assume infinite time span if neither is given
         ## (see the comments under _get_event_end)
-        return datetime.date(*DATE_MIN)
+        return DATE_MIN_DT
 
-    def _get_component_end(self):
+    @classmethod
+    def end_of(cls, component):
         """Return DUE or DTSTART+DURATION or something"""
         ## Easy case - DUE is set
-        end = self.component.get("DUE")
+        end = component.get("DUE")
         if end is not None:
             return end.dt
 
-        dtstart = self.component.get("DTSTART")
+        dtstart = component.get("DTSTART")
 
         ## DURATION can be specified instead of DUE.
-        duration = self.component.get("DURATION")
+        duration = component.get("DURATION")
         ## It is no requirement that DTSTART is set.
         ## Perhaps duration is a time estimate rather than an indirect
         ## way to set DUE.
         if duration is not None and dtstart is not None:
-            return self.component["DTSTART"].dt + duration.dt
+            return component["DTSTART"].dt + duration.dt
 
         ## According to the RFC, a VEVENT without an end/duration
         ## is to be considered to have zero duration.  Assuming the
@@ -569,22 +605,24 @@ class RepeatedTodo(RepeatedComponent):
 class RepeatedJournal(RepeatedComponent):
     end_prop = ""
 
-    def _get_component_start(self):
+    @classmethod
+    def start_of(cls, component):
         """Return DTSTART if it set, do not panic if it's not set."""
         ## according to the specification, DTSTART in a VJOURNAL is optional
-        dtstart = self.component.get("DTSTART")
+        dtstart = component.get("DTSTART")
         if dtstart is not None:
             return dtstart.dt
-        return datetime.date(*DATE_MIN)
+        return DATE_MIN_DT
 
     ## VJOURNAL cannot have a DTEND.  We should consider a VJOURNAL to
     ## describe one day if DTSTART is a date, and we can probably
     ## consider it to have zero duration if a timestamp is given.
-    _get_component_end = _get_component_start
+    end_of = start_of
 
 
 # The minimum value accepted as date (pytz + zoneinfo)
 DATE_MIN = (1970, 1, 1)
+DATE_MIN_DT = datetime.date(*DATE_MIN)
 # The maximum value accepted as date (pytz + zoneinfo)
 DATE_MAX = (2038, 1, 1)
 DATE_MAX_DT = datetime.date(*DATE_MAX)
@@ -621,7 +659,7 @@ class UnfoldableCalendar:
         if skip_bad_events is not None:
             self.skip_bad_events = skip_bad_events
 
-        self.repetitions = []
+        self.repetitions = {}  # id -> component
         components = components or ["VEVENT"]
         for component_name in components:
             if component_name not in self.recurrence_calculators:
@@ -631,12 +669,22 @@ class UnfoldableCalendar:
                     f"I only know these: {recurrence_calculators_str}."
                 )
 
+            recurrence_calculator = self.recurrence_calculators[component_name]
             for event in calendar.walk(component_name):
                 with self.__handle_invalid_calendar_errors:
-                    recurrence_calculator = self.recurrence_calculators[component_name]
-                    self.repetitions.append(
-                        recurrence_calculator(event, keep_recurrence_attributes),
+                    recurring_component = recurrence_calculator(
+                        event, keep_recurrence_attributes
                     )
+                    rid = self._get_event_id(event)
+                    # TODO: This is a little off: The calendar merges the
+                    #       events but actually that could be done by the
+                    #       components themselves.
+                    if (
+                        rid not in self.repetitions
+                        or recurring_component.sequence > self.repetitions[rid].sequence
+                    ):
+                        # we have to replace a later edit
+                        self.repetitions[rid] = recurring_component
 
     @staticmethod
     def to_datetime(date):
@@ -712,7 +760,6 @@ class UnfoldableCalendar:
 
         def add_event(event):
             """Add an event and check if it was edited."""
-            # TODO: test what comes first
             same_events = events_by_id[event.get("UID", default_uid)]
             # TODO: this is still wrong: what if there are different events at
             # the same time?
@@ -723,7 +770,7 @@ class UnfoldableCalendar:
             if isinstance(recurrence_id, datetime.datetime):
                 recurrence_id = recurrence_id.date()
             other = same_events.get(recurrence_id, None)
-            if other:  # TODO: test that this is independet of order
+            if other:
                 event_recurrence_id = event.get("RECURRENCE-ID", None)
                 other_recurrence_id = other.get("RECURRENCE-ID", None)
                 if event_recurrence_id is not None and other_recurrence_id is None:
@@ -751,7 +798,7 @@ class UnfoldableCalendar:
         # the time span
         # see https://github.com/niccokunzmann/python-recurring-ical-events/issues/62
         remove_because_not_in_span = []
-        for event_repetitions in self.repetitions:
+        for event_repetitions in self.repetitions.values():
             with self.__handle_invalid_calendar_errors:
                 if event_repetitions.is_recurrence():
                     repetition = event_repetitions.as_single_event()
@@ -777,17 +824,12 @@ class UnfoldableCalendar:
 
         return events
 
-    @staticmethod
-    def _get_event_id(event):
+    def _get_event_id(self, event):
         """Return a tuple that identifies the event.
 
         => (name, UID, recurrence-id)
         """
-        return (
-            event.name,
-            event.get("UID"),
-            event.get("RECURRENCE-ID", event.get("DTSTART")).dt,
-        )
+        return self.recurrence_calculators[event.name].id_of(event)
 
     def after(self, earliest_end):
         """
