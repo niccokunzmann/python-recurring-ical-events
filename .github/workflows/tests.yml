@@ -109,3 +109,21 @@ jobs:
         fi
         twine check dist/*
         twine upload dist/*
+
+  deploy-github-release:
+    # only deploy on tags, see https://stackoverflow.com/a/58478262/1320237
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs:
+    - run-tests
+    - deploy-tag-to-pypi
+    runs-on: ubuntu-latest
+    environment:
+      name: github-release
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create GitHub release from tag
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          body: "To view the changes, please see the [Changelog](https://github.com/niccokunzmann/python-recurring-ical-events?tab=readme-ov-file#changelog). This release can be installed from [PyPI](https://pypi.org/project/recurring-ical-events/#history)."
+          generateReleaseNotes: false
