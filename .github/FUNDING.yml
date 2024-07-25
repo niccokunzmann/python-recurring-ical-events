@@ -2,6 +2,7 @@
 
 github: # Replace with up to 4 GitHub Sponsors-enabled usernames e.g., [user1, user2]
 - niccokunzmann
+polar: niccokunzmann/python-recurring-ical-events
 patreon: # Replace with a single Patreon username
 open_collective: open-web-calendar # Replace with a single Open Collective username
 ko_fi: # Replace with a single Ko-fi username
@@ -12,4 +13,3 @@ issuehunt: # Replace with a single IssueHunt username
 otechie: # Replace with a single Otechie username
 lfx_crowdfunding: # Replace with a single LFX Crowdfunding project-name e.g., cloud-foundry
 custom: # Replace with up to 4 custom sponsorship URLs e.g., ['link1', 'link2']
-  - https://polar.sh/niccokunzmann/python-recurring-ical-events
