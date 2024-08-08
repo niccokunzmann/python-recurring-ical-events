@@ -8,26 +8,35 @@ assignees: ''
 <!-- This template is a suggestion. So, you do not have to use it. -->
 
 **Describe the bug**
-<!-- A clear and concise description of what the bug is. --> 
+<!-- A clear and concise description of what the bug is. -->
 
 **To Reproduce**
-<!-- Source code to reproduce the behavior. --> 
+<!-- Source code to reproduce the behavior. -->
 
 **ICS file**
-<!-- Please paste an ICS file here which does not work or attach it. --> 
+<!-- Please paste an ICS file here which does not work or attach it with a .txt ending. -->
 
 ```
 ```
 
 **Expected behavior**
-<!-- A clear and concise description of what you expected to happen. --> 
+<!-- A clear and concise description of what you expected to happen. -->
 
 **Console output**
-<!-- If applicable, add output/screenshots to help explain your problem. --> 
+<!-- If applicable, add output/screenshots to help explain your problem. -->
 
 **Version:**
-<!-- Which Version do you use? --> 
+<!-- Which Version do you use? -->
 ![](https://raster.shields.io/badge/version-0.1.12b0-brightgreen.png)
+
+<!-- Sometimes, the problems are in other packages. You can provide an overview
+     by running this command and passing the output:
+
+     pip list
+-->
+```shell
+pip list
+```
 
 **Additional context**
 <!-- Add any other context about the problem here. Or maybe related issues. -->
