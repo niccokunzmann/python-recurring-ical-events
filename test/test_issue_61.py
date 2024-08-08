@@ -21,4 +21,4 @@ def test_sequence_is_not_present(calendars):
     )  # datetime.datetime.now(timezone(tz)) # use fixed time
     events = calendars.issue_61_time_zone_error.at(now)
     assert len(events) == 1
-    assert type(events[0]["DTSTART"].dt) == datetime.date
+    assert isinstance(events[0]["DTSTART"].dt, datetime.date)
