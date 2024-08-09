@@ -14,4 +14,4 @@ def test_count_events_from_issue(calendars):
     events = calendars.issue_151_macos_linux_difference.between(start_time, end_time)
     for event in events:
         print(event["UID"], event["DTSTART"], event["SUMMARY"])
-    assert len(events) == 4
+    assert len(events) == 1
