@@ -5,6 +5,7 @@ See https://github.com/niccokunzmann/python-recurring-ical-events/issues/151
 
 from datetime import datetime, timezone
 from recurring_ical_events import time_span_contains_event
+import pytest
 
 
 def _test_count_events_from_issue(calendars):
@@ -40,8 +41,8 @@ def test_that_time_span_contains_event(calendars, utc):
     print(f"time_span_contains_event(\n\t{start_time}, \n\t{end_time}, \n\t{event_start_time}, \n\t{event_end_time})")
     assert time_span_contains_event(start_time, end_time, event_start_time, event_end_time)
 
-
-def test_that_time_span_contains_event_in_same_timezone(calendars, utc):
+@pytest.mark.parametrize("comparable", [True, False])
+def test_that_time_span_contains_event_in_same_timezone(calendars, utc, comparable):
     """Check that the timespan issue is due to the timezone provided."""
     start_time = datetime.fromtimestamp(1722564000, utc)
     end_time = datetime.fromtimestamp(1722567600, utc)
@@ -53,5 +54,5 @@ def test_that_time_span_contains_event_in_same_timezone(calendars, utc):
     start_time = start_time.astimezone(event_start_time.tzinfo)
     event_end_time = event["DTEND"].dt
     end_time = end_time.astimezone(event_start_time.tzinfo)
-    print(f"time_span_contains_event(\n\t{start_time}, \n\t{end_time}, \n\t{event_start_time}, \n\t{event_end_time})")
-    assert time_span_contains_event(start_time, end_time, event_start_time, event_end_time)
+    print(f"time_span_contains_event(\n\t{start_time}, \n\t{end_time}, \n\t{event_start_time}, \n\t{event_end_time}, comparable={comparable})")
+    assert time_span_contains_event(start_time, end_time, event_start_time, event_end_time, comparable=comparable)
