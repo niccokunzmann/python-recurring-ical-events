@@ -8,7 +8,7 @@ from recurring_ical_events import time_span_contains_event
 import pytest
 
 
-def _test_count_events_from_issue(calendars):
+def test_count_events_from_issue(calendars):
     """Avents were omitted through version upgrade from 2.2.2 to 2.2.3."""
 
     start_time = datetime.fromtimestamp(1722564000, timezone.utc)
@@ -19,7 +19,7 @@ def _test_count_events_from_issue(calendars):
         print(event["UID"], event["DTSTART"], event["SUMMARY"])
     assert len(events) == 1
 
-def _test_check_event_count_for_that_day(calendars):
+def test_check_event_count_for_that_day(calendars):
     """Avents were omitted through version upgrade from 2.2.2 to 2.2.3."""
 
     events = calendars.issue_151_macos_linux_difference.at("20140801")
