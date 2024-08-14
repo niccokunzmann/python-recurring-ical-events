@@ -770,6 +770,7 @@ class UnfoldableCalendar:
             if isinstance(recurrence_id, datetime.datetime):
                 recurrence_id = recurrence_id.date()
             other = same_events.get(recurrence_id, None)
+            print("other", recurrence_id, other, type(recurrence_id))
             if other:
                 event_recurrence_id = event.get("RECURRENCE-ID", None)
                 other_recurrence_id = other.get("RECURRENCE-ID", None)
@@ -786,6 +787,7 @@ class UnfoldableCalendar:
                         events.remove(other)
             same_events[recurrence_id] = event
             events.append(event)
+            print("added event!")
 
         span_start_day = span_start
         if isinstance(span_start_day, datetime.datetime):
@@ -799,6 +801,7 @@ class UnfoldableCalendar:
         # see https://github.com/niccokunzmann/python-recurring-ical-events/issues/62
         remove_because_not_in_span = []
         for event_repetitions in self.repetitions.values():
+            print(event_repetitions)
             with self.__handle_invalid_calendar_errors:
                 if event_repetitions.is_recurrence():
                     repetition = event_repetitions.as_single_event()
@@ -818,6 +821,10 @@ class UnfoldableCalendar:
                     if repetition.is_in_span(span_start, span_stop):
                         add_event(repetition.as_vevent())
 
+        print(
+            f"remove_because_not_in_span {len(remove_because_not_in_span)}",
+            remove_because_not_in_span,
+        )
         for vevent in remove_because_not_in_span:
             with contextlib.suppress(ValueError):
                 events.remove(vevent)
