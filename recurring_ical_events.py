@@ -154,6 +154,8 @@ def time_span_contains_event(
         return event_start <= span_start < event_stop
     print(f"event_start < span_stop: {event_start} < {span_stop} == {event_start < span_stop}")
     print(f"and span_start < event_stop: {span_start} < {event_stop} == {span_start < event_stop}")
+    print(span_start)
+    print(event_stop)
     return event_start < span_stop and span_start < event_stop
 
 
