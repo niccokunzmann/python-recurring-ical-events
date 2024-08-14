@@ -810,6 +810,7 @@ class UnfoldableCalendar:
                     vevent = repetition.as_vevent()
                     add_event(vevent)
                     if not repetition.is_in_span(span_start, span_stop):
+                        print("not in span!", span_start, span_stop)
                         remove_because_not_in_span.append(vevent)
                     continue
                 for repetition in event_repetitions.within_days(

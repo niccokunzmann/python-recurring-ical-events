@@ -4,16 +4,16 @@ from pathlib import Path
 
 import icalendar
 import pytest
+from datetime import timezone
+import dateutil
+import pytz
 
 from recurring_ical_events import of
 
 try:
     import zoneinfo as _zoneinfo
 except ImportError:
-    try:
-        import backports.zoneinfo as _zoneinfo
-    except ImportError:
-        _zoneinfo = None
+    import backports.zoneinfo as _zoneinfo
 
 HERE = Path(__file__).parent
 REPO = Path(HERE).parent
@@ -138,3 +138,9 @@ def zoneinfo():
 def ZoneInfo(zoneinfo):
     """Shortcut for zoneinfo.ZoneInfo."""
     return zoneinfo.ZoneInfo
+
+
+@pytest.fixture(scope="module", params=[pytz.utc, _zoneinfo.ZoneInfo("UTC"), timezone.utc, dateutil.tz.UTC])
+def utc(request):
+    """Return all the UTC implementations."""
+    return request.param
