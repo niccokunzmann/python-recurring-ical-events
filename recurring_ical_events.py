@@ -108,7 +108,13 @@ def convert_to_date(date: Time) -> datetime.date:
 
 
 def convert_to_datetime(date: Time, tzinfo: Optional[datetime.tzinfo]):  # noqa: UP007
-    """Converts a date to a datetime"""
+    """Converts a date to a datetime.
+    
+    Dates are converted to datetimes with tzinfo.
+    Datetimes loose their timezone if tzinfo is None.
+    Datetimes receive tzinfo as a timezone if they do not have a timezone.
+    Datetimes retain their timezone if they have one already (tzinfo is not None).
+    """
     if isinstance(date, datetime.datetime):
         if date.tzinfo is None:
             if tzinfo is not None:
@@ -213,7 +219,7 @@ def cmp(date1:Time, date2:Time) -> int:
     return (date1 > date2) - (date1 < date2)
 
 
-def is_pytz(tzinfo: datetime.tzinfo):
+def is_pytz(tzinfo: datetime.tzinfo|Time):
     """Whether the time zone requires localize() and normalize().
 
     pytz requires these funtions to be used in order to correctly use the
@@ -221,6 +227,20 @@ def is_pytz(tzinfo: datetime.tzinfo):
     """
     return hasattr(tzinfo, "localize")
 
+
+def is_pytz_dt(time: Time):
+    """Whether the time requires localize() and normalize().
+
+    pytz requires these funtions to be used in order to correctly use the
+    time zones after operations.
+    """
+    return isinstance(time, datetime.datetime) and is_pytz(time.tzinfo)
+
+def normalize_pytz(time: Time):
+    """We have to normalize the time after a calculation if we use pytz."""
+    if is_pytz_dt(time):
+        return time.tzinfo.normalize(time)
+    return time
 
 def cached_property(func:Callable):
     """Cache the property value for speed up."""
@@ -253,7 +273,6 @@ class Series:
                 self.modifications[recurrence_id] = component
         del component
         self.core = self.modifications.pop(None, None)
-        pprint(self.modifications)
         if self.core is None:
             raise InvalidCalendar(f"The event definition for {components[0].uid} only contains modifications.")
         # Setup complete. Now we calculate the series
@@ -402,21 +421,21 @@ class Series:
             # TODO: Test if modification is included if it has a very long
             #       duration even if the start is way off
             span_start_dt -= self.core.duration
+        # we have to account for pytz timezones not being properly calculated
+        # at the timezone changes. This is a heuristic: most changes are only 1 hour.
+        # This will still create problems at the fringes of timezone definition changes.
+        if is_pytz(self.tzinfo):
+            span_start_dt = normalize_pytz(span_start_dt - datetime.timedelta(hours=1))
+            span_stop_dt = normalize_pytz(span_stop_dt + datetime.timedelta(hours=1))
         returned_starts : set[Time] = set()
         # NOTE: If in the following line, we get an error, datetime and date
         # may still be mixed because RDATE, EXDATE, start and rule.
         for start in self.rule.between(span_start_dt, span_stop_dt, inc=True):
-            if isinstance(start, datetime.datetime) and is_pytz(start.tzinfo):
+            if is_pytz_dt(start):
                 # update the time zone in case of summer/winter time change
                 start = start.tzinfo.localize(start.replace(tzinfo=None))  # noqa: PLW2901
                 # We could now well be out of bounce of the end of the UNTIL
                 # value. This is tested by test/test_issue_20_exdate_ignored.py.
-                if (
-                    self.until is not None
-                    and start > self.until
-                    and start not in self.rdates
-                ):
-                    continue
             start_date = convert_to_date(start)
             if start_date in self.check_exdates:
                 continue
@@ -424,14 +443,17 @@ class Series:
             # TODO: Test: use time from event modification over RDATE
             stop = self.replace_ends.get(start_date, start + component.duration)
             if start in returned_starts:
+                # TODO: What if a modification is moved to the same time as another
+                #       occurrence?
+                #       This should be tested.
                 continue
-            returned_starts.add(start)
             occurrence = Occurrence(
                 component,
                 self.convert_to_original_type(start),
                 self.convert_to_original_type(stop)
             )
             if occurrence.is_in_span(span_start, span_stop):
+                returned_starts.add(start)
                 yield occurrence
 
     def convert_to_original_type(self, date):
@@ -448,6 +470,15 @@ class Series:
         ):
             return convert_to_date(date)
         return date
+
+    @property
+    def uid(self):
+        """The UID that identifies this series."""
+        return self.core.uid
+    
+    def __repr__(self):
+        """A string representation."""
+        return f"<{self.__class__.__name__} uid={self.uid} modifications:{len(self.modifications)}>"
 
 class ComponentAdapter(ABC):
     """A unified interface to work with icalendar components."""
@@ -622,7 +653,7 @@ class EventAdapter(ComponentAdapter):
             return end.dt
         duration = self._component.get("DURATION")
         if duration is not None:
-            return self._component["DTSTART"].dt + duration.dt
+            return normalize_pytz(self._component["DTSTART"].dt + duration.dt)
         return self._component["DTSTART"].dt
 
 class TodoAdapter(ComponentAdapter):
@@ -671,7 +702,7 @@ class TodoAdapter(ComponentAdapter):
         ## Perhaps duration is a time estimate rather than an indirect
         ## way to set DUE.
         if duration is not None and dtstart is not None:
-            return self._component["DTSTART"].dt + duration.dt
+            return normalize_pytz(self._component["DTSTART"].dt + duration.dt)
 
         ## According to the RFC, a VEVENT without an end/duration
         ## is to be considered to have zero duration.  Assuming the
