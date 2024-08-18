@@ -35,6 +35,8 @@ if TYPE_CHECKING:
     from dateutil.rrule import rrule
     UID = str
     ComponentID = tuple[str, UID, Time]
+    Timestamp = float
+    RecurrenceID = Time | None
 
 
 # The minimum value accepted as date (pytz + zoneinfo)
@@ -94,7 +96,7 @@ class BadRuleStringFormat(InvalidCalendar):
         return self._rule
 
 
-def timestamp(dt : datetime.datetime) -> float:
+def timestamp(dt : datetime.datetime) -> Timestamp:
     """Return the time stamp of a datetime"""
     return dt.timestamp()
 
@@ -122,7 +124,7 @@ def convert_to_datetime(date: Time, tzinfo: Optional[datetime.tzinfo]):  # noqa:
                     return tzinfo.localize(date)
                 return date.replace(tzinfo=tzinfo)
         elif tzinfo is None:
-            return date.replace(tzinfo=None)
+            return normalize_pytz(date).replace(tzinfo=None)
         return date
     if isinstance(date, datetime.date):
         return datetime.datetime(date.year, date.month, date.day, tzinfo=tzinfo)
@@ -256,6 +258,13 @@ def cached_property(func:Callable):
     return cached_property
     
 
+def as_recurrence_id(time : Time) -> RecurrenceID:
+    """Convert the time to a recurrence id so it can be hashed and recognized."""
+    # We are inside the Series calculation with this and want to identify
+    # a date. It is fair to assume that the timezones are the same now.
+    if not isinstance(time, datetime.datetime) or time.tzinfo is None:
+        return time
+    return time.astimezone(datetime.timezone.utc)
 
 
 class Series:
@@ -265,7 +274,10 @@ class Series:
         """Create an component which may have repetitions in it."""
         if len(components) == 0:
             raise ValueError("No components given to calculate a series.")
-        self.modifications : dict[datetime.date | None, ComponentAdapter] = {}  # RECURRENCE-ID -> adapter
+        # We identify recurrences with a timestamp as all recurrence values
+        # should be the same in UTC either way and we want to omit
+        # inequality because of timezone implementation mismatches.
+        self.modifications : dict[RecurrenceID | None, ComponentAdapter] = {}  # RECURRENCE-ID -> adapter
         for component in components:
             recurrence_id = component.recurrence_id
             other_component = self.modifications.get(recurrence_id)
@@ -275,48 +287,55 @@ class Series:
         self.core = self.modifications.pop(None, None)
         if self.core is None:
             raise InvalidCalendar(f"The event definition for {components[0].uid} only contains modifications.")
-        # Setup complete. Now we calculate the series
+        # Setup complete. We create the attribtues
         self.start = self.original_start = self.core.start
         self.end = self.original_end = self.core.end
-        self.exdates = []
-        self.check_exdates : set[datetime.date] = set()
-        self.replace_ends : dict[datetime.date, Time] = {}  # for periods
+        self.exdates : set[Time] = set()
+        self.check_exdates : set[RecurrenceID] = set()  # should be in UTC
+        self.rdates : set[Time] = set()
+        self.replace_ends : dict[RecurrenceID, Time] = {}  # for periods, in UTC
+        # fill the attributes
         for exdate in self.core.exdates:
-            self.exdates.append(exdate)
-            self.check_exdates.add(convert_to_date(exdate))
-        self.rdates : list[Time] = []
+            self.exdates.add(exdate)
+            self.check_exdates.add(as_recurrence_id(exdate))
         for rdate in self.core.rdates:
             if isinstance(rdate, tuple):
                 # we have a period as rdate
-                self.rdates.append(rdate[0])
+                self.rdates.add(rdate[0])
                 # TODO: Test RDATE Period with duration
-                self.replace_ends[convert_to_date(rdate[0])] = rdate[1]
+                self.replace_ends[as_recurrence_id(rdate[0])] = rdate[1]
             else:
                 # we have a date/datetime
-                self.rdates.append(rdate)
+                self.rdates.add(rdate)
 
+        # We make sure that all dates and times mentioned here are either:
+        # - a date
+        # - a datetime with None is tzinfo
+        # - a datetime with a timezone
         self.make_all_dates_comparable()
 
+        # Calculate the rules with the same timezones
         self.rule = rruleset(cache=True)
-        self.until : Time | None = None
+        self.last_until : Time | None = None
         for rrule_string in self.core.rrules:
             _rrule : rrule = self.create_rule_with_start(rrule_string)
             self.rule.rrule(_rrule)
             if _rrule.until and (
-                not self.until or compare_greater(_rrule.until, self.until)
+                not self.last_until or compare_greater(_rrule.until, self.last_until)
             ):
-                self.until = _rrule.until
+                self.last_until = _rrule.until
 
         for exdate in self.exdates:
             self.rule.exdate(exdate)
+            self.check_exdates.add(exdate)
         for rdate in self.rdates:
             self.rule.rdate(rdate)
 
-        if not self.until or not compare_greater(self.start, self.until):
-            self.rule.rdate(self.start)
+        if not self.last_until or not compare_greater(self.start, self.last_until):
+            self.rule.rdate(self.start)  # TODO: Check if we can remove this when all tests run
 
 
-    def create_rule_with_start(self, rule_string):
+    def create_rule_with_start(self, rule_string) -> rrule:
         """Helper to create an rrule from a rule_string
 
         The rrule is starting at the start of the component.
@@ -358,7 +377,7 @@ class Series:
             )
             return self.rrulestr(new_rule_string)
 
-    def rrulestr(self, rule_string):
+    def rrulestr(self, rule_string) -> rrule:
         """Return an rrulestr with a start. This might fail."""
         rule_string = NEGATIVE_RRULE_COUNT_REGEX.sub("", rule_string)  # Issue 128
         rule = rrulestr(rule_string, dtstart=self.start, cache=True)
@@ -372,7 +391,7 @@ class Series:
             rule.until = until
         return rule
 
-    def _get_rrule_until(self, rrule):
+    def _get_rrule_until(self, rrule) -> None | Time:
         """Return the UNTIL datetime of the rrule or None if absent."""
         rule_list = rrule.string.split(";UNTIL=")
         if len(rule_list) == 1:
@@ -406,10 +425,10 @@ class Series:
         self.start = convert_to_datetime(self.start, self.tzinfo)
 
         self.end = convert_to_datetime(self.end, self.tzinfo)
-        self.rdates = [convert_to_datetime(rdate, self.tzinfo) for rdate in self.rdates]
-        self.exdates = [
+        self.rdates = {convert_to_datetime(rdate, self.tzinfo) for rdate in self.rdates}
+        self.exdates = {
             convert_to_datetime(exdate, self.tzinfo) for exdate in self.exdates
-        ]
+        }
 
     def between(self, span_start: Time, span_stop: Time) -> Generator[Occurrence]:
         """components between the start (inclusive) and end (exclusive)"""
@@ -436,24 +455,28 @@ class Series:
                 start = start.tzinfo.localize(start.replace(tzinfo=None))  # noqa: PLW2901
                 # We could now well be out of bounce of the end of the UNTIL
                 # value. This is tested by test/test_issue_20_exdate_ignored.py.
-            start_date = convert_to_date(start)
-            if start_date in self.check_exdates:
-                continue
-            component = self.modifications.get(start_date, self.core)
-            # TODO: Test: use time from event modification over RDATE
-            stop = self.replace_ends.get(start_date, start + component.duration)
             if start in returned_starts:
                 # TODO: What if a modification is moved to the same time as another
                 #       occurrence?
                 #       This should be tested.
                 continue
-            occurrence = Occurrence(
-                component,
-                self.convert_to_original_type(start),
-                self.convert_to_original_type(stop)
-            )
-            if occurrence.is_in_span(span_start, span_stop):
+            recurrence_id  = as_recurrence_id(start)
+            if recurrence_id in self.check_exdates:
+                continue
+            component = self.modifications.get(recurrence_id, self.core)
+            if component is self.core:
+                stop = self.replace_ends.get(recurrence_id, start + component.duration)
+                occurrence = Occurrence(
+                    component,
+                    self.convert_to_original_type(start),
+                    self.convert_to_original_type(stop)
+                )
                 returned_starts.add(start)
+            else:
+                print(f"found modification! {component}")
+                occurrence = Occurrence(component)
+            # TODO: Test: use time from event modification over RDATE
+            if occurrence.is_in_span(span_start, span_stop):
                 yield occurrence
 
     def convert_to_original_type(self, date):
@@ -539,6 +562,7 @@ class ComponentAdapter(ABC):
     def as_component(self, start: Time, stop:Time, keep_recurrence_attributes: bool):  # noqa: FBT001
         """Create a shallow copy of the source event and modify some attributes."""
         copied_component = self._component.copy()
+        # TODO: Test that duration gets removed for all component types
         copied_component["DTSTART"] = vDDDTypes(start)
         if self.end_property is not None:
             copied_component[self.end_property] = vDDDTypes(stop)
@@ -551,7 +575,7 @@ class ComponentAdapter(ABC):
         return copied_component
 
     @cached_property
-    def recurrence_id(self) -> datetime.date | None:
+    def recurrence_id(self) -> Timestamp | None:
         """The recurrence id of the component or None.
         
         The basic event definiton has no recurrence id.
@@ -560,7 +584,7 @@ class ComponentAdapter(ABC):
         recurrence_id = self._component.get("RECURRENCE-ID")
         if recurrence_id is None:
             return None
-        return convert_to_date(recurrence_id.dt)
+        return as_recurrence_id(recurrence_id.dt)
     
     @cached_property
     def sequence(self) -> int:
@@ -759,26 +783,26 @@ class Occurrence:
     def __init__(
         self,
         adapter: ComponentAdapter,
-        start: Time,
-        stop:Time
+        start: Time | None = None,
+        end:Time | None = None
     ):
         """Create an event repetition.
 
         - source - the icalendar Event
-        - start - the start date/datetime
-        - stop - the end date/datetime
+        - start - the start date/datetime to replace
+        - stop - the end date/datetime to replace
         """
         self._adapter = adapter
-        self.start = start
-        self.stop = stop
+        self.start = adapter.start if start is None else start
+        self.end = adapter.end if end is None else end
 
     def as_component(self, keep_recurrence_attributes:bool) -> Component:  # noqa: FBT001
         """Create a shallow copy of the source component and modify some attributes."""
-        return self._adapter.as_component(self.start, self.stop, keep_recurrence_attributes)
+        return self._adapter.as_component(self.start, self.end, keep_recurrence_attributes)
 
     def is_in_span(self, span_start:Time, span_stop:Time) -> bool:
         """Return whether the event is in the span."""
-        return time_span_contains_event(span_start, span_stop, self.start, self.stop)
+        return time_span_contains_event(span_start, span_stop, self.start, self.end)
 
     def __lt__(self, other: Occurrence) -> bool:
         """Compare two occurrences for sorting.
