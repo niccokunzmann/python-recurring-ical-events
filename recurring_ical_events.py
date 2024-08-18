@@ -17,6 +17,7 @@ from __future__ import annotations
 import contextlib
 import datetime
 import functools
+from pprint import pprint
 import re
 from abc import ABC, abstractmethod
 from collections import defaultdict
@@ -250,8 +251,9 @@ class Series:
                 self.modifications[recurrence_id] = component
         del component
         self.core = self.modifications.pop(None, None)
+        pprint(self.modifications)
         if self.core is None:
-            raise InvalidCalendar(f"The event definition for {components[0].uid} only contain modifications.")
+            raise InvalidCalendar(f"The event definition for {components[0].uid} only contains modifications.")
         # Setup complete. Now we calculate the series
         self.start = self.original_start = self.core.start
         self.end = self.original_end = self.core.end
