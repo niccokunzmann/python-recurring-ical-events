@@ -30,8 +30,10 @@ from functools import wraps
 if TYPE_CHECKING:
     from icalendar.cal import Component
     Time = Union[datetime.date, datetime.datetime]
-    DateArgument= tuple[int] | Time | str | int
+    DateArgument = tuple[int] | Time | str | int
     from dateutil.rrule import rrule
+    UID = str
+    ComponentID = tuple[str, UID, Time]
 
 
 # The minimum value accepted as date (pytz + zoneinfo)
@@ -472,7 +474,7 @@ class ComponentAdapter(ABC):
         """The end time."""
         
     @property
-    def uid(self) -> str:
+    def uid(self) -> UID:
         """The UID of a component.
         
         UID is required by RFC5545.
@@ -574,7 +576,14 @@ class ComponentAdapter(ABC):
         """The duration of the component."""
         return self.end - self.start
 
-
+    @cached_property
+    def id(self) -> ComponentID:
+        """The id of the component."""
+        return (
+            self._component.name,
+            self.uid,
+            self.recurrence_id or self.start
+        )
 
 class EventAdapter(ComponentAdapter):
     """An icalendar event adapter."""
@@ -734,8 +743,18 @@ class Occurrence:
         """Return whether the event is in the span."""
         return time_span_contains_event(span_start, span_stop, self.start, self.stop)
 
+    def __lt__(self, other: Occurrence) -> bool:
+        """Compare two occurrences for sorting.
 
+        See https://stackoverflow.com/a/4010558/1320237
+        """
+        self_start, other_start = make_comparable((self.start, other.start))
+        return self_start < other_start
 
+    @property
+    def id(self) -> ComponentID:
+        """The id of the component."""
+        return self._adapter.id
 
 class UnfoldableCalendar:
     """A calendar that can unfold its events at a certain time.
@@ -866,15 +885,24 @@ class UnfoldableCalendar:
         """Return events at a time between start (inclusive) and end (inclusive)"""
         return self._between(self.to_datetime(start), self.to_datetime(stop))
     
-    def _between(self, start: Time, end: Time):
+    def _occurrences_to_components(self, occurrences: list[Occurrence]) -> list[Component]:
+        """Map occurrences to components."""
+        return [occurrence.as_component(self.keep_recurrence_attributes)
+                for occurrence in occurrences]
+    
+    def _between(self, start: Time, end: Time) -> list[Component]:
+        """Return the occurrences between the start and the end."""
+        return self._occurrences_to_components(self._occurrences_between(start, end))
+
+    def _occurrences_between(self, start: Time, end: Time) -> list[Occurrence]:
         """Return the components between the start and the end."""
         occurrences : list[Occurrence] = []
         for series in self.series:
             with contextlib.suppress(self._skip_errors):
                 occurrences.extend(series.between(start, end))
-        return [occurrence.as_component(self.keep_recurrence_attributes) for occurrence in occurrences]
+        return occurrences
 
-    def after(self, earliest_end):
+    def after(self, earliest_end) -> Generator[Component]:
         """
         Return an iterator over the next events that happen during or after
         the earliest_end.
@@ -883,7 +911,7 @@ class UnfoldableCalendar:
         min_time_span = datetime.timedelta(minutes=15)
         earliest_end = self.to_datetime(earliest_end)
         done = False
-        returned_events = set()  # (UID, recurrence-id)
+        result_ids : set[ComponentID] = set()
 
         def cmp_event(event1, event2):
             """Cmp for events"""
@@ -898,18 +926,15 @@ class UnfoldableCalendar:
                 if compare_greater(earliest_end, next_end):
                     return  # we might run too far
                 done = True
-            events = self._between(earliest_end, next_end)
-            events.sort(
-                key=functools.cmp_to_key(cmp_event),
-            )  # see https://docs.python.org/3/howto/sorting.html#comparison-functions
-            for event in events:
-                event_id = self._get_event_id(event)
-                if event_id not in returned_events:
-                    yield event
-                    returned_events.add(event_id)
+            occurrences = self._occurrences_between(earliest_end, next_end)
+            occurrences.sort()
+            for occurrence in occurrences:
+                if occurrence.id not in result_ids:
+                    yield occurrence.as_component(self.keep_recurrence_attributes)
+                    result_ids.add(occurrence.id)
             # prepare next query
             time_span = max(
-                time_span / 2 if events else time_span * 2,
+                time_span / 2 if occurrences else time_span * 2,
                 min_time_span,
             )  # binary search to improve speed
             earliest_end = next_end
