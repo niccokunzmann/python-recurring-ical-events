@@ -22,7 +22,7 @@ def test_count_events_from_issue(calendars):
 def test_check_event_count_for_that_day(calendars):
     """Avents were omitted through version upgrade from 2.2.2 to 2.2.3."""
 
-    events = calendars.issue_151_macos_linux_difference.at("20140801")
+    events = calendars.issue_151_macos_linux_difference.at("20240801")
     for event in events:
         print(event["UID"], event["DTSTART"], event["SUMMARY"], event["DTSTART"].dt.timestamp())
     assert len(events) == 1 and False  # noqa: PT018
