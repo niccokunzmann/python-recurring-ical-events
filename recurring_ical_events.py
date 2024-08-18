@@ -418,11 +418,13 @@ class Series:
             if start in returned_starts:
                 continue
             returned_starts.add(start)
-            yield Occurrence(
+            occurrence = Occurrence(
                 component,
                 self.convert_to_original_type(start),
                 self.convert_to_original_type(stop)
             )
+            if occurrence.is_in_span(span_start, span_stop):
+                yield occurrence
 
     def convert_to_original_type(self, date):
         """Convert a date back if this is possible.
