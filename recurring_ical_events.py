@@ -267,6 +267,10 @@ def as_recurrence_id(time : Time) -> RecurrenceID:
     return time.astimezone(datetime.timezone.utc)
 
 
+def is_date(time: Time):
+    """Whether this is a date and not a datetime."""
+    return isinstance(time, datetime.date) and not isinstance(time, datetime.datetime)
+
 class Series:
     """Base class for components that result in a series of occurrences."""
 
@@ -291,13 +295,16 @@ class Series:
         self.start = self.original_start = self.core.start
         self.end = self.original_end = self.core.end
         self.exdates : set[Time] = set()
-        self.check_exdates : set[RecurrenceID] = set()  # should be in UTC
+        self.check_exdates_datetime : set[RecurrenceID] = set()  # should be in UTC
+        self.check_exdates_date : set[datetime.date] = set()  # should be in UTC
         self.rdates : set[Time] = set()
         self.replace_ends : dict[RecurrenceID, Time] = {}  # for periods, in UTC
         # fill the attributes
         for exdate in self.core.exdates:
             self.exdates.add(exdate)
-            self.check_exdates.add(as_recurrence_id(exdate))
+            self.check_exdates_datetime.add(as_recurrence_id(exdate))
+            if is_date(exdate):
+                self.check_exdates_date.add(exdate)
         for rdate in self.core.rdates:
             if isinstance(rdate, tuple):
                 # we have a period as rdate
@@ -327,7 +334,7 @@ class Series:
 
         for exdate in self.exdates:
             self.rule.exdate(exdate)
-            self.check_exdates.add(exdate)
+            self.check_exdates_datetime.add(exdate)
         for rdate in self.rdates:
             self.rule.rdate(rdate)
 
@@ -461,7 +468,8 @@ class Series:
                 #       This should be tested.
                 continue
             recurrence_id  = as_recurrence_id(start)
-            if recurrence_id in self.check_exdates:
+            print(f"recurrence_id - {recurrence_id} check_exdates - {self.check_exdates_datetime}")
+            if recurrence_id in self.check_exdates_datetime or convert_to_date(start) in self.check_exdates_date:
                 continue
             component = self.modifications.get(recurrence_id, self.core)
             print(self.modifications, recurrence_id)
