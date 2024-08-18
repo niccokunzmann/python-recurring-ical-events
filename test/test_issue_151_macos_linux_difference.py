@@ -4,8 +4,6 @@ See https://github.com/niccokunzmann/python-recurring-ical-events/issues/151
 """
 
 from datetime import datetime, timezone
-from recurring_ical_events import time_span_contains_event
-import pytest
 
 
 def test_count_events_from_issue(calendars):

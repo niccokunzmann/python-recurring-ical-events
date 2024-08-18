@@ -173,6 +173,8 @@ def time_span_contains_event(
         return span_start <= event_start < span_stop
     if span_start == span_stop:
         return event_start <= span_start < event_stop
+    print(f"span: {span_start} - {span_stop} \nevent: {event_start} - {event_stop}")
+    print(f"{event_start} < {span_stop} == {event_start < span_stop} \nand {span_start} < {event_stop} == {span_start < event_stop}")
     return event_start < span_stop and span_start < event_stop
 
 
@@ -393,15 +395,17 @@ class Series:
     def between(self, span_start: Time, span_stop: Time) -> Generator[Occurrence]:
         """components between the start (inclusive) and end (exclusive)"""
         # make dates comparable, rrule converts them to datetimes
-        span_start = convert_to_datetime(span_start, self.tzinfo)
-        span_stop = convert_to_datetime(span_stop, self.tzinfo)
-        if compare_greater(span_start, self.start):
+        span_start_dt = convert_to_datetime(span_start, self.tzinfo)
+        span_stop_dt = convert_to_datetime(span_stop, self.tzinfo)
+        if compare_greater(span_start_dt, self.start):
             # do not exclude an component if it spans across the time span
-            span_start -= self.core.duration
+            # TODO: Test if modification is included if it has a very long
+            #       duration even if the start is way off
+            span_start_dt -= self.core.duration
         returned_starts : set[Time] = set()
         # NOTE: If in the following line, we get an error, datetime and date
         # may still be mixed because RDATE, EXDATE, start and rule.
-        for start in self.rule.between(span_start, span_stop, inc=True):
+        for start in self.rule.between(span_start_dt, span_stop_dt, inc=True):
             if isinstance(start, datetime.datetime) and is_pytz(start.tzinfo):
                 # update the time zone in case of summer/winter time change
                 start = start.tzinfo.localize(start.replace(tzinfo=None))  # noqa: PLW2901
@@ -898,6 +902,7 @@ class UnfoldableCalendar:
 
     def _occurrences_between(self, start: Time, end: Time) -> list[Occurrence]:
         """Return the components between the start and the end."""
+        print(f"occurrences_between: {start} - {end}")
         occurrences : list[Occurrence] = []
         for series in self.series:
             with contextlib.suppress(self._skip_errors):
