@@ -273,13 +273,13 @@ class Series:
 
         self.rule = rruleset(cache=True)
         self.until = None
-        for _rule in self.core.rrules:
-            rrule = self.create_rule_with_start(_rule.to_ical().decode())
-            self.rule.rrule(rrule)
-            if rrule.until and (
-                not self.until or compare_greater(rrule.until, self.until)
+        for rrule_string in self.core.rrules:
+            _rrule : rrule = self.create_rule_with_start(rrule_string)
+            self.rule.rrule(_rrule)
+            if _rrule.until and (
+                not self.until or compare_greater(_rrule.until, self.until)
             ):
-                self.until = rrule.until
+                self.until = _rrule.until
 
         for exdate in self.exdates:
             self.rule.exdate(exdate)
@@ -466,8 +466,12 @@ class ComponentAdapter(ABC):
         
     @property
     def uid(self) -> str:
-        """The UID of a component."""
-        return self._component["UID"]
+        """The UID of a component.
+        
+        UID is required by RFC5545.
+        If the UID is absent, we use the Python ID.
+        """
+        return self._component.get("UID", str(id(self._component)))
         
     @classmethod
     def collect_components(cls, source: Component) -> Sequence[Series]:
@@ -522,11 +526,11 @@ class ComponentAdapter(ABC):
         result : list[Time] = []
         exdates = self._component.get("EXDATE", [])
         for exdates in (exdates,) if not isinstance(exdates, list) else exdates:
-            result.extend(exdates.dts)
+            result.extend(exdate.dt for exdate in exdates.dts)
         return result
 
     @cached_property
-    def rrules(self) -> list[rrule]:
+    def rrules(self) -> list[str]:
         """A list of rrules of this component."""
         rrules = self._component.get("RRULE", None)
         if not rrules:
@@ -539,7 +543,7 @@ class ComponentAdapter(ABC):
                 if _rule not in _dedup_rules:
                     _dedup_rules.append(_rule)
             rrules = _dedup_rules
-        return [self.create_rule_with_start(rrule.to_ical().decode()) for rrule in rrules]
+        return [rrule.to_ical().decode() for rrule in rrules]
 
     @cached_property
     def rdates(self) -> list[Time, tuple[Time, Time]]:
@@ -547,7 +551,7 @@ class ComponentAdapter(ABC):
         rdates = self._component.get("RDATE", [])
         result = []
         for rdates in (rdates,) if not isinstance(rdates, list) else rdates:
-            result.extend(rdates.dts)
+            result.extend(rdate.dt for rdate in rdates.dts)
         return result
     
     @cached_property
