@@ -255,16 +255,17 @@ class Series:
         self.end = self.original_end = self.core.end
         self.exdates = []
         self.check_exdates : set[datetime.date] = set()
-        self.replace_ends = {}  # DTSTART -> DTEND # for periods
+        self.replace_ends : dict[datetime.date, Time] = {}  # for periods
         for exdate in self.core.exdates:
             self.exdates.append(exdate)
             self.check_exdates.add(convert_to_date(exdate))
-        self.rdates = []
+        self.rdates : list[Time] = []
         for rdate in self.core.rdates:
             if isinstance(rdate, tuple):
                 # we have a period as rdate
                 self.rdates.append(rdate[0])
-                self.replace_ends[timestamp(rdate[0])] = rdate[1]
+                # TODO: Test RDATE Period with duration
+                self.replace_ends[convert_to_date(rdate[0])] = rdate[1]
             else:
                 # we have a date/datetime
                 self.rdates.append(rdate)
@@ -272,7 +273,7 @@ class Series:
         self.make_all_dates_comparable()
 
         self.rule = rruleset(cache=True)
-        self.until = None
+        self.until : Time | None = None
         for rrule_string in self.core.rrules:
             _rrule : rrule = self.create_rule_with_start(rrule_string)
             self.rule.rrule(_rrule)
@@ -393,6 +394,7 @@ class Series:
         if compare_greater(span_start, self.start):
             # do not exclude an component if it spans across the time span
             span_start -= self.core.duration
+        returned_starts : set[Time] = set()
         # NOTE: If in the following line, we get an error, datetime and date
         # may still be mixed because RDATE, EXDATE, start and rule.
         for start in self.rule.between(span_start, span_stop, inc=True):
@@ -410,9 +412,12 @@ class Series:
             start_date = convert_to_date(start)
             if start_date in self.check_exdates:
                 continue
-            component = self.modifications.get(convert_to_date(start), self.core)
+            component = self.modifications.get(start_date, self.core)
             # TODO: Test: use time from event modification over RDATE
-            stop = self.replace_ends.get(timestamp(start), start + component.duration)
+            stop = self.replace_ends.get(start_date, start + component.duration)
+            if start in returned_starts:
+                continue
+            returned_starts.add(start)
             yield Occurrence(
                 component,
                 self.convert_to_original_type(start),
