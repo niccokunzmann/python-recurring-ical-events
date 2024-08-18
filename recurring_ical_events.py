@@ -454,6 +454,7 @@ class Series:
             span_start_dt = normalize_pytz(span_start_dt - datetime.timedelta(hours=1))
             span_stop_dt = normalize_pytz(span_stop_dt + datetime.timedelta(hours=1))
         returned_starts : set[Time] = set()
+        returned_modifications : set[ComponentAdapter] = set()
         # NOTE: If in the following line, we get an error, datetime and date
         # may still be mixed because RDATE, EXDATE, start and rule.
         for start in self.rule.between(span_start_dt, span_stop_dt, inc=True):
@@ -471,22 +472,33 @@ class Series:
             print(f"recurrence_id - {recurrence_id} check_exdates - {self.check_exdates_datetime}")
             if recurrence_id in self.check_exdates_datetime or convert_to_date(start) in self.check_exdates_date:
                 continue
-            component = self.modifications.get(recurrence_id, self.core)
+            adapter = self.modifications.get(recurrence_id, self.core)
             print(self.modifications, recurrence_id)
-            if component is self.core:
-                stop = self.replace_ends.get(recurrence_id, start + component.duration)
+            if adapter is self.core:
+                stop = self.replace_ends.get(recurrence_id, start + adapter.duration)
                 occurrence = Occurrence(
-                    component,
+                    adapter,
                     self.convert_to_original_type(start),
                     self.convert_to_original_type(stop)
                 )
                 returned_starts.add(start)
             else:
-                print(f"found modification! {component}")
-                occurrence = Occurrence(component)
+                # We found a modification
+                print(f"found modification! {adapter}")
+                if adapter in returned_modifications:
+                    continue
+                returned_modifications.add(adapter)
+                occurrence = Occurrence(adapter)
             # TODO: Test: use time from event modification over RDATE
             if occurrence.is_in_span(span_start, span_stop):
                 yield occurrence
+        for modification in self.modifications.values():
+            # we assume that the modifications are actually included
+            if modification in returned_modifications:
+                continue
+            if modification.is_in_span(span_start, span_stop):
+                returned_modifications.add(modification)
+                yield Occurrence(modification)
 
     def convert_to_original_type(self, date):
         """Convert a date back if this is possible.
@@ -654,6 +666,11 @@ class ComponentAdapter(ABC):
             self.uid,
             self.recurrence_id or self.start
         )
+        
+    def is_in_span(self, span_start:Time, span_stop:Time) -> bool:
+        """Return whether the component is in the span."""
+        return time_span_contains_event(span_start, span_stop, self.start, self.end)
+
 
 class EventAdapter(ComponentAdapter):
     """An icalendar event adapter."""
@@ -810,7 +827,7 @@ class Occurrence:
         return self._adapter.as_component(self.start, self.end, keep_recurrence_attributes)
 
     def is_in_span(self, span_start:Time, span_stop:Time) -> bool:
-        """Return whether the event is in the span."""
+        """Return whether the component is in the span."""
         return time_span_contains_event(span_start, span_stop, self.start, self.end)
 
     def __lt__(self, other: Occurrence) -> bool:
