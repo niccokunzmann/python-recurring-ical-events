@@ -25,4 +25,4 @@ def test_check_event_count_for_that_day(calendars):
     events = calendars.issue_151_macos_linux_difference.at("20240801")
     for event in events:
         print(event["UID"], event["DTSTART"], event["SUMMARY"], event["DTSTART"].dt.timestamp())
-    assert len(events) == 1 and False  # noqa: PT018
+    assert len(events) == 1
