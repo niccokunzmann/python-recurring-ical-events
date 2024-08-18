@@ -481,13 +481,21 @@ class ComponentAdapter(ABC):
         return self._component.get("UID", str(id(self._component)))
         
     @classmethod
-    def collect_components(cls, source: Component) -> Sequence[Series]:
-        """Collect all components from the source component."""
+    def collect_components(cls, source: Component, suppress_errors:tuple[Exception]) -> Sequence[Series]:
+        """Collect all components from the source component.
+        
+        suppress_errors - a list of errors that should be suppressed.
+            A Series of events with such an error is removed from all results.
+        """
         components : dict[str, list[Component]] = defaultdict(list) # UID -> components
         for component in source.walk(cls.component_name()):
             adapter = cls(component)
             components[adapter.uid].append(adapter)
-        return [Series(components) for components in components.values()]
+        result = []
+        for components in components.values():
+            with contextlib.suppress(suppress_errors):
+                result.append(Series(components))
+        return result
 
     def as_component(self, start: Time, stop:Time, keep_recurrence_attributes: bool):  # noqa: FBT001
         """Create a shallow copy of the source event and modify some attributes."""
@@ -736,41 +744,61 @@ class UnfoldableCalendar:
     selected components. If any malformed icalendar information is found,
     an InvalidCalendar exception is raised. For other bad arguments, you
     should expect a ValueError.
+    
+    suppressed_errors - a list of errors to suppress when
+        skip_bad_series is True
+    
+    component_adapters - a list of component adapters
     """
 
-    component_adapters : dict[str: type[ComponentAdapter]] = {
-        EventAdapter.component_name(): EventAdapter,
-        TodoAdapter.component_name(): TodoAdapter,
-        JournalAdapter.component_name(): JournalAdapter,
-    }
+    component_adapters = [
+        EventAdapter, TodoAdapter, JournalAdapter
+    ]
+    
+    @cached_property
+    def _component_adapters(self) -> dict[str: type[ComponentAdapter]]:
+        """A mapping of component adapters."""
+        return {adapter.component_name() : adapter for adapter in self.component_adapters}
+    
+    suppressed_errors = [
+        BadRuleStringFormat, PeriodEndBeforeStart
+    ]
 
     def __init__(
         self,
         calendar:Component,
         keep_recurrence_attributes:bool=False,  # noqa: FBT001
         components:Sequence[str|type[ComponentAdapter]]=("VEVENT",),
-        skip_bad_events:bool=False,  # noqa: FBT001
+        skip_bad_series:bool=False,  # noqa: FBT001
     ):
-        """Create an unfoldable calendar from a given calendar."""
+        """Create an unfoldable calendar from a given calendar.
+        
+        calendar - an icalendar component - probably a calendar - 
+            from which occurrences will be calculated
+        keep_recurrence_attributes - whether to keep values
+            in the results that are used for calculation
+        skip_bad_events - whether to skip a series of components that
+            contains errors. This skips self.suppressed_errors.
+        """
         self.keep_recurrence_attributes = keep_recurrence_attributes
-        self.skip_bad_events = skip_bad_events
         if calendar.get("CALSCALE", "GREGORIAN") != "GREGORIAN":
             # https://www.kanzaki.com/docs/ical/calscale.html
             raise InvalidCalendar("Only Gregorian calendars are supported.")
 
         self.series : list[Series] = []  # component
+        self._skip_errors = tuple(self.suppressed_errors) if skip_bad_series else ()
         for component_adapter_id in components:
             if isinstance(component_adapter_id, str):
-                if component_adapter_id not in self.component_adapters:
+                if component_adapter_id not in self._component_adapters:
                     raise ValueError(
                         f'"{component_adapter_id}" is an unknown name for a '
                         'recurring component.'
-                        f"I only know these: { ', '.join(self.component_adapters)}."
+                        f"I only know these: { ', '.join(self._component_adapters)}."
                     )
-                component_adapter = self.component_adapters[component_adapter_id]
+                component_adapter = self._component_adapters[component_adapter_id]
             else:
                 component_adapter = component_adapter_id
-            self.series.extend(component_adapter.collect_components(calendar))
+            self.series.extend(component_adapter.collect_components(calendar, self._skip_errors))
 
     @staticmethod
     def to_datetime(date:DateArgument):
@@ -842,7 +870,8 @@ class UnfoldableCalendar:
         """Return the components between the start and the end."""
         occurrences : list[Occurrence] = []
         for series in self.series:
-            occurrences.extend(series.between(start, end))
+            with contextlib.suppress(self._skip_errors):
+                occurrences.extend(series.between(start, end))
         return [occurrence.as_component(self.keep_recurrence_attributes) for occurrence in occurrences]
 
     def after(self, earliest_end):
@@ -885,29 +914,12 @@ class UnfoldableCalendar:
             )  # binary search to improve speed
             earliest_end = next_end
 
-    @property
-    @contextlib.contextmanager
-    def __handle_invalid_calendar_errors(self):
-        """
-        Private context manager which catch `InvalidCalendar` exceptions and
-        silently skip them if `self.skip_bad_events` is `True`
-
-        Usage:
-        with self.__handle_invalid_calendar_errors:
-            ...
-        """
-        try:
-            yield
-        except InvalidCalendar:
-            if not self.skip_bad_events:
-                raise
-
 
 def of(
     a_calendar,
     keep_recurrence_attributes=False,
     components:Sequence[str|type[ComponentAdapter]]=("VEVENT",),
-    skip_bad_events:bool=False,  # noqa: FBT001
+    skip_bad_series:bool=False,  # noqa: FBT001
 ) -> UnfoldableCalendar:
     """Unfold recurring events of a_calendar
 
@@ -919,7 +931,7 @@ def of(
     """
     a_calendar = x_wr_timezone.to_standard(a_calendar)
     return UnfoldableCalendar(
-        a_calendar, keep_recurrence_attributes, components, skip_bad_events
+        a_calendar, keep_recurrence_attributes, components, skip_bad_series
     )
 
 
