@@ -36,7 +36,7 @@ if TYPE_CHECKING:
     UID = str
     ComponentID = tuple[str, UID, Time]
     Timestamp = float
-    RecurrenceID = Time | None
+    RecurrenceID = datetime.datetime | None
 
 
 # The minimum value accepted as date (pytz + zoneinfo)
@@ -263,7 +263,7 @@ def as_recurrence_id(time : Time) -> RecurrenceID:
     # We are inside the Series calculation with this and want to identify
     # a date. It is fair to assume that the timezones are the same now.
     if not isinstance(time, datetime.datetime) or time.tzinfo is None:
-        return time
+        return convert_to_datetime(time, None)
     return time.astimezone(datetime.timezone.utc)
 
 
@@ -464,6 +464,7 @@ class Series:
             if recurrence_id in self.check_exdates:
                 continue
             component = self.modifications.get(recurrence_id, self.core)
+            print(self.modifications, recurrence_id)
             if component is self.core:
                 stop = self.replace_ends.get(recurrence_id, start + component.duration)
                 occurrence = Occurrence(
