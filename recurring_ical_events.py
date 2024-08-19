@@ -262,9 +262,11 @@ def as_recurrence_id(time : Time) -> RecurrenceID:
     """Convert the time to a recurrence id so it can be hashed and recognized."""
     # We are inside the Series calculation with this and want to identify
     # a date. It is fair to assume that the timezones are the same now.
-    if not isinstance(time, datetime.datetime) or time.tzinfo is None:
+    if not isinstance(time, datetime.datetime):
         return convert_to_datetime(time, None)
-    return time.astimezone(datetime.timezone.utc)
+    if time.tzinfo is None:
+        return time
+    return time.astimezone(datetime.timezone.utc).replace(tzinfo=None)
 
 
 def is_date(time: Time):
