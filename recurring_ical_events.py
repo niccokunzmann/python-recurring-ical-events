@@ -385,6 +385,7 @@ class Series:
             new_rule_string = (
                 rule_list[0] + rule_list[1][date_end_index:] + ";UNTIL=" + until_string
             )
+            print("error!!")
             return self.rrulestr(new_rule_string)
 
     def rrulestr(self, rule_string) -> rrule:
@@ -665,15 +666,6 @@ class ComponentAdapter(ABC):
     def duration(self) -> datetime.timedelta:
         """The duration of the component."""
         return self.end - self.start
-
-    @cached_property
-    def id(self) -> ComponentID:
-        """The id of the component."""
-        return (
-            self._component.name,
-            self.uid,
-            self.recurrence_id or self.start
-        )
         
     def is_in_span(self, span_start:Time, span_stop:Time) -> bool:
         """Return whether the component is in the span."""
@@ -846,10 +838,14 @@ class Occurrence:
         self_start, other_start = make_comparable((self.start, other.start))
         return self_start < other_start
 
-    @property
+    @cached_property
     def id(self) -> ComponentID:
         """The id of the component."""
-        return self._adapter.id
+        return (
+            self._adapter.component_name(),
+            self._adapter.uid,
+            self._adapter.recurrence_id or self.start
+        )
 
 class UnfoldableCalendar:
     """A calendar that can unfold its events at a certain time.
@@ -1008,10 +1004,6 @@ class UnfoldableCalendar:
         earliest_end = self.to_datetime(earliest_end)
         done = False
         result_ids : set[ComponentID] = set()
-
-        def cmp_event(event1, event2):
-            """Cmp for events"""
-            return cmp(event1["DTSTART"].dt, event2["DTSTART"].dt)
 
         while not done:
             try:
