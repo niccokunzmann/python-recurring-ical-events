@@ -449,7 +449,7 @@ class Series:
                     start = start.tzinfo.localize(start.replace(tzinfo=None))  # noqa: PLW2901
                 # We could now well be out of bounce of the end of the UNTIL
                 # value. This is tested by test/test_issue_20_exdate_ignored.py.
-                if rule.until is None or compare_greater(rule.until, start):
+                if rule.until is None or not compare_greater(start, rule.until):
                     yield start
                     
     def between(self, span_start: Time, span_stop: Time) -> Generator[Occurrence]:
