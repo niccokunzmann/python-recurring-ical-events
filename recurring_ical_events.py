@@ -272,8 +272,10 @@ def to_recurrence_ids(time: Time) -> RecurrenceIDs:
         return (convert_to_datetime(time, None),)
     if time.tzinfo is None:
         return (time,)
-    return (time.astimezone(datetime.timezone.utc).replace(tzinfo=None),
-            time.replace(tzinfo=None))
+    return (
+        time.astimezone(datetime.timezone.utc).replace(tzinfo=None),
+        time.replace(tzinfo=None),
+    )
 
 
 def is_date(time: Time):
@@ -281,12 +283,18 @@ def is_date(time: Time):
     return isinstance(time, datetime.date) and not isinstance(time, datetime.datetime)
 
 
-def with_highest_sequence(adapter1 : ComponentAdapter|None, adapter2: ComponentAdapter|None):
+def with_highest_sequence(
+    adapter1: ComponentAdapter | None, adapter2: ComponentAdapter | None
+):
     """Return the one with the highest sequence."""
-    return max(adapter1, adapter2, key=lambda adapter: -1e10 if adapter is None else adapter.sequence)
+    return max(
+        adapter1,
+        adapter2,
+        key=lambda adapter: -1e10 if adapter is None else adapter.sequence,
+    )
 
 
-def get_any(dictionary:dict, keys:Sequence[object], default:object=None):
+def get_any(dictionary: dict, keys: Sequence[object], default: object = None):
     """Get any item from the keys and return it."""
     result = default
     for key in keys:
@@ -307,8 +315,8 @@ class Series:
         self.recurrence_id_to_modification: dict[
             RecurrenceID, ComponentAdapter
         ] = {}  # RECURRENCE-ID -> adapter
-        self.modifications : set[ComponentAdapter] = set()
-        core : ComponentAdapter|None = None
+        self.modifications: set[ComponentAdapter] = set()
+        core: ComponentAdapter | None = None
         for component in components:
             if component.is_modification():
                 self.modifications.add(component)
@@ -316,7 +324,7 @@ class Series:
                     self.recurrence_id_to_modification[recurrence_id] = (
                         with_highest_sequence(
                             self.recurrence_id_to_modification.get(recurrence_id),
-                            component
+                            component,
                         )
                     )
             else:
@@ -494,9 +502,6 @@ class Series:
         # make dates comparable, rrule converts them to datetimes
         span_start_dt = convert_to_datetime(span_start, self.tzinfo)
         span_stop_dt = convert_to_datetime(span_stop, self.tzinfo)
-        print(f"between {span_start} - {span_stop}")
-        print(self, self.modifications)
-        print(f"self.modifications={list(self.recurrence_id_to_modification.keys())}")
         if compare_greater(span_start_dt, self.start):
             # do not exclude an component if it spans across the time span
             # TODO: Test if modification is included if it has a very long
@@ -517,17 +522,23 @@ class Series:
             # TODO: What if a modification is moved to the same time as another
             #       occurrence?
             #       This should be tested.
-            if (start in returned_starts or 
-                convert_to_date(start) in self.check_exdates_date or any(
-                recurrence_id in self.check_exdates_datetime
-                    for recurrence_id in recurrence_ids)):
+            if (
+                start in returned_starts
+                or convert_to_date(start) in self.check_exdates_date
+                or any(
+                    recurrence_id in self.check_exdates_datetime
+                    for recurrence_id in recurrence_ids
+                )
+            ):
                 continue
-            adapter : ComponentAdapter = get_any(
-                self.recurrence_id_to_modification, recurrence_ids, self.core)
+            adapter: ComponentAdapter = get_any(
+                self.recurrence_id_to_modification, recurrence_ids, self.core
+            )
             if adapter is self.core:
-                stop = get_any(self.replace_ends,
+                stop = get_any(
+                    self.replace_ends,
                     recurrence_ids,
-                    normalize_pytz(start + self.core.duration)
+                    normalize_pytz(start + self.core.duration),
                 )
                 occurrence = Occurrence(
                     self.core,
