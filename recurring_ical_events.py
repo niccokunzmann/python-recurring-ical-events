@@ -36,7 +36,8 @@ if TYPE_CHECKING:
     UID = str
     ComponentID = tuple[str, UID, Time]
     Timestamp = float
-    RecurrenceID = datetime.datetime | None
+    RecurrenceID = datetime.datetime
+    RecurrenceIDs = tuple[RecurrenceID]
 
 
 # The minimum value accepted as date (pytz + zoneinfo)
@@ -259,20 +260,38 @@ def cached_property(func: Callable):
     return cached_property
 
 
-def as_recurrence_id(time: Time) -> RecurrenceID:
-    """Convert the time to a recurrence id so it can be hashed and recognized."""
+def to_recurrence_ids(time: Time) -> RecurrenceIDs:
+    """Convert the time to a recurrence id so it can be hashed and recognized.
+
+    The first value should be used to identify a component as it is a datetime in UTC.
+    The other values can be used to look the component up.
+    """
     # We are inside the Series calculation with this and want to identify
     # a date. It is fair to assume that the timezones are the same now.
     if not isinstance(time, datetime.datetime):
-        return convert_to_datetime(time, None)
+        return (convert_to_datetime(time, None),)
     if time.tzinfo is None:
-        return time
-    return time.astimezone(datetime.timezone.utc).replace(tzinfo=None)
+        return (time,)
+    return (time.astimezone(datetime.timezone.utc).replace(tzinfo=None),
+            time.replace(tzinfo=None))
 
 
 def is_date(time: Time):
     """Whether this is a date and not a datetime."""
     return isinstance(time, datetime.date) and not isinstance(time, datetime.datetime)
+
+
+def with_highest_sequence(adapter1 : ComponentAdapter|None, adapter2: ComponentAdapter|None):
+    """Return the one with the highest sequence."""
+    return max(adapter1, adapter2, key=lambda adapter: -1e10 if adapter is None else adapter.sequence)
+
+
+def get_any(dictionary:dict, keys:Sequence[object], default:object=None):
+    """Get any item from the keys and return it."""
+    result = default
+    for key in keys:
+        result = dictionary.get(key, result)
+    return result
 
 
 class Series:
@@ -285,21 +304,30 @@ class Series:
         # We identify recurrences with a timestamp as all recurrence values
         # should be the same in UTC either way and we want to omit
         # inequality because of timezone implementation mismatches.
-        self.modifications: dict[
-            RecurrenceID | None, ComponentAdapter
+        self.recurrence_id_to_modification: dict[
+            RecurrenceID, ComponentAdapter
         ] = {}  # RECURRENCE-ID -> adapter
+        self.modifications : set[ComponentAdapter] = set()
+        core : ComponentAdapter|None = None
         for component in components:
-            recurrence_id = component.recurrence_id
-            other_component = self.modifications.get(recurrence_id)
-            if other_component is None or other_component.sequence < component.sequence:
-                self.modifications[recurrence_id] = component
+            if component.is_modification():
+                self.modifications.add(component)
+                for recurrence_id in component.recurrence_ids:
+                    self.recurrence_id_to_modification[recurrence_id] = (
+                        with_highest_sequence(
+                            self.recurrence_id_to_modification.get(recurrence_id),
+                            component
+                        )
+                    )
+            else:
+                core = with_highest_sequence(core, component)
         del component
-        self.core = self.modifications.pop(None, None)
-        if self.core is None:
+        if core is None:
             raise InvalidCalendar(
-                f"The event definition for {components[0].uid}"
+                f"The event definition for {components[0].uid} "
                 "only contains modifications."
             )
+        self.core = core
         # Setup complete. We create the attribtues
         self.start = self.original_start = self.core.start
         self.end = self.original_end = self.core.end
@@ -311,7 +339,7 @@ class Series:
         # fill the attributes
         for exdate in self.core.exdates:
             self.exdates.add(exdate)
-            self.check_exdates_datetime.add(as_recurrence_id(exdate))
+            self.check_exdates_datetime.update(to_recurrence_ids(exdate))
             if is_date(exdate):
                 self.check_exdates_date.add(exdate)
         for rdate in self.core.rdates:
@@ -319,7 +347,8 @@ class Series:
                 # we have a period as rdate
                 self.rdates.add(rdate[0])
                 # TODO: Test RDATE Period with duration
-                self.replace_ends[as_recurrence_id(rdate[0])] = rdate[1]
+                for recurrence_id in to_recurrence_ids(rdate[0]):
+                    self.replace_ends[recurrence_id] = rdate[1]
             else:
                 # we have a date/datetime
                 self.rdates.add(rdate)
@@ -465,6 +494,9 @@ class Series:
         # make dates comparable, rrule converts them to datetimes
         span_start_dt = convert_to_datetime(span_start, self.tzinfo)
         span_stop_dt = convert_to_datetime(span_stop, self.tzinfo)
+        print(f"between {span_start} - {span_stop}")
+        print(self, self.modifications)
+        print(f"self.modifications={list(self.recurrence_id_to_modification.keys())}")
         if compare_greater(span_start_dt, self.start):
             # do not exclude an component if it spans across the time span
             # TODO: Test if modification is included if it has a very long
@@ -481,22 +513,24 @@ class Series:
         # NOTE: If in the following line, we get an error, datetime and date
         # may still be mixed because RDATE, EXDATE, start and rule.
         for start in self.rrule_between(span_start_dt, span_stop_dt):
-            if start in returned_starts:
-                # TODO: What if a modification is moved to the same time as another
-                #       occurrence?
-                #       This should be tested.
-                continue
-            recurrence_id = as_recurrence_id(start)
-            if (
+            recurrence_ids = to_recurrence_ids(start)
+            # TODO: What if a modification is moved to the same time as another
+            #       occurrence?
+            #       This should be tested.
+            if (start in returned_starts or 
+                convert_to_date(start) in self.check_exdates_date or any(
                 recurrence_id in self.check_exdates_datetime
-                or convert_to_date(start) in self.check_exdates_date
-            ):
+                    for recurrence_id in recurrence_ids)):
                 continue
-            adapter = self.modifications.get(recurrence_id, self.core)
+            adapter : ComponentAdapter = get_any(
+                self.recurrence_id_to_modification, recurrence_ids, self.core)
             if adapter is self.core:
-                stop = self.replace_ends.get(recurrence_id, start + adapter.duration)
+                stop = get_any(self.replace_ends,
+                    recurrence_ids,
+                    normalize_pytz(start + self.core.duration)
+                )
                 occurrence = Occurrence(
-                    adapter,
+                    self.core,
                     self.convert_to_original_type(start),
                     self.convert_to_original_type(stop),
                 )
@@ -510,7 +544,7 @@ class Series:
             # TODO: Test: use time from event modification over RDATE
             if occurrence.is_in_span(span_start, span_stop):
                 yield occurrence
-        for modification in self.modifications.values():
+        for modification in self.modifications:
             # we assume that the modifications are actually included
             if modification in returned_modifications:
                 continue
@@ -536,13 +570,13 @@ class Series:
     @property
     def uid(self):
         """The UID that identifies this series."""
-        return self.core.uid
+        return getattr(self.core, "uid", "invalid")
 
     def __repr__(self):
         """A string representation."""
         return (
             f"<{self.__class__.__name__} uid={self.uid} "
-            f"modifications:{len(self.modifications)}>"
+            f"modifications:{len(self.recurrence_id_to_modification)}>"
         )
 
 
@@ -619,16 +653,16 @@ class ComponentAdapter(ABC):
         return copied_component
 
     @cached_property
-    def recurrence_id(self) -> Timestamp | None:
-        """The recurrence id of the component or None.
-
-        The basic event definiton has no recurrence id.
-        All modifications have recurrence ids.
-        """
+    def recurrence_ids(self) -> RecurrenceIDs:
+        """The recurrence ids of the component that might be used to identify it."""
         recurrence_id = self._component.get("RECURRENCE-ID")
         if recurrence_id is None:
-            return None
-        return as_recurrence_id(recurrence_id.dt)
+            return ()
+        return to_recurrence_ids(recurrence_id.dt)
+
+    def is_modification(self) -> bool:
+        """Whether the adapter is a modification."""
+        return bool(self.recurrence_ids)
 
     @cached_property
     def sequence(self) -> int:
@@ -642,7 +676,7 @@ class ComponentAdapter(ABC):
         """Debug representation with more info."""
         return (
             f"<{self.__class__.__name__} UID={self.uid} start={self.start} "
-            f"recurrence_id={self.recurrence_id} sequence={self.sequence} "
+            f"recurrence_ids={self.recurrence_ids} sequence={self.sequence} "
             f"end={self.end}>"
         )
 
@@ -857,10 +891,11 @@ class Occurrence:
     @cached_property
     def id(self) -> ComponentID:
         """The id of the component."""
+        recurrence_id = ((*self._adapter.recurrence_ids, self.start))[0]
         return (
             self._adapter.component_name(),
             self._adapter.uid,
-            self._adapter.recurrence_id or self.start,
+            recurrence_id,
         )
 
 
