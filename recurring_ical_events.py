@@ -326,23 +326,24 @@ class Series:
         # Calculate the rules with the same timezones
         self.rule_set = rruleset(cache=True)
         self.rrules = []
-        self.last_until : Time | None = None
+        last_until : Time | None = None
         for rrule_string in self.core.rrules:
             rule = self.create_rule_with_start(rrule_string)
             self.rrules.append(rule)
             if rule.until and (
-                not self.last_until or compare_greater(rule.until, self.last_until)
+                not last_until or compare_greater(rule.until, last_until)
             ):
-                self.last_until = rule.until
+                last_until = rule.until
 
         for exdate in self.exdates:
             self.check_exdates_datetime.add(exdate)
         for rdate in self.rdates:
             self.rule_set.rdate(rdate)
 
-        if not self.last_until or not compare_greater(self.start, self.last_until):
+        if not last_until or not compare_greater(self.start, last_until):
             self.rule_set.rdate(self.start)  # TODO: Check if we can remove this when all tests run
 
+        print(self.rrules)
 
     def create_rule_with_start(self, rule_string) -> rrule:
         """Helper to create an rrule from a rule_string
@@ -439,11 +440,13 @@ class Series:
             convert_to_datetime(exdate, self.tzinfo) for exdate in self.exdates
         }
 
-    def rrule_between(self, start: Time, stop:Time) -> Generator[Time]:
+    def rrule_between(self, span_start: Time, span_stop:Time) -> Generator[Time]:
         """Recalculate the rrules so that minor mistakes are corrected."""
         yield from self.rule_set
         for rule in self.rrules:
-            for start in rule.between(start, stop, inc=True):
+            print(f"rrule_between {span_start} - {span_stop} :", rule)
+            for start in rule.between(span_start, span_stop, inc=True):
+                print("rrule_between", start)
                 if is_pytz_dt(start):
                     # update the time zone in case of summer/winter time change
                     start = start.tzinfo.localize(start.replace(tzinfo=None))  # noqa: PLW2901
@@ -639,20 +642,15 @@ class ComponentAdapter(ABC):
         return result
 
     @cached_property
-    def rrules(self) -> list[str]:
+    def rrules(self) -> set[str]:
         """A list of rrules of this component."""
-        rrules = self._component.get("RRULE", None)
-        if not rrules:
-            return []
-        if not isinstance(rrules, list):
-            rrules = [rrules]
-        else:
-            _dedup_rules = []
-            for _rule in rrules:
-                if _rule not in _dedup_rules:
-                    _dedup_rules.append(_rule)
-            rrules = _dedup_rules
-        return [rrule.to_ical().decode() for rrule in rrules]
+        rules = self._component.get("RRULE", None)
+        if not rules:
+            return set()
+        return {rrule.to_ical().decode()
+                   for rrule in 
+                   (rules if isinstance(rules, list) else [rules])
+                   }
 
     @cached_property
     def rdates(self) -> list[Time, tuple[Time, Time]]:
