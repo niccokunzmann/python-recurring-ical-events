@@ -324,24 +324,24 @@ class Series:
         self.make_all_dates_comparable()
 
         # Calculate the rules with the same timezones
-        self.rule = rruleset(cache=True)
+        self.rule_set = rruleset(cache=True)
+        self.rrules = []
         self.last_until : Time | None = None
         for rrule_string in self.core.rrules:
-            _rrule : rrule = self.create_rule_with_start(rrule_string)
-            self.rule.rrule(_rrule)
-            if _rrule.until and (
-                not self.last_until or compare_greater(_rrule.until, self.last_until)
+            rule = self.create_rule_with_start(rrule_string)
+            self.rrules.append(rule)
+            if rule.until and (
+                not self.last_until or compare_greater(rule.until, self.last_until)
             ):
-                self.last_until = _rrule.until
+                self.last_until = rule.until
 
         for exdate in self.exdates:
-            self.rule.exdate(exdate)
             self.check_exdates_datetime.add(exdate)
         for rdate in self.rdates:
-            self.rule.rdate(rdate)
+            self.rule_set.rdate(rdate)
 
         if not self.last_until or not compare_greater(self.start, self.last_until):
-            self.rule.rdate(self.start)  # TODO: Check if we can remove this when all tests run
+            self.rule_set.rdate(self.start)  # TODO: Check if we can remove this when all tests run
 
 
     def create_rule_with_start(self, rule_string) -> rrule:
@@ -439,6 +439,19 @@ class Series:
             convert_to_datetime(exdate, self.tzinfo) for exdate in self.exdates
         }
 
+    def rrule_between(self, start: Time, stop:Time) -> Generator[Time]:
+        """Recalculate the rrules so that minor mistakes are corrected."""
+        yield from self.rule_set
+        for rule in self.rrules:
+            for start in rule.between(start, stop, inc=True):
+                if is_pytz_dt(start):
+                    # update the time zone in case of summer/winter time change
+                    start = start.tzinfo.localize(start.replace(tzinfo=None))  # noqa: PLW2901
+                # We could now well be out of bounce of the end of the UNTIL
+                # value. This is tested by test/test_issue_20_exdate_ignored.py.
+                if rule.until is None or compare_greater(rule.until, start):
+                    yield start
+                    
     def between(self, span_start: Time, span_stop: Time) -> Generator[Occurrence]:
         """components between the start (inclusive) and end (exclusive)"""
         # make dates comparable, rrule converts them to datetimes
@@ -459,12 +472,7 @@ class Series:
         returned_modifications : set[ComponentAdapter] = set()
         # NOTE: If in the following line, we get an error, datetime and date
         # may still be mixed because RDATE, EXDATE, start and rule.
-        for start in self.rule.between(span_start_dt, span_stop_dt, inc=True):
-            if is_pytz_dt(start):
-                # update the time zone in case of summer/winter time change
-                start = start.tzinfo.localize(start.replace(tzinfo=None))  # noqa: PLW2901
-                # We could now well be out of bounce of the end of the UNTIL
-                # value. This is tested by test/test_issue_20_exdate_ignored.py.
+        for start in self.rrule_between(span_start_dt, span_stop_dt):
             if start in returned_starts:
                 # TODO: What if a modification is moved to the same time as another
                 #       occurrence?

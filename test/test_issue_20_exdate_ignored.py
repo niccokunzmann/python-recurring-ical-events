@@ -61,7 +61,7 @@ def test_there_are_n_events(calendars):
     for date in expected_dates[len(events) :]:
         print(f"expected: {date}")
     for event in events[len(expected_dates) :]:
-        print("start: {}".format(event["DTSTART"].dt))
+        print("not expected: {}".format(event["DTSTART"].dt))
     assert len(events) == 7
 
 
