@@ -61,11 +61,13 @@ def test_there_are_n_events(calendars):
     for date in expected_dates[len(events) :]:
         print(f"expected: {date}")
     for event in events[len(expected_dates) :]:
-        print("start: {}".format(event["DTSTART"].dt))
+        print("not expected: {}".format(event["DTSTART"].dt))
     assert len(events) == 7
 
 
 def test_rdate_after_until_also_in_rrule(calendars):
     """Special test for pytz, if the event is included."""
     events = calendars.rdate_falls_on_rrule_until.at("20200204")
+    for event in events:
+        print(event)
     assert len(events) == 1

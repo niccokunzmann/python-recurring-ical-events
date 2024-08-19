@@ -1,19 +1,19 @@
 import sys
 import time
+from datetime import timezone
 from pathlib import Path
 
+import dateutil
 import icalendar
 import pytest
+import pytz
 
 from recurring_ical_events import of
 
 try:
     import zoneinfo as _zoneinfo
 except ImportError:
-    try:
-        import backports.zoneinfo as _zoneinfo
-    except ImportError:
-        _zoneinfo = None
+    import backports.zoneinfo as _zoneinfo
 
 HERE = Path(__file__).parent
 REPO = Path(HERE).parent
@@ -45,7 +45,7 @@ class ICSCalendars:
         return self.Calendar.from_ical(content)
 
     def __getitem__(self, name):
-        return getattr(self, name.replace("-", "_"))
+        return getattr(self, name)
 
     @property
     def raw(self):
@@ -138,3 +138,12 @@ def zoneinfo():
 def ZoneInfo(zoneinfo):
     """Shortcut for zoneinfo.ZoneInfo."""
     return zoneinfo.ZoneInfo
+
+
+@pytest.fixture(
+    scope="module",
+    params=[pytz.utc, _zoneinfo.ZoneInfo("UTC"), timezone.utc, dateutil.tz.UTC],
+)
+def utc(request):
+    """Return all the UTC implementations."""
+    return request.param

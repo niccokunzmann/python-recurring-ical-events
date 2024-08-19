@@ -27,8 +27,8 @@ def test_dates_are_equal():
     assert c1_t_utc == c1_t_london, "dates should equal"
 
 
-c1 = "rdate-hackerpublicradio"
-c2 = "x-wr-timezone-simple-events-issue-59"
+c1 = "rdate_hackerpublicradio"
+c2 = "x_wr_timezone_simple_events_issue_59"
 
 
 @pytest.mark.parametrize(

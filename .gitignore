@@ -11,3 +11,4 @@ ENV2
 env-2
 /htmlcov
 .coverage
+.venv
