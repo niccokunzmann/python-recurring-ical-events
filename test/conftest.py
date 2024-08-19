@@ -1,11 +1,11 @@
 import sys
 import time
+from datetime import timezone
 from pathlib import Path
 
+import dateutil
 import icalendar
 import pytest
-from datetime import timezone
-import dateutil
 import pytz
 
 from recurring_ical_events import of
@@ -140,7 +140,10 @@ def ZoneInfo(zoneinfo):
     return zoneinfo.ZoneInfo
 
 
-@pytest.fixture(scope="module", params=[pytz.utc, _zoneinfo.ZoneInfo("UTC"), timezone.utc, dateutil.tz.UTC])
+@pytest.fixture(
+    scope="module",
+    params=[pytz.utc, _zoneinfo.ZoneInfo("UTC"), timezone.utc, dateutil.tz.UTC],
+)
 def utc(request):
     """Return all the UTC implementations."""
     return request.param

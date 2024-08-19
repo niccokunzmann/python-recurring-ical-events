@@ -16,23 +16,23 @@ from __future__ import annotations
 
 import contextlib
 import datetime
-import functools
-from pprint import pprint
 import re
 from abc import ABC, abstractmethod
 from collections import defaultdict
-from typing import TYPE_CHECKING, Generator, Optional, Sequence, Union, Callable
+from functools import wraps
+from typing import TYPE_CHECKING, Callable, Generator, Optional, Sequence, Union
 
 import x_wr_timezone
 from dateutil.rrule import rruleset, rrulestr
 from icalendar.prop import vDDDTypes
-from functools import wraps
 
 if TYPE_CHECKING:
     from icalendar.cal import Component
+
     Time = Union[datetime.date, datetime.datetime]
     DateArgument = tuple[int] | Time | str | int
     from dateutil.rrule import rrule
+
     UID = str
     ComponentID = tuple[str, UID, Time]
     Timestamp = float
@@ -45,7 +45,6 @@ DATE_MIN_DT = datetime.date(*DATE_MIN)
 # The maximum value accepted as date (pytz + zoneinfo)
 DATE_MAX = (2038, 1, 1)
 DATE_MAX_DT = datetime.date(*DATE_MAX)
-
 
 
 class InvalidCalendar(ValueError):
@@ -65,7 +64,7 @@ class InvalidCalendar(ValueError):
 class PeriodEndBeforeStart(InvalidCalendar):
     """An event or component starts before it ends."""
 
-    def __init__(self, message:str , start:Time, end:Time):
+    def __init__(self, message: str, start: Time, end: Time):
         """Create a new PeriodEndBeforeStart error."""
         super().__init__(message)
         self._start = start
@@ -96,7 +95,7 @@ class BadRuleStringFormat(InvalidCalendar):
         return self._rule
 
 
-def timestamp(dt : datetime.datetime) -> Timestamp:
+def timestamp(dt: datetime.datetime) -> Timestamp:
     """Return the time stamp of a datetime"""
     return dt.timestamp()
 
@@ -111,7 +110,7 @@ def convert_to_date(date: Time) -> datetime.date:
 
 def convert_to_datetime(date: Time, tzinfo: Optional[datetime.tzinfo]):  # noqa: UP007
     """Converts a date to a datetime.
-    
+
     Dates are converted to datetimes with tzinfo.
     Datetimes loose their timezone if tzinfo is None.
     Datetimes receive tzinfo as a timezone if they do not have a timezone.
@@ -132,11 +131,11 @@ def convert_to_datetime(date: Time, tzinfo: Optional[datetime.tzinfo]):  # noqa:
 
 
 def time_span_contains_event(
-    span_start : Time,
-    span_stop : Time,
-    event_start : Time,
-    event_stop : Time,
-    comparable:bool=False,  # noqa: FBT001
+    span_start: Time,
+    span_stop: Time,
+    event_start: Time,
+    event_stop: Time,
+    comparable: bool = False,  # noqa: FBT001
 ):
     """Return whether an event should is included within a time span.
 
@@ -181,12 +180,10 @@ def time_span_contains_event(
         return span_start <= event_start < span_stop
     if span_start == span_stop:
         return event_start <= span_start < event_stop
-    print(f"span: {span_start} - {span_stop} \nevent: {event_start} - {event_stop}")
-    print(f"{event_start} < {span_stop} == {event_start < span_stop} \nand {span_start} < {event_stop} == {span_start < event_stop}")
     return event_start < span_stop and span_start < event_stop
 
 
-def make_comparable(dates:Sequence[Time]) -> list[Time]:
+def make_comparable(dates: Sequence[Time]) -> list[Time]:
     """Make an list or tuple of dates comparable.
 
     Returns an list.
@@ -199,13 +196,13 @@ def make_comparable(dates:Sequence[Time]) -> list[Time]:
     return [convert_to_datetime(date, tzinfo) for date in dates]
 
 
-def compare_greater(date1:Time, date2:Time) -> bool:
+def compare_greater(date1: Time, date2: Time) -> bool:
     """Compare two dates if date1 > date2 and make them comparable before."""
     date1, date2 = make_comparable((date1, date2))
     return date1 > date2
 
 
-def cmp(date1:Time, date2:Time) -> int:
+def cmp(date1: Time, date2: Time) -> int:
     """Compare two dates, like cmp().
 
     Returns
@@ -221,7 +218,7 @@ def cmp(date1:Time, date2:Time) -> int:
     return (date1 > date2) - (date1 < date2)
 
 
-def is_pytz(tzinfo: datetime.tzinfo|Time):
+def is_pytz(tzinfo: datetime.tzinfo | Time):
     """Whether the time zone requires localize() and normalize().
 
     pytz requires these funtions to be used in order to correctly use the
@@ -238,27 +235,31 @@ def is_pytz_dt(time: Time):
     """
     return isinstance(time, datetime.datetime) and is_pytz(time.tzinfo)
 
+
 def normalize_pytz(time: Time):
     """We have to normalize the time after a calculation if we use pytz."""
     if is_pytz_dt(time):
         return time.tzinfo.normalize(time)
     return time
 
-def cached_property(func:Callable):
+
+def cached_property(func: Callable):
     """Cache the property value for speed up."""
     name = f"_cached_{func.__name__}"
     not_found = object()
+
     @property
     @wraps(func)
-    def cached_property(self:object):
+    def cached_property(self: object):
         value = self.__dict__.get(name, not_found)
         if value is not_found:
             self.__dict__[name] = value = func(self)
         return value
-    return cached_property
-    
 
-def as_recurrence_id(time : Time) -> RecurrenceID:
+    return cached_property
+
+
+def as_recurrence_id(time: Time) -> RecurrenceID:
     """Convert the time to a recurrence id so it can be hashed and recognized."""
     # We are inside the Series calculation with this and want to identify
     # a date. It is fair to assume that the timezones are the same now.
@@ -273,6 +274,7 @@ def is_date(time: Time):
     """Whether this is a date and not a datetime."""
     return isinstance(time, datetime.date) and not isinstance(time, datetime.datetime)
 
+
 class Series:
     """Base class for components that result in a series of occurrences."""
 
@@ -283,7 +285,9 @@ class Series:
         # We identify recurrences with a timestamp as all recurrence values
         # should be the same in UTC either way and we want to omit
         # inequality because of timezone implementation mismatches.
-        self.modifications : dict[RecurrenceID | None, ComponentAdapter] = {}  # RECURRENCE-ID -> adapter
+        self.modifications: dict[
+            RecurrenceID | None, ComponentAdapter
+        ] = {}  # RECURRENCE-ID -> adapter
         for component in components:
             recurrence_id = component.recurrence_id
             other_component = self.modifications.get(recurrence_id)
@@ -292,15 +296,18 @@ class Series:
         del component
         self.core = self.modifications.pop(None, None)
         if self.core is None:
-            raise InvalidCalendar(f"The event definition for {components[0].uid} only contains modifications.")
+            raise InvalidCalendar(
+                f"The event definition for {components[0].uid}"
+                "only contains modifications."
+            )
         # Setup complete. We create the attribtues
         self.start = self.original_start = self.core.start
         self.end = self.original_end = self.core.end
-        self.exdates : set[Time] = set()
-        self.check_exdates_datetime : set[RecurrenceID] = set()  # should be in UTC
-        self.check_exdates_date : set[datetime.date] = set()  # should be in UTC
-        self.rdates : set[Time] = set()
-        self.replace_ends : dict[RecurrenceID, Time] = {}  # for periods, in UTC
+        self.exdates: set[Time] = set()
+        self.check_exdates_datetime: set[RecurrenceID] = set()  # should be in UTC
+        self.check_exdates_date: set[datetime.date] = set()  # should be in UTC
+        self.rdates: set[Time] = set()
+        self.replace_ends: dict[RecurrenceID, Time] = {}  # for periods, in UTC
         # fill the attributes
         for exdate in self.core.exdates:
             self.exdates.add(exdate)
@@ -326,7 +333,7 @@ class Series:
         # Calculate the rules with the same timezones
         self.rule_set = rruleset(cache=True)
         self.rrules = []
-        last_until : Time | None = None
+        last_until: Time | None = None
         for rrule_string in self.core.rrules:
             rule = self.create_rule_with_start(rrule_string)
             self.rrules.append(rule)
@@ -341,9 +348,9 @@ class Series:
             self.rule_set.rdate(rdate)
 
         if not last_until or not compare_greater(self.start, last_until):
-            self.rule_set.rdate(self.start)  # TODO: Check if we can remove this when all tests run
-
-        print(self.rrules)
+            self.rule_set.rdate(
+                self.start
+            )  # TODO: Check if we can remove this when all tests run
 
     def create_rule_with_start(self, rule_string) -> rrule:
         """Helper to create an rrule from a rule_string
@@ -385,7 +392,6 @@ class Series:
             new_rule_string = (
                 rule_list[0] + rule_list[1][date_end_index:] + ";UNTIL=" + until_string
             )
-            print("error!!")
             return self.rrulestr(new_rule_string)
 
     def rrulestr(self, rule_string) -> rrule:
@@ -441,13 +447,11 @@ class Series:
             convert_to_datetime(exdate, self.tzinfo) for exdate in self.exdates
         }
 
-    def rrule_between(self, span_start: Time, span_stop:Time) -> Generator[Time]:
+    def rrule_between(self, span_start: Time, span_stop: Time) -> Generator[Time]:
         """Recalculate the rrules so that minor mistakes are corrected."""
         yield from self.rule_set
         for rule in self.rrules:
-            print(f"rrule_between {span_start} - {span_stop} :", rule)
             for start in rule.between(span_start, span_stop, inc=True):
-                print("rrule_between", start)
                 if is_pytz_dt(start):
                     # update the time zone in case of summer/winter time change
                     start = start.tzinfo.localize(start.replace(tzinfo=None))  # noqa: PLW2901
@@ -455,7 +459,7 @@ class Series:
                 # value. This is tested by test/test_issue_20_exdate_ignored.py.
                 if rule.until is None or not compare_greater(start, rule.until):
                     yield start
-                    
+
     def between(self, span_start: Time, span_stop: Time) -> Generator[Occurrence]:
         """components between the start (inclusive) and end (exclusive)"""
         # make dates comparable, rrule converts them to datetimes
@@ -472,8 +476,8 @@ class Series:
         if is_pytz(self.tzinfo):
             span_start_dt = normalize_pytz(span_start_dt - datetime.timedelta(hours=1))
             span_stop_dt = normalize_pytz(span_stop_dt + datetime.timedelta(hours=1))
-        returned_starts : set[Time] = set()
-        returned_modifications : set[ComponentAdapter] = set()
+        returned_starts: set[Time] = set()
+        returned_modifications: set[ComponentAdapter] = set()
         # NOTE: If in the following line, we get an error, datetime and date
         # may still be mixed because RDATE, EXDATE, start and rule.
         for start in self.rrule_between(span_start_dt, span_stop_dt):
@@ -482,23 +486,23 @@ class Series:
                 #       occurrence?
                 #       This should be tested.
                 continue
-            recurrence_id  = as_recurrence_id(start)
-            print(f"recurrence_id - {recurrence_id} check_exdates - {self.check_exdates_datetime}")
-            if recurrence_id in self.check_exdates_datetime or convert_to_date(start) in self.check_exdates_date:
+            recurrence_id = as_recurrence_id(start)
+            if (
+                recurrence_id in self.check_exdates_datetime
+                or convert_to_date(start) in self.check_exdates_date
+            ):
                 continue
             adapter = self.modifications.get(recurrence_id, self.core)
-            print(self.modifications, recurrence_id)
             if adapter is self.core:
                 stop = self.replace_ends.get(recurrence_id, start + adapter.duration)
                 occurrence = Occurrence(
                     adapter,
                     self.convert_to_original_type(start),
-                    self.convert_to_original_type(stop)
+                    self.convert_to_original_type(stop),
                 )
                 returned_starts.add(start)
             else:
                 # We found a modification
-                print(f"found modification! {adapter}")
                 if adapter in returned_modifications:
                     continue
                 returned_modifications.add(adapter)
@@ -533,58 +537,63 @@ class Series:
     def uid(self):
         """The UID that identifies this series."""
         return self.core.uid
-    
+
     def __repr__(self):
         """A string representation."""
-        return f"<{self.__class__.__name__} uid={self.uid} modifications:{len(self.modifications)}>"
+        return (
+            f"<{self.__class__.__name__} uid={self.uid} "
+            f"modifications:{len(self.modifications)}>"
+        )
+
 
 class ComponentAdapter(ABC):
     """A unified interface to work with icalendar components."""
-    
+
     ATTRIBUTES_TO_DELETE_ON_COPY = ["RRULE", "RDATE", "EXDATE"]
 
     @staticmethod
     @abstractmethod
     def component_name() -> str:
         """The icalendar component name."""
-        
-    
+
     def __init__(self, component: Component):
         """Create a new adapter."""
         self._component = component
-    
+
     @property
     def end_property(self) -> str | None:
         """The name of the end property."""
         return None
-    
+
     @property
     @abstractmethod
     def start(self) -> Time:
         """The start time."""
-    
+
     @property
     @abstractmethod
     def end(self) -> Time:
         """The end time."""
-        
+
     @property
     def uid(self) -> UID:
         """The UID of a component.
-        
+
         UID is required by RFC5545.
         If the UID is absent, we use the Python ID.
         """
         return self._component.get("UID", str(id(self._component)))
-        
+
     @classmethod
-    def collect_components(cls, source: Component, suppress_errors:tuple[Exception]) -> Sequence[Series]:
+    def collect_components(
+        cls, source: Component, suppress_errors: tuple[Exception]
+    ) -> Sequence[Series]:
         """Collect all components from the source component.
-        
+
         suppress_errors - a list of errors that should be suppressed.
             A Series of events with such an error is removed from all results.
         """
-        components : dict[str, list[Component]] = defaultdict(list) # UID -> components
+        components: dict[str, list[Component]] = defaultdict(list)  # UID -> components
         for component in source.walk(cls.component_name()):
             adapter = cls(component)
             components[adapter.uid].append(adapter)
@@ -594,7 +603,7 @@ class ComponentAdapter(ABC):
                 result.append(Series(components))
         return result
 
-    def as_component(self, start: Time, stop:Time, keep_recurrence_attributes: bool):  # noqa: FBT001
+    def as_component(self, start: Time, stop: Time, keep_recurrence_attributes: bool):  # noqa: FBT001
         """Create a shallow copy of the source event and modify some attributes."""
         copied_component = self._component.copy()
         # TODO: Test that duration gets removed for all component types
@@ -612,7 +621,7 @@ class ComponentAdapter(ABC):
     @cached_property
     def recurrence_id(self) -> Timestamp | None:
         """The recurrence id of the component or None.
-        
+
         The basic event definiton has no recurrence id.
         All modifications have recurrence ids.
         """
@@ -620,23 +629,27 @@ class ComponentAdapter(ABC):
         if recurrence_id is None:
             return None
         return as_recurrence_id(recurrence_id.dt)
-    
+
     @cached_property
     def sequence(self) -> int:
         """The sequence in the history of modification.
-        
+
         The sequence is negative if none was found.
         """
         return self._component.get("SEQUENCE", -1)
-    
-    def __repr__(self)->str:
+
+    def __repr__(self) -> str:
         """Debug representation with more info."""
-        return f"<{self.__class__.__name__} UID={self.uid} start={self.start} recurrence_id={self.recurrence_id} sequence={self.sequence} end={self.end}>"
+        return (
+            f"<{self.__class__.__name__} UID={self.uid} start={self.start} "
+            f"recurrence_id={self.recurrence_id} sequence={self.sequence} "
+            f"end={self.end}>"
+        )
 
     @cached_property
     def exdates(self) -> list[Time]:
         """A list of exdates."""
-        result : list[Time] = []
+        result: list[Time] = []
         exdates = self._component.get("EXDATE", [])
         for exdates in (exdates,) if not isinstance(exdates, list) else exdates:
             result.extend(exdate.dt for exdate in exdates.dts)
@@ -648,10 +661,10 @@ class ComponentAdapter(ABC):
         rules = self._component.get("RRULE", None)
         if not rules:
             return set()
-        return {rrule.to_ical().decode()
-                   for rrule in 
-                   (rules if isinstance(rules, list) else [rules])
-                   }
+        return {
+            rrule.to_ical().decode()
+            for rrule in (rules if isinstance(rules, list) else [rules])
+        }
 
     @cached_property
     def rdates(self) -> list[Time, tuple[Time, Time]]:
@@ -661,25 +674,25 @@ class ComponentAdapter(ABC):
         for rdates in (rdates,) if not isinstance(rdates, list) else rdates:
             result.extend(rdate.dt for rdate in rdates.dts)
         return result
-    
+
     @cached_property
     def duration(self) -> datetime.timedelta:
         """The duration of the component."""
         return self.end - self.start
-        
-    def is_in_span(self, span_start:Time, span_stop:Time) -> bool:
+
+    def is_in_span(self, span_start: Time, span_stop: Time) -> bool:
         """Return whether the component is in the span."""
         return time_span_contains_event(span_start, span_stop, self.start, self.end)
 
 
 class EventAdapter(ComponentAdapter):
     """An icalendar event adapter."""
-    
+
     @staticmethod
     def component_name() -> str:
         """The icalendar component name."""
         return "VEVENT"
-    
+
     @property
     def end_property(self) -> str:
         """DTEND"""
@@ -706,6 +719,7 @@ class EventAdapter(ComponentAdapter):
             return normalize_pytz(self._component["DTSTART"].dt + duration.dt)
         return self._component["DTSTART"].dt
 
+
 class TodoAdapter(ComponentAdapter):
     """Unified access to TODOs."""
 
@@ -713,7 +727,7 @@ class TodoAdapter(ComponentAdapter):
     def component_name() -> str:
         """The icalendar component name."""
         return "VTODO"
-    
+
     @property
     def end_property(self) -> str:
         """DUE"""
@@ -735,7 +749,7 @@ class TodoAdapter(ComponentAdapter):
         ## Assume infinite time span if neither is given
         ## (see the comments under _get_event_end)
         return DATE_MIN_DT
-    
+
     @cached_property
     def end(self) -> Time:
         """Return DUE or DTSTART+DURATION or something"""
@@ -791,7 +805,7 @@ class JournalAdapter(ComponentAdapter):
         if dtstart is not None:
             return dtstart.dt
         return DATE_MIN_DT
-    
+
     @cached_property
     def end(self) -> Time:
         """The end time is the same as the start."""
@@ -810,7 +824,7 @@ class Occurrence:
         self,
         adapter: ComponentAdapter,
         start: Time | None = None,
-        end:Time | None = None
+        end: Time | None = None,
     ):
         """Create an event repetition.
 
@@ -822,11 +836,13 @@ class Occurrence:
         self.start = adapter.start if start is None else start
         self.end = adapter.end if end is None else end
 
-    def as_component(self, keep_recurrence_attributes:bool) -> Component:  # noqa: FBT001
+    def as_component(self, keep_recurrence_attributes: bool) -> Component:  # noqa: FBT001
         """Create a shallow copy of the source component and modify some attributes."""
-        return self._adapter.as_component(self.start, self.end, keep_recurrence_attributes)
+        return self._adapter.as_component(
+            self.start, self.end, keep_recurrence_attributes
+        )
 
-    def is_in_span(self, span_start:Time, span_stop:Time) -> bool:
+    def is_in_span(self, span_start: Time, span_stop: Time) -> bool:
         """Return whether the component is in the span."""
         return time_span_contains_event(span_start, span_stop, self.start, self.end)
 
@@ -844,8 +860,9 @@ class Occurrence:
         return (
             self._adapter.component_name(),
             self._adapter.uid,
-            self._adapter.recurrence_id or self.start
+            self._adapter.recurrence_id or self.start,
         )
+
 
 class UnfoldableCalendar:
     """A calendar that can unfold its events at a certain time.
@@ -854,36 +871,34 @@ class UnfoldableCalendar:
     selected components. If any malformed icalendar information is found,
     an InvalidCalendar exception is raised. For other bad arguments, you
     should expect a ValueError.
-    
+
     suppressed_errors - a list of errors to suppress when
         skip_bad_series is True
-    
+
     component_adapters - a list of component adapters
     """
 
-    component_adapters = [
-        EventAdapter, TodoAdapter, JournalAdapter
-    ]
-    
+    component_adapters = [EventAdapter, TodoAdapter, JournalAdapter]
+
     @cached_property
-    def _component_adapters(self) -> dict[str: type[ComponentAdapter]]:
+    def _component_adapters(self) -> dict[str : type[ComponentAdapter]]:
         """A mapping of component adapters."""
-        return {adapter.component_name() : adapter for adapter in self.component_adapters}
-    
-    suppressed_errors = [
-        BadRuleStringFormat, PeriodEndBeforeStart
-    ]
+        return {
+            adapter.component_name(): adapter for adapter in self.component_adapters
+        }
+
+    suppressed_errors = [BadRuleStringFormat, PeriodEndBeforeStart]
 
     def __init__(
         self,
-        calendar:Component,
-        keep_recurrence_attributes:bool=False,  # noqa: FBT001
-        components:Sequence[str|type[ComponentAdapter]]=("VEVENT",),
-        skip_bad_series:bool=False,  # noqa: FBT001
+        calendar: Component,
+        keep_recurrence_attributes: bool = False,  # noqa: FBT001
+        components: Sequence[str | type[ComponentAdapter]] = ("VEVENT",),
+        skip_bad_series: bool = False,  # noqa: FBT001
     ):
         """Create an unfoldable calendar from a given calendar.
-        
-        calendar - an icalendar component - probably a calendar - 
+
+        calendar - an icalendar component - probably a calendar -
             from which occurrences will be calculated
         keep_recurrence_attributes - whether to keep values
             in the results that are used for calculation
@@ -895,7 +910,7 @@ class UnfoldableCalendar:
             # https://www.kanzaki.com/docs/ical/calscale.html
             raise InvalidCalendar("Only Gregorian calendars are supported.")
 
-        self.series : list[Series] = []  # component
+        self.series: list[Series] = []  # component
         self._skip_errors = tuple(self.suppressed_errors) if skip_bad_series else ()
         for component_adapter_id in components:
             if isinstance(component_adapter_id, str):
@@ -908,10 +923,12 @@ class UnfoldableCalendar:
                 component_adapter = self._component_adapters[component_adapter_id]
             else:
                 component_adapter = component_adapter_id
-            self.series.extend(component_adapter.collect_components(calendar, self._skip_errors))
+            self.series.extend(
+                component_adapter.collect_components(calendar, self._skip_errors)
+            )
 
     @staticmethod
-    def to_datetime(date:DateArgument):
+    def to_datetime(date: DateArgument):
         """Convert date inputs of various sorts into a datetime object."""
         if isinstance(date, int):
             date = (date,)
@@ -942,7 +959,7 @@ class UnfoldableCalendar:
         datetime.timedelta(seconds=1),
     ]
 
-    def at(self, date:DateArgument):
+    def at(self, date: DateArgument):
         """Return all events within the next 24 hours of starting at the given day.
 
         - date can be a year like (2019,) or 2099
@@ -972,23 +989,26 @@ class UnfoldableCalendar:
         dt = self.to_datetime(date)
         return self._between(dt, dt + self._DELTAS[len(date) - 3])
 
-    def between(self, start:DateArgument, stop:DateArgument):
+    def between(self, start: DateArgument, stop: DateArgument):
         """Return events at a time between start (inclusive) and end (inclusive)"""
         return self._between(self.to_datetime(start), self.to_datetime(stop))
-    
-    def _occurrences_to_components(self, occurrences: list[Occurrence]) -> list[Component]:
+
+    def _occurrences_to_components(
+        self, occurrences: list[Occurrence]
+    ) -> list[Component]:
         """Map occurrences to components."""
-        return [occurrence.as_component(self.keep_recurrence_attributes)
-                for occurrence in occurrences]
-    
+        return [
+            occurrence.as_component(self.keep_recurrence_attributes)
+            for occurrence in occurrences
+        ]
+
     def _between(self, start: Time, end: Time) -> list[Component]:
         """Return the occurrences between the start and the end."""
         return self._occurrences_to_components(self._occurrences_between(start, end))
 
     def _occurrences_between(self, start: Time, end: Time) -> list[Occurrence]:
         """Return the components between the start and the end."""
-        print(f"occurrences_between: {start} - {end}")
-        occurrences : list[Occurrence] = []
+        occurrences: list[Occurrence] = []
         for series in self.series:
             with contextlib.suppress(self._skip_errors):
                 occurrences.extend(series.between(start, end))
@@ -1003,7 +1023,7 @@ class UnfoldableCalendar:
         min_time_span = datetime.timedelta(minutes=15)
         earliest_end = self.to_datetime(earliest_end)
         done = False
-        result_ids : set[ComponentID] = set()
+        result_ids: set[ComponentID] = set()
 
         while not done:
             try:
@@ -1031,8 +1051,8 @@ class UnfoldableCalendar:
 def of(
     a_calendar,
     keep_recurrence_attributes=False,
-    components:Sequence[str|type[ComponentAdapter]]=("VEVENT",),
-    skip_bad_series:bool=False,  # noqa: FBT001
+    components: Sequence[str | type[ComponentAdapter]] = ("VEVENT",),
+    skip_bad_series: bool = False,  # noqa: FBT001
 ) -> UnfoldableCalendar:
     """Unfold recurring events of a_calendar
 
