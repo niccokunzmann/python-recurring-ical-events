@@ -354,7 +354,6 @@ class Series:
             if isinstance(rdate, tuple):
                 # we have a period as rdate
                 self.rdates.add(rdate[0])
-                # TODO: Test RDATE Period with duration
                 for recurrence_id in to_recurrence_ids(rdate[0]):
                     self.replace_ends[recurrence_id] = rdate[1]
             else:
@@ -385,9 +384,7 @@ class Series:
             self.rule_set.rdate(rdate)
 
         if not last_until or not compare_greater(self.start, last_until):
-            self.rule_set.rdate(
-                self.start
-            )  # TODO: Check if we can remove this when all tests run
+            self.rule_set.rdate(self.start)
 
     def create_rule_with_start(self, rule_string) -> rrule:
         """Helper to create an rrule from a rule_string
@@ -504,8 +501,6 @@ class Series:
         span_stop_dt = convert_to_datetime(span_stop, self.tzinfo)
         if compare_greater(span_start_dt, self.start):
             # do not exclude an component if it spans across the time span
-            # TODO: Test if modification is included if it has a very long
-            #       duration even if the start is way off
             span_start_dt -= self.core.duration
         # we have to account for pytz timezones not being properly calculated
         # at the timezone changes. This is a heuristic: most changes are only 1 hour.
@@ -519,9 +514,6 @@ class Series:
         # may still be mixed because RDATE, EXDATE, start and rule.
         for start in self.rrule_between(span_start_dt, span_stop_dt):
             recurrence_ids = to_recurrence_ids(start)
-            # TODO: What if a modification is moved to the same time as another
-            #       occurrence?
-            #       This should be tested.
             if (
                 start in returned_starts
                 or convert_to_date(start) in self.check_exdates_date
@@ -552,7 +544,6 @@ class Series:
                     continue
                 returned_modifications.add(adapter)
                 occurrence = Occurrence(adapter)
-            # TODO: Test: use time from event modification over RDATE
             if occurrence.is_in_span(span_start, span_stop):
                 yield occurrence
         for modification in self.modifications:
@@ -651,7 +642,6 @@ class ComponentAdapter(ABC):
     def as_component(self, start: Time, stop: Time, keep_recurrence_attributes: bool):  # noqa: FBT001
         """Create a shallow copy of the source event and modify some attributes."""
         copied_component = self._component.copy()
-        # TODO: Test that duration gets removed for all component types
         copied_component["DTSTART"] = vDDDTypes(start)
         if self.end_property is not None:
             copied_component[self.end_property] = vDDDTypes(stop)
@@ -1095,7 +1085,7 @@ class CalendarQuery:
 
 
 def of(
-    a_calendar : Component,
+    a_calendar: Component,
     keep_recurrence_attributes=False,
     components: Sequence[str | type[ComponentAdapter]] = ("VEVENT",),
     skip_bad_series: bool = False,  # noqa: FBT001
@@ -1112,6 +1102,7 @@ def of(
     return CalendarQuery(
         a_calendar, keep_recurrence_attributes, components, skip_bad_series
     )
+
 
 __all__ = [
     "of",
