@@ -233,11 +233,11 @@ Skip bad formatted ical events
 ******************************
 
 Some events may be badly formatted and therefore cannot be handled by recurring-ical-events.
-Passing ```skip_bad_events=True``` as ``of()`` argument will totally skip theses events.
+Passing ```skip_bad_series=True``` as ``of()`` argument will totally skip theses events.
 
 .. code:: Python
 
-    of(a_calendar, skip_bad_events=True)
+    of(a_calendar, skip_bad_series=True)
 
 
 Version Fixing
@@ -323,8 +323,35 @@ To release new versions,
 
 6. notify the issues about their release
 
+Architecture
+------------
+
+.. image:: img/architecture.png
+   :alt: Architecture Diagram showing the components interacting
+
+Each icalendar **Calendar** can contain Events, Journal entries,
+TODOs and others, called **Components**.
+Those entries are grouped by their ``UID``.
+Such a ``UID`` defines a **Series** of **Occurrences** that take place at
+a given time.
+Since each **Component** is different, the **ComponentAdapter** offers a unified
+interface to interact with them.
+The **Calendar** gets filtered and for each ``UID``,
+a **Series** can use one or more **ComponentAdapters** to create 
+**Occurrences** of what happens in a time span.
+These **Occurrences** are used internally and convert to **Components** for further use.
+
 Changelog
 ---------
+
+- v3.0.0
+
+  - Change the architecture and add a diagram
+  - Add type hints, see `Issue 91 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/91>`_
+  - Rename ``UnfoldableCalendar`` to ``CalendarQuery``
+  - Rename ``of(skip_bad_events=None)`` to ``of(skip_bad_series=False)``
+  - ``of(components=[...])`` now also takes ``ComponentAdapters``
+  - Fix edit sequence problems, see `Issue 151 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/151>`_
 
 - v2.2.3
 
