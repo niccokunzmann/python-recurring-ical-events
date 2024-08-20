@@ -8,7 +8,7 @@ from datetime import datetime
 import pytest
 from pytz import utc
 
-from recurring_ical_events import UnfoldableCalendar
+from recurring_ical_events import CalendarQuery
 
 
 @pytest.mark.parametrize(
@@ -25,4 +25,4 @@ from recurring_ical_events import UnfoldableCalendar
     ],
 )
 def test_conversion(input_date, output_datetime):
-    assert UnfoldableCalendar.to_datetime(input_date) == output_datetime
+    assert CalendarQuery.to_datetime(input_date) == output_datetime

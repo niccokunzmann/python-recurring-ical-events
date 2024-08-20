@@ -910,7 +910,7 @@ class Occurrence:
         )
 
 
-class UnfoldableCalendar:
+class CalendarQuery:
     """A calendar that can unfold its events at a certain time.
 
     Functions like at(), between() and after() can be used to query the
@@ -1095,11 +1095,11 @@ class UnfoldableCalendar:
 
 
 def of(
-    a_calendar,
+    a_calendar : Component,
     keep_recurrence_attributes=False,
     components: Sequence[str | type[ComponentAdapter]] = ("VEVENT",),
     skip_bad_series: bool = False,  # noqa: FBT001
-) -> UnfoldableCalendar:
+) -> CalendarQuery:
     """Unfold recurring events of a_calendar
 
     - a_calendar is an icalendar VCALENDAR component or something like that.
@@ -1109,10 +1109,9 @@ def of(
       should be returned.
     """
     a_calendar = x_wr_timezone.to_standard(a_calendar)
-    return UnfoldableCalendar(
+    return CalendarQuery(
         a_calendar, keep_recurrence_attributes, components, skip_bad_series
     )
-
 
 __all__ = [
     "of",
@@ -1122,6 +1121,9 @@ __all__ = [
     "is_pytz",
     "DATE_MIN",
     "DATE_MAX",
-    "UnfoldableCalendar",
+    "CalendarQuery",
     "ComponentAdapter",
+    "EventAdapter",
+    "TodoAdapter",
+    "JournalAdapter",
 ]
