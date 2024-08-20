@@ -351,6 +351,7 @@ Changelog
   - Rename ``UnfoldableCalendar`` to ``CalendarQuery``
   - Rename ``of(skip_bad_events=None)`` to ``of(skip_bad_series=False)``
   - ``of(components=[...])`` now also takes ``ComponentAdapters``
+  - Fix edit sequence problems, see `Issue 151 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/151>`_
 
 - v2.2.3
 
