@@ -517,10 +517,7 @@ class Series:
             if (
                 start in returned_starts
                 or convert_to_date(start) in self.check_exdates_date
-                or any(
-                    recurrence_id in self.check_exdates_datetime
-                    for recurrence_id in recurrence_ids
-                )
+                or self.check_exdates_datetime & set(recurrence_ids)
             ):
                 continue
             adapter: ComponentAdapter = get_any(
@@ -548,7 +545,10 @@ class Series:
                 yield occurrence
         for modification in self.modifications:
             # we assume that the modifications are actually included
-            if modification in returned_modifications:
+            if (
+                modification in returned_modifications
+                or self.check_exdates_datetime & set(modification.recurrence_ids)
+            ):
                 continue
             if modification.is_in_span(span_start, span_stop):
                 returned_modifications.add(modification)
@@ -1097,6 +1097,7 @@ class CalendarQuery:
         for _ in self.all():
             i += 1
         return i
+
 
 def of(
     a_calendar: Component,

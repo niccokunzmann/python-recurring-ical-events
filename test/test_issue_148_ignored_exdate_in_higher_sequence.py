@@ -2,6 +2,8 @@
 
 In case the whole event is edited and receives a new sequence number,
 the exdate should be considered.
+
+See https://github.com/niccokunzmann/python-recurring-ical-events/issues/148
 """
 
 from datetime import date
