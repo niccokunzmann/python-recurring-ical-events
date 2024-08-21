@@ -166,8 +166,52 @@ For examples, see ``at(a_date)`` above.
 
 The resulting ``events`` are in a list of `icalendar events`_, see below.
 
-``events`` as list
-******************
+``after(earliest_end)``
+***********************
+
+You can retrieve events that happen after a time or date using ``after(earliest_end)``.
+Events that are happening during the ``earliest_end`` are included in the iteration.
+
+.. code:: Python
+
+    earlierst_end = 2019
+    for event in recurring_ical_events.of(an_icalendar_object).after(earlierst_end):
+        print(event["DTEND"]) # all dates printed are after January 1st 2019
+
+
+``all()``
+*********
+
+If you wish to iterate over all occurrences of the components, then you can use ``all()``.
+Since a calendar can define a huge amount of recurring entries, this method generates them
+and forgets them, reducing memory overhead.
+
+This example shows the first event that takes place in the calendar:
+
+.. code:: Python
+
+    query = recurring_ical_events.of(an_icalendar_object)
+    first_event = next(query.all()) # not all events are generated
+    print("First event starts at: {first_event}")
+
+``count()``
+***********
+
+You can count occurrences of events and other components using ``count()``.
+
+.. code:: Python
+
+    number_of_events = recurring_ical_events.of(an_icalendar_object).count()
+    print(f"{number_of_events} events happen in this calendar.")
+
+    number_of_TODOs = recurring_ical_events.of(an_icalendar_object, components=["VTODO"]).count()
+    print(f"You have {number_of_TODOs} things to do!")
+
+    number_of_journal_entries = recurring_ical_events.of(an_icalendar_object, components=["VJOURNAL"]).count()
+    print(f"There are {number_of_journal_entries} journal entries in the calendar.")
+
+``events`` as list - ``at()`` and ``between()``
+***********************************************
 
 The result of both ``between(start, end)`` and ``at(a_date)`` is a list of `icalendar events`_.
 By default, all attributes of the event with repetitions are copied, like ``UID`` and ``SUMMARY``.
@@ -179,18 +223,16 @@ However, these attributes may differ from the source event:
   They are **not** included in repeated events, see `Issue 23 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/23>`_.
   To change this, use ``of(calendar, keep_recurrence_attributes=True)``.
 
-Iteration with ``after``
-************************
+Generator - ``after()`` and ``all()``
+*************************************
 
-If the resulting events should be ordered, ``after(earliest_end)`` can be used.
+If the resulting components are ordered when ``after(earliest_end)`` or ``all()`` is used.
 The result is an iterator that returns the events in order.
 
 .. code:: Python
 
     for event in recurring_ical_events.of(an_icalendar_object).after(datetime.datetime.now()):
         print(event["DTSTART"]) # The start is ordered
-
-
 
 Different Components, not just Events
 *************************************

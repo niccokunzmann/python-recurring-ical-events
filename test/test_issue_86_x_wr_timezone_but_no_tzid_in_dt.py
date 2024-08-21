@@ -6,9 +6,7 @@ See https://github.com/niccokunzmann/python-recurring-ical-events/issues/86
 
 
 def test_event_can_be_retrieved(calendars):
-    events = calendars.issue_86_x_wr_timezone_without_time_zone_in_dt.all()
-    assert len(events) == 1
-    event = events[0]
+    event = next(calendars.issue_86_x_wr_timezone_without_time_zone_in_dt.all())
     assert event["DTSTART"].dt.tzinfo is not None, "should be replaced"
     assert event["DTSTART"].dt.tzname() == "CEST"
     assert event["DTSTART"].dt.year == 2021

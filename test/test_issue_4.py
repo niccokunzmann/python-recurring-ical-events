@@ -34,10 +34,10 @@ def test_at(calendars):
 
 
 def test_can_use_different_rrule_until(calendars):
-    events = calendars.issue_4_rrule_until.all()
+    events = list(calendars.issue_4_rrule_until.all())
     assert len(events) == 12
 
 
 def test_weidenrinde(calendars):
-    events = calendars.issue_4_weidenrinde.all()
+    events = list(calendars.issue_4_weidenrinde.all())
     assert len(events) == 2

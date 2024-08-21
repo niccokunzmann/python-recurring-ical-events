@@ -55,7 +55,7 @@ def test_rrule_dates_show_up(date, calendars):
 
 def test_there_are_n_events(calendars):
     """Test the total numer of events."""
-    events = calendars.issue_20_exdate_ignored.all()
+    events = list(calendars.issue_20_exdate_ignored.all())
     for event, expected_date in zip(events, expected_dates):
         print("start: {} expected: {}".format(event["DTSTART"].dt, expected_date))
     for date in expected_dates[len(events) :]:

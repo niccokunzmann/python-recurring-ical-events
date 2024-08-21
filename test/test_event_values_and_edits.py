@@ -20,7 +20,7 @@ def test_one_event_is_edited(calendars):
 
 
 def test_three_events_total(calendars):
-    events = calendars.three_events_one_edited.all()
+    events = list(calendars.three_events_one_edited.all())
     assert len(events) == 3
 
 

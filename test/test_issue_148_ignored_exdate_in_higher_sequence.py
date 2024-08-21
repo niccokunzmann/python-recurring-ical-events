@@ -11,7 +11,7 @@ import pytest
 
 def test_total_events(calendars):
     """We should remove the edited event."""
-    events = calendars.issue_148_ignored_exdate.all()
+    events = list(calendars.issue_148_ignored_exdate.all())
     assert len(events) == 2
 
 
@@ -88,7 +88,7 @@ def test_rdate_and_exdate_are_unedited(calendars, date, count, message):
 @pytest.mark.parametrize("index", [1, 2])
 def test_edge_cases(calendars, index):
     """Check the results of the edge cases."""
-    events = calendars[f"issue_148_edge_case_{index}"].all()
+    events = list(calendars[f"issue_148_edge_case_{index}"].all())
     assert len(events) == 3
     starts = [event["DTSTART"].dt for event in events]
     assert date(2024, 7, 2) in starts

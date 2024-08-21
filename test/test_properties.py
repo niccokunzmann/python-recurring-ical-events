@@ -4,7 +4,7 @@ import pytest
 
 
 def test_event_has_summary(calendars):
-    event = calendars.one_event.all()[0]
+    event = next(calendars.one_event.all())
     assert event["SUMMARY"] == "test1"
 
 
@@ -17,7 +17,7 @@ def test_recurrent_events_change_start_and_end(calendars, attribute):
 
 @pytest.mark.parametrize("index", [1, 2])
 def test_duration_stays_the_same(calendars, index):
-    events = calendars.three_events_one_edited.all()
+    events = list(calendars.three_events_one_edited.all())
     duration1 = events[0]["DTEND"].dt - events[0]["DTSTART"].dt
     duration2 = events[index]["DTEND"].dt - events[index]["DTSTART"].dt
     assert duration1 == duration2

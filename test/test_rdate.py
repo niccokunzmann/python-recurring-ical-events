@@ -81,5 +81,5 @@ def test_rdate_and_rrule_can_be_excluded_by_exdate(calendars):
 
 def test_rdate_occurs_multiple_times(calendars):
     """An event can not only have an RDATE once but also many of them."""
-    events = calendars.rdate_hackerpublicradio.all()
+    events = list(calendars.rdate_hackerpublicradio.all())
     assert len(events) == 12

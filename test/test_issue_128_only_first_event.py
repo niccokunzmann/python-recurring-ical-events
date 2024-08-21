@@ -10,7 +10,7 @@ import recurring_ical_events
 
 def test_all_events_are_present(calendars):
     """All events are shown and not just the first one."""
-    assert len(calendars.issue_128_only_first_event.all()) == 7
+    assert len(list(calendars.issue_128_only_first_event.all())) == 7
 
 
 @pytest.mark.parametrize(
