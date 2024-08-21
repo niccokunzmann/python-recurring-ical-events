@@ -315,11 +315,9 @@ class Series:
         self.recurrence_id_to_modification: dict[
             RecurrenceID, ComponentAdapter
         ] = {}  # RECURRENCE-ID -> adapter
-        self.modifications: set[ComponentAdapter] = set()
         core: ComponentAdapter | None = None
         for component in components:
             if component.is_modification():
-                self.modifications.add(component)
                 for recurrence_id in component.recurrence_ids:
                     self.recurrence_id_to_modification[recurrence_id] = (
                         with_highest_sequence(
@@ -329,6 +327,7 @@ class Series:
                     )
             else:
                 core = with_highest_sequence(core, component)
+        self.modifications: set[ComponentAdapter] = set(self.recurrence_id_to_modification.values())
         del component
         if core is None:
             raise InvalidCalendar(
@@ -718,7 +717,6 @@ class ComponentAdapter(ABC):
     def is_in_span(self, span_start: Time, span_stop: Time) -> bool:
         """Return whether the component is in the span."""
         return time_span_contains_event(span_start, span_stop, self.start, self.end)
-
 
 class EventAdapter(ComponentAdapter):
     """An icalendar event adapter."""
