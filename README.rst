@@ -396,7 +396,8 @@ Changelog
 
 - v3.1.1
 
-  - Remove duplication of modification with same sequence number, see `Issue 164 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/164>`_
+  - Fix: Remove duplication of modification with same sequence number, see `Issue 164 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/164>`_
+  - Fix: EXDATE now excludes a modified instance for an event with higher ``SEQUENCE``, see `Issue <https://github.com/niccokunzmann/python-recurring-ical-events/issues/163>`_
 
 - v3.1.0
 
