@@ -394,6 +394,10 @@ These **Occurrences** are used internally and convert to **Components** for furt
 Changelog
 ---------
 
+- v3.1.1
+
+  - Remove duplication of modification with same sequence number, see `Issue 164 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/164>`_
+
 - v3.1.0
 
   - Add ``count() -> int`` to count all occurrences within a calendar
