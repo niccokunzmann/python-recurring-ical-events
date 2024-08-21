@@ -87,10 +87,27 @@ def test_rdate_and_exdate_are_unedited(calendars, date, count, message):
     assert len(events) == count, message
 
 
-@pytest.mark.parametrize("index", [1, 2])
-def test_edge_cases(calendars, index):
-    """Check the results of the edge cases."""
-    events = list(calendars[f"issue_148_edge_case_{index}"].all())
+def test_edge_case_1(calendars):
+    """Check the edge case.
+
+    Here, we do not have a modified event.
+    See https://github.com/niccokunzmann/python-recurring-ical-events/issues/163#issuecomment-2301748873
+    """
+    events = list(calendars["issue_148_edge_case_1"].all())
+    assert len(events) == 2
+    starts = [event["DTSTART"].dt for event in events]
+    assert date(2024, 7, 2) not in starts, "This event is not present in edge case 1"
+    assert date(2024, 7, 1) in starts
+    assert date(2024, 7, 29) in starts
+
+
+def test_edge_case_2(calendars):
+    """Check the edge case.
+
+    This edge case shows that we have a modified event.
+    See https://github.com/niccokunzmann/python-recurring-ical-events/issues/163#issuecomment-2301748873
+    """
+    events = list(calendars["issue_148_edge_case_2"].all())
     assert len(events) == 3
     starts = [event["DTSTART"].dt for event in events]
     assert date(2024, 7, 2) in starts
