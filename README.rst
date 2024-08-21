@@ -67,7 +67,7 @@ Installation
 
 .. code:: shell
 
-    pip install 'recurring-ical-events==2.*'
+    pip install 'recurring-ical-events==3.*'
 
 Support
 -------
