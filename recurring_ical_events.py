@@ -1101,6 +1101,12 @@ class CalendarQuery:
             )  # binary search to improve speed
             earliest_end = next_end
 
+    def count(self) -> int:
+        """Return the amount of recurring components in this calendar."""
+        i = 0
+        for _ in self.all():
+            i += 1
+        return i
 
 def of(
     a_calendar : Component,
