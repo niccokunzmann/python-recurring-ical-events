@@ -65,9 +65,17 @@ Not included:
 Installation
 ------------
 
+You can install this package using ``pip``.
+
 .. code:: shell
 
     pip install 'recurring-ical-events==3.*'
+
+On Debian/Ubuntu, you use the package manager to install `python-recurring-ical-events <https://tracker.debian.org/pkg/python-recurring-ical-events>`_.
+
+.. code:: shell
+
+    sudo apt-get install python-recurring-ical-events
 
 Support
 -------
