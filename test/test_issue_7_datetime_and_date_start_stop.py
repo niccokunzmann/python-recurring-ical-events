@@ -12,9 +12,7 @@ from icalendar import Event
 
 def test_can_serialize(calendars):
     """Test that the event can be serialized."""
-    events = calendars.one_day_event.all()
-    assert events
-    event = events[0]
+    event = next(calendars.one_day_event.all())
     string = event.to_ical()
     assert isinstance(string, bytes)
 
@@ -30,10 +28,7 @@ def test_can_serialize(calendars):
 )
 def test_is_date(calendars, attribute, dt_type, event_name):
     """Check the type of the attributes"""
-    calendar = calendars[event_name]
-    events = calendar.all()
-    assert len(events) == 1
-    event = events[0]
+    event = next(calendars[event_name].all())
     event = Event.from_ical(event.to_ical())
     dt = event[attribute]
     assert isinstance(dt.dt, dt_type), "content of ical should match"

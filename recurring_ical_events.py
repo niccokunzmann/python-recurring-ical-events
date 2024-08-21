@@ -909,6 +909,14 @@ class Occurrence:
             recurrence_id,
         )
 
+    def __hash__(self) -> int:
+        """Hash this for an occurrence."""
+        return hash(self.id)
+
+    def __eq__(self, other: Occurrence) -> bool:
+        """self == other"""
+        return self.id == other.id
+
 
 class CalendarQuery:
     """A calendar that can unfold its events at a certain time.
@@ -988,15 +996,15 @@ class CalendarQuery:
             return datetime.datetime.strptime(date, "%Y%m%dT%H%M%SZ")  # noqa: DTZ007
         return date
 
-    def all(self):
-        """Returns all events.
+    def all(self) -> Generator[Component]:
+        """Generate all Components.
 
-        I personally do not recommend to use this because
-        this method is not documented and you may end up with lots of events
-        most of which you may not use anyway.
+        The Components are sorted from the first to the last Occurrence.
+        Calendars can contain millions of Occurrences. This iterates
+        safely across all of them
         """
         # MAX and MIN values may change in the future
-        return self._between(DATE_MIN_DT, DATE_MAX_DT)
+        return self.after(DATE_MIN_DT)
 
     _DELTAS = [
         datetime.timedelta(days=1),
@@ -1060,7 +1068,7 @@ class CalendarQuery:
                 occurrences.extend(series.between(start, end))
         return occurrences
 
-    def after(self, earliest_end) -> Generator[Component]:
+    def after(self, earliest_end: DateArgument) -> Generator[Component]:
         """
         Return an iterator over the next events that happen during or after
         the earliest_end.
@@ -1126,4 +1134,7 @@ __all__ = [
     "EventAdapter",
     "TodoAdapter",
     "JournalAdapter",
+    "Time",
+    "RecurrenceID",
+    "RecurrenceIDs",
 ]

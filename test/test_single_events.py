@@ -22,5 +22,5 @@ def test_event_is_not_included_if_it_is_earlier(calendars):
 
 
 def test_all_events(calendars):
-    assert len(calendars.one_event.all()) == 1
-    assert len(calendars.no_events.all()) == 0
+    assert len(list(calendars.one_event.all())) == 1
+    assert len(list(calendars.no_events.all())) == 0

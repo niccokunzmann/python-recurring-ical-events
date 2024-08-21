@@ -35,7 +35,7 @@ def test_no_dtend(calendars):
 
     KeyError: 'DTEND'
     """
-    calendars.discourse_no_dtend.all()
+    list(calendars.discourse_no_dtend.all())
 
 
 def test_date_events_are_in_the_date(calendars):
