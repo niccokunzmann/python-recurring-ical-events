@@ -386,6 +386,11 @@ These **Occurrences** are used internally and convert to **Components** for furt
 Changelog
 ---------
 
+- v3.1.0
+
+  - Add ``count() -> int`` to count all occurrences within a calendar
+  - Add ``all() -> Generator[icalendar.Component]`` to iterate over the whole calendar
+
 - v3.0.0
 
   - Change the architecture and add a diagram
