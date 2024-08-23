@@ -962,7 +962,7 @@ class CalendarQuery:
                 if component_adapter_id not in self._component_adapters:
                     raise ValueError(
                         f'"{component_adapter_id}" is an unknown name for a '
-                        'recurring component.'
+                        'recurring component. '
                         f"I only know these: { ', '.join(self._component_adapters)}."
                     )
                 component_adapter = self._component_adapters[component_adapter_id]
