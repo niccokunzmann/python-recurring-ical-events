@@ -3,12 +3,13 @@
 See https://github.com/niccokunzmann/python-recurring-ical-events/issues/164
 """
 
+
 def test_event_is_only_returned_once(calendars):
     """We should not see the same event twice!"""
-    events = calendars.issue_164_duplicated_event.at([2024,8])
+    events = calendars.issue_164_duplicated_event.at([2024, 8])
     for event in events:
         start = event["DTSTART"].dt
         duration = event["DTEND"].dt - event["DTSTART"].dt
-        print("start {} duration {}".format(start, duration))
+        print(f"start {start} duration {duration}")
         print(event.to_ical().decode())
     assert len(events) == 2

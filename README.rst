@@ -166,7 +166,8 @@ The resulting ``events`` are a list of `icalendar events <https://icalendar.read
 
 ``between(start, end)`` returns all events happening between a start and an end time. Both arguments can be `datetime.datetime`_, `datetime.date`_, tuples of numbers passed as arguments to `datetime.datetime`_ or strings in the form of
 ``%Y%m%d`` (``yyyymmdd``) and ``%Y%m%dT%H%M%SZ`` (``yyyymmddThhmmssZ``).
-For examples, see ``at(a_date)`` above.
+Additionally, the ``end`` argument can be a ``datetime.timedelta`` to express that the end is relative to the ``start``.
+For examples of arguments, see ``at(a_date)`` above.
 
 .. code:: Python
 
@@ -393,6 +394,10 @@ These **Occurrences** are used internally and convert to **Components** for furt
 
 Changelog
 ---------
+
+- v3.2.0
+
+  - Allow ``datetime.timedelta`` as second argument to ``between(absolute_time, datetime.timedelta())``
 
 - v3.1.1
 
