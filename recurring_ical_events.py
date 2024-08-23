@@ -327,7 +327,9 @@ class Series:
                     )
             else:
                 core = with_highest_sequence(core, component)
-        self.modifications: set[ComponentAdapter] = set(self.recurrence_id_to_modification.values())
+        self.modifications: set[ComponentAdapter] = set(
+            self.recurrence_id_to_modification.values()
+        )
         del component
         if core is None:
             raise InvalidCalendar(
@@ -718,6 +720,7 @@ class ComponentAdapter(ABC):
         """Return whether the component is in the span."""
         return time_span_contains_event(span_start, span_stop, self.start, self.end)
 
+
 class EventAdapter(ComponentAdapter):
     """An icalendar event adapter."""
 
@@ -1031,9 +1034,15 @@ class CalendarQuery:
         dt = self.to_datetime(date)
         return self._between(dt, dt + self._DELTAS[len(date) - 3])
 
-    def between(self, start: DateArgument, stop: DateArgument):
+    def between(self, start: DateArgument, stop: DateArgument | datetime.timedelta):
         """Return events at a time between start (inclusive) and end (inclusive)"""
-        return self._between(self.to_datetime(start), self.to_datetime(stop))
+        start = self.to_datetime(start)
+        stop = (
+            start + stop
+            if isinstance(stop, datetime.timedelta)
+            else self.to_datetime(stop)
+        )
+        return self._between(start, stop)
 
     def _occurrences_to_components(
         self, occurrences: list[Occurrence]

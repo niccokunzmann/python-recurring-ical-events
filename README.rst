@@ -394,6 +394,10 @@ These **Occurrences** are used internally and convert to **Components** for furt
 Changelog
 ---------
 
+- v3.2.0
+
+  - Allow ``datetime.timedelta`` as second argument to ``between(absolute_time, datetime.timedelta())``
+
 - v3.1.1
 
   - Fix: Remove duplication of modification with same sequence number, see `Issue 164 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/164>`_
