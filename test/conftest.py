@@ -106,7 +106,12 @@ class ReversedCalendars(ICSCalendars):
         return self._of(calendar)
 
 
-@pytest.fixture(params=[icalendar.use_pytz, icalendar.use_zoneinfo], scope="module")
+if hasattr(icalendar, 'use_pytz') and hasattr(icalendar, 'use_zoneinfo'):
+    tzps = [icalendar.use_pytz, icalendar.use_zoneinfo]
+else:
+    tzps = [lambda: ...]
+
+@pytest.fixture(params=tzps, scope="module")
 def tzp(request):
     """The timezone provider supported by icalendar."""
     return request.param
