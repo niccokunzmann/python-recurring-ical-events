@@ -284,7 +284,7 @@ Skip bad formatted ical events
 ******************************
 
 Some events may be badly formatted and therefore cannot be handled by recurring-ical-events.
-Passing ```skip_bad_series=True``` as ``of()`` argument will totally skip theses events.
+Passing ``skip_bad_series=True`` as ``of()`` argument will totally skip theses events.
 
 .. code:: Python
 
