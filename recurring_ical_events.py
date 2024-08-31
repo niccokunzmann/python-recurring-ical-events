@@ -1108,7 +1108,7 @@ class CalendarQuery:
 
 def of(
     a_calendar: Component,
-    keep_recurrence_attributes=False,
+    keep_recurrence_attributes: bool = False,  # noqa: FBT001
     components: Sequence[str | type[ComponentAdapter]] = ("VEVENT",),
     skip_bad_series: bool = False,  # noqa: FBT001
 ) -> CalendarQuery:
