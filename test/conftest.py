@@ -106,10 +106,11 @@ class ReversedCalendars(ICSCalendars):
         return self._of(calendar)
 
 
-if hasattr(icalendar, 'use_pytz') and hasattr(icalendar, 'use_zoneinfo'):
+if hasattr(icalendar, "use_pytz") and hasattr(icalendar, "use_zoneinfo"):
     tzps = [icalendar.use_pytz, icalendar.use_zoneinfo]
 else:
     tzps = [lambda: ...]
+
 
 @pytest.fixture(params=tzps, scope="module")
 def tzp(request):
