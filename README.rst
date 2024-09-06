@@ -207,9 +207,22 @@ Events that are happening during the ``earliest_end`` are included in the iterat
 
 .. code:: Python
 
-    earlierst_end = 2019
-    for event in recurring_ical_events.of(an_icalendar_object).after(earlierst_end):
-        print(event["DTEND"]) # all dates printed are after January 1st 2019
+    >>> earlierst_end = 2023
+    >>> for i, event in enumerate(query.after(earlierst_end)):
+    ...     print(f"{event['SUMMARY']} ends {event['DTEND'].dt}") # all dates printed are after January 1st 2023
+    ...     if i > 10: break  # we might get endless events and a lot of them!
+    Repair Café ends 2023-01-07 17:00:00+01:00
+    Repair Café ends 2023-02-04 17:00:00+01:00
+    Repair Café ends 2023-03-04 17:00:00+01:00
+    Repair Café ends 2023-04-01 17:00:00+02:00
+    Repair Café ends 2023-05-06 17:00:00+02:00
+    Repair Café ends 2023-06-03 17:00:00+02:00
+    Repair Café ends 2023-07-01 17:00:00+02:00
+    Repair Café ends 2023-08-05 17:00:00+02:00
+    Repair Café ends 2023-09-02 17:00:00+02:00
+    Repair Café ends 2023-10-07 17:00:00+02:00
+    Repair Café ends 2023-11-04 17:00:00+01:00
+    Repair Café ends 2023-12-02 17:00:00+01:00
 
 
 ``all()``
@@ -223,9 +236,9 @@ This example shows the first event that takes place in the calendar:
 
 .. code:: Python
 
-    query = recurring_ical_events.of(an_icalendar_object)
-    first_event = next(query.all()) # not all events are generated
-    print("First event starts at: {first_event}")
+    >>> first_event = next(query.all()) # not all events are generated
+    >>> print(f"The first event is {first_event['SUMMARY']}")
+    The first event is Weihnachts Repair-Café
 
 ``count()``
 ***********
@@ -234,14 +247,16 @@ You can count occurrences of events and other components using ``count()``.
 
 .. code:: Python
 
-    number_of_events = recurring_ical_events.of(an_icalendar_object).count()
-    print(f"{number_of_events} events happen in this calendar.")
+    >>> number_of_TODOs = recurring_ical_events.of(a_calendar, components=["VTODO"]).count()
+    >>> print(f"You have {number_of_TODOs} things to do!")
+    You have 0 things to do!
 
-    number_of_TODOs = recurring_ical_events.of(an_icalendar_object, components=["VTODO"]).count()
-    print(f"You have {number_of_TODOs} things to do!")
+    >>> number_of_journal_entries = recurring_ical_events.of(a_calendar, components=["VJOURNAL"]).count()
+    >>> print(f"There are {number_of_journal_entries} journal entries in the calendar.")
+    There are 0 journal entries in the calendar.
 
-    number_of_journal_entries = recurring_ical_events.of(an_icalendar_object, components=["VJOURNAL"]).count()
-    print(f"There are {number_of_journal_entries} journal entries in the calendar.")
+However, this can be very costly!
+
 
 ``events`` as list - ``at()`` and ``between()``
 ***********************************************
@@ -282,10 +297,10 @@ Here is a template code for choosing the supported types of components:
 
 .. code:: Python
 
-   events = recurring_ical_events.of(calendar).between(...)
-   journals = recurring_ical_events.of(calendar, components=["VJOURNAL"]).between(...)
-   todos = recurring_ical_events.of(calendar, components=["VTODO"]).between(...)
-   all = recurring_ical_events.of(calendar, components=["VTODO", "VEVENT", "VJOURNAL"]).between(...)
+   >>> query_events = recurring_ical_events.of(a_calendar)
+   >>> query_journals = recurring_ical_events.of(a_calendar, components=["VJOURNAL"])
+   >>> query_todos = recurring_ical_events.of(a_calendar, components=["VTODO"])
+   >>> query_all = recurring_ical_events.of(a_calendar, components=["VTODO", "VEVENT", "VJOURNAL"])
 
 If a type of component is not listed here, it can be added.
 Please create an issue for this in the source code repository.
