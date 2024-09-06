@@ -172,5 +172,6 @@ def env_for_doctest(monkeypatch):
     from icalendar.timezone.zoneinfo import ZONEINFO
     monkeypatch.setattr(ZONEINFO, "utc", _zoneinfo.ZoneInfo("UTC"))
     return {
-        "print": doctest_print
+        "print": doctest_print,
+        "CALENDARS": CALENDARS_FOLDER,
     }

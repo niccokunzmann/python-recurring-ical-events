@@ -44,7 +44,7 @@ def test_documentation_file(document, env_for_doctest):
 
     functions are also replaced to work.
     """
-    test_result = doctest.testfile(str(document), module_relative=False, globs=env_for_doctest, raise_on_error=True)
+    test_result = doctest.testfile(str(document), module_relative=False, globs=env_for_doctest, raise_on_error=False)
     assert test_result.failed == 0, f"{test_result.failed} errors in {document.name}"
 
 

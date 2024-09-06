@@ -93,34 +93,41 @@ Example
 
 .. code-block:: python
 
-    import icalendar
-    import recurring_ical_events
-    import urllib.request
+    >>> import icalendar
+    >>> import recurring_ical_events
+    >>> import urllib.request
+    >>> from pathlib import Path
 
-    start_date = (2019, 3, 5)
-    end_date =   (2019, 4, 1)
-    url = "http://tinyurl.com/y24m3r8f"
+    # read the calendar file and parse it
+    # CALENDARS = Path("to/your/calendar/directory")
+    >>> calendar_file : Path = CALENDARS / "fablab_cottbus.ics"
+    >>> ical_string = calendar_file.read_bytes()
+    >>> print(ical_string[:28])
+    BEGIN:VCALENDAR
+    VERSION:2.0
+    >>> calendar = icalendar.Calendar.from_ical(ical_string)
 
-    ical_string = urllib.request.urlopen(url).read()
-    calendar = icalendar.Calendar.from_ical(ical_string)
-    events = recurring_ical_events.of(calendar).between(start_date, end_date)
-    for event in events:
-        start = event["DTSTART"].dt
-        duration = event["DTEND"].dt - event["DTSTART"].dt
-        print("start {} duration {}".format(start, duration))
+    # request the events in a specific interval
+    # start on the 1st of January 2017 0:00
+    >>> start_date = (2017, 1, 1)
 
-Output:
-
-.. code-block:: text
-
-    start 2019-03-18 04:00:00+01:00 duration 1:00:00
-    start 2019-03-20 04:00:00+01:00 duration 1:00:00
-    start 2019-03-19 04:00:00+01:00 duration 1:00:00
-    start 2019-03-07 02:00:00+01:00 duration 1:00:00
-    start 2019-03-08 01:00:00+01:00 duration 2:00:00
-    start 2019-03-09 03:00:00+01:00 duration 0:30:00
-    start 2019-03-10 duration 1 day, 0:00:00
-
+    # the event on the 1st of January 2018 is not included
+    >>> end_date =   (2018,  1, 1)
+    >>> events = recurring_ical_events.of(calendar).between(start_date, end_date)
+    >>> for event in events:
+    ...     start = event["DTSTART"].dt
+    ...     summary = event["SUMMARY"]
+    ...     print(f"start {start} summary {summary}")
+    start 2017-03-11 17:00:00+01:00 summary Vereinssitzung
+    start 2017-06-10 10:00:00+02:00 summary Repair und Recycling Café
+    start 2017-06-11 16:30:00+02:00 summary Brandenburger Maker-Treffen
+    start 2017-07-05 17:45:00+02:00 summary Der Computer-Treff fällt aus
+    start 2017-07-29 14:00:00+02:00 summary Sommerfest
+    start 2017-10-19 16:00:00+02:00 summary 3D-Modelle programmieren mit OpenSCAD
+    start 2017-10-20 16:00:00+02:00 summary Programmier dir deine eigene Crypto-Währung
+    start 2017-10-21 13:00:00+02:00 summary Programmiere deine eigene Wetterstation
+    start 2017-10-22 13:00:00+02:00 summary Luftqualität: Ein Workshop zum selber messen (Einsteiger)
+    start 2017-10-22 13:00:00+02:00 summary Websites selbst programmieren
 
 Usage
 -----
@@ -265,6 +272,10 @@ Here is a template code for choosing the supported types of components:
 
 If a type of component is not listed here, it can be added.
 Please create an issue for this in the source code repository.
+
+You can create subclasses and customizations.
+
+
 
 Speed
 *****
