@@ -88,6 +88,20 @@ Support
 We accept donations to sustain our work, once or regular.
 Consider donating money to open-source as everyone benefits.
 
+Usage
+-----
+
+The `icalendar <https://pypi.org/project/icalendar/>`_ module is responsible for parsing and converting calendars.
+The `recurring_ical_events <https://pypi.org/project/recurring-ical-events/>`_ module uses such a `calendar`_ and creates all repetitions of its events within a time span.
+
+To import this module, write
+
+.. code:: Python
+
+    >>> import recurring_ical_events
+
+There are several methods you can use to unfold repeating events, such as ``at(a_time)`` and ``between(a_start, an_end)``.
+
 Example
 -------
 
@@ -104,7 +118,7 @@ Example
     >>> print(ical_string[:28])
     BEGIN:VCALENDAR
     VERSION:2.0
-    >>> calendar = icalendar.Calendar.from_ical(ical_string)
+    >>> a_calendar = icalendar.Calendar.from_ical(ical_string)
 
     # request the events in a specific interval
     # start on the 1st of January 2017 0:00
@@ -112,7 +126,7 @@ Example
 
     # the event on the 1st of January 2018 is not included
     >>> end_date =   (2018,  1, 1)
-    >>> events = recurring_ical_events.of(calendar).between(start_date, end_date)
+    >>> events = recurring_ical_events.of(a_calendar).between(start_date, end_date)
     >>> for event in events:
     ...     start = event["DTSTART"].dt
     ...     summary = event["SUMMARY"]
@@ -128,19 +142,6 @@ Example
     start 2017-10-22 13:00:00+02:00 summary Luftqualität: Ein Workshop zum selber messen (Einsteiger)
     start 2017-10-22 13:00:00+02:00 summary Websites selbst programmieren
 
-Usage
------
-
-The `icalendar <https://pypi.org/project/icalendar/>`_ module is responsible for parsing and converting calendars.
-The `recurring_ical_events <https://pypi.org/project/recurring-ical-events/>`_ module uses such a `calendar`_ and creates all repetitions of its events within a time span.
-
-To import this module, write
-
-.. code:: Python
-
-    import recurring_ical_events
-
-There are several methods you can use to unfold repeating events, such as ``at(a_time)`` and ``between(a_start, an_end)``.
 
 ``at(a_date)``
 **************
@@ -152,18 +153,30 @@ The start and end are inclusive. As an example: if an event is longer than one d
 
 .. code:: Python
 
-    a_date =  2023   # a year
-    a_date = (2023,) # a year
-    a_date = (2023, 1) # January in 2023
-    a_date = (2023, 1, 1) # the 1st of January in 2023
-    a_date = "20230101"   # the 1st of January in 2023
-    a_date = (2023, 1, 1, 0) # the first hour of the year 2023
-    a_date = (2023, 1, 1, 0, 0) # the first minute in 2023
-    a_date = datetime.date(2023) # the first day in 2023
-    a_date = datetime.date(2023, 1, 1) # the first day in 2023
-    a_date = datetime.datetime.now() # this exact second
+    >>> import datetime
 
-    events = recurring_ical_events.of(an_icalendar_object).at(a_date)
+    # save the query object for the calendar
+    >>> query = recurring_ical_events.of(a_calendar)
+    >>> len(query.at(2023))                      # a year - 2023 has 12 events happening
+    12
+    >>> len(query.at((2023,)))                   # a year
+    12
+    >>> len(query.at((2023, 1)))                 # January in 2023 - only one event is in January
+    1
+    >>> len(query.at((2023, 1, 1)))              # the 1st of January in 2023
+    0
+    >>> len(query.at("20230101"))                # the 1st of January in 2023
+    0
+    >>> len(query.at((2023, 1, 1, 0)))           # the first hour of the year 2023
+    0
+    >>> len(query.at((2023, 1, 1, 0, 0)))        # the first minute in 2023
+    0
+    >>> len(query.at(datetime.date(2023, 1, 1))) # the first day in 2023
+    0
+    >>> len(query.at(datetime.date.today()))     # today
+    0
+    >>> len(query.at(datetime.datetime.now()))   # this exact second
+    0
 
 The resulting ``events`` are a list of `icalendar events <https://icalendar.readthedocs.io/en/latest/api.html#icalendar.cal.Event>`_, see below.
 
@@ -177,7 +190,12 @@ For examples of arguments, see ``at(a_date)`` above.
 
 .. code:: Python
 
-    events = recurring_ical_events.of(an_icalendar_object).between(start, end)
+    >>> query = recurring_ical_events.of(a_calendar)
+
+    # What happens in 2016, 2017 and 2018?
+    >>> events = recurring_ical_events.of(a_calendar).between(2016, 2019)
+    >>> len(events) # quite a lot is happening!
+    39
 
 The resulting ``events`` are in a list of `icalendar events`_, see below.
 
