@@ -95,7 +95,6 @@ Example
 
     >>> import icalendar
     >>> import recurring_ical_events
-    >>> import urllib.request
     >>> from pathlib import Path
 
     # read the calendar file and parse it
