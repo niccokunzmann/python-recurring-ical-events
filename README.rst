@@ -317,21 +317,33 @@ several times, it is faster to re-use the object coming from ``of()``.
 
 .. code:: Python
 
-    rcalendar = recurring_ical_events.of(an_icalendar_object)
-    events_of_day_1 = rcalendar.at(day_1)
-    events_of_day_2 = rcalendar.at(day_2)
-    events_of_day_3 = rcalendar.at(day_3)
-    # ...
+    >>> query = recurring_ical_events.of(a_calendar)
+    >>> events_of_day_1 = query.at((2019, 2, 1))
+    >>> events_of_day_2 = query.at((2019, 2, 2))
+    >>> events_of_day_3 = query.at((2019, 2, 3))
+
+    # ... and so on
 
 Skip bad formatted ical events
 ******************************
 
-Some events may be badly formatted and therefore cannot be handled by recurring-ical-events.
-Passing ```skip_bad_series=True``` as ``of()`` argument will totally skip theses events.
+Some events may be badly formatted and therefore cannot be handled by ``recurring-ical-events``.
+Passing ``skip_bad_series=True`` as ``of()`` argument will totally skip theses events.
 
 .. code:: Python
 
-    of(a_calendar, skip_bad_series=True)
+    >>> calendar_file = CALENDARS / "bad_rrule_missing_until_event.ics"
+    >>> calendar_with_bad_event = icalendar.Calendar.from_ical(calendar_file.read_bytes())
+
+     # default: error
+    >>> recurring_ical_events.of(calendar_with_bad_event, skip_bad_series=False).count()
+    Traceback (most recent call last):
+      ...
+    recurring_ical_events.BadRuleStringFormat: UNTIL parameter is missing: FREQ=WEEKLY;BYDAY=TH;WKST=SU;UNTL=20191023
+
+    # skip the bad events
+    >>> recurring_ical_events.of(calendar_with_bad_event, skip_bad_series=True).count()
+    0
 
 
 Version Fixing
