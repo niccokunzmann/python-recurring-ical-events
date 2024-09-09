@@ -909,6 +909,19 @@ class Occurrence:
         return self.id == other.id
 
 
+class CollectComponents(ABC):
+    """Class to collect components from a calendar."""
+
+    @abstractmethod
+    def collect_components(
+        self, source: Component, suppress_errors: tuple[Exception]
+    ) -> Sequence[Series]:
+        """Collect all components from the source component.
+
+        suppress_errors - a list of errors that should be suppressed.
+            A Series of events with such an error is removed from all results.
+        """
+
 class CalendarQuery:
     """A calendar that can unfold its events at a certain time.
 
@@ -1142,4 +1155,5 @@ __all__ = [
     "Time",
     "RecurrenceID",
     "RecurrenceIDs",
+    "CollectComponents",
 ]
