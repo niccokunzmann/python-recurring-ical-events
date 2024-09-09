@@ -450,6 +450,11 @@ These **Occurrences** are used internally and convert to **Components** for furt
 Changelog
 ---------
 
+- v3.3.0
+
+  - Make tests work with ``icalendar`` version 5
+  - Restructure README to be tested with ``doctest``
+
 - v3.2.0
 
   - Allow ``datetime.timedelta`` as second argument to ``between(absolute_time, datetime.timedelta())``
