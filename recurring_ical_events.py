@@ -513,7 +513,6 @@ class Series:
         returned_modifications: set[ComponentAdapter] = set()
         # NOTE: If in the following line, we get an error, datetime and date
         # may still be mixed because RDATE, EXDATE, start and rule.
-        prev_adapter = None
         for start in self.rrule_between(span_start_dt, span_stop_dt):
             recurrence_ids = to_recurrence_ids(start)
             if (
@@ -525,18 +524,7 @@ class Series:
             adapter: ComponentAdapter = get_any(
                 self.recurrence_id_to_modification, recurrence_ids, self.core
             )
-            if prev_adapter and adapter is self.core:
-                stop = get_any(
-                    self.replace_ends,
-                    recurrence_ids,
-                    normalize_pytz(start + self.core.duration),
-                )
-                occurrence = Occurrence(
-                    prev_adapter,
-                    self.convert_to_original_type(start),
-                    self.convert_to_original_type(stop),
-                )
-            elif adapter is self.core:
+            if adapter is self.core:
                 stop = get_any(
                     self.replace_ends,
                     recurrence_ids,
@@ -554,8 +542,6 @@ class Series:
                     continue
                 returned_modifications.add(adapter)
                 occurrence = Occurrence(adapter)
-                if adapter.thisandfuture:
-                    prev_adapter = adapter
             if occurrence.is_in_span(span_start, span_stop):
                 yield occurrence
         for modification in self.modifications:
@@ -675,18 +661,6 @@ class ComponentAdapter(ABC):
         if recurrence_id is None:
             return ()
         return to_recurrence_ids(recurrence_id.dt)
-
-    @cached_property
-    def thisandfuture(self) -> bool:
-        
-        """The recurrence ids has a thisand future range property"""
-        recurrence_id = self._component.get("RECURRENCE-ID")
-        if recurrence_id is None:
-            return False
-        if "RANGE" in recurrence_id.params:
-            return recurrence_id.params["RANGE"] == "THISANDFUTURE"
-        return False
-        
 
     def is_modification(self) -> bool:
         """Whether the adapter is a modification."""
