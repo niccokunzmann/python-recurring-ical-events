@@ -503,7 +503,10 @@ class Series:
                     yield start
 
     def between(self, span_start: Time, span_stop: Time) -> Generator[Occurrence]:
-        """components between the start (inclusive) and end (exclusive)"""
+        """Components between the start (inclusive) and end (exclusive).
+        
+        The result does not need to be ordered.
+        """
         # make dates comparable, rrule converts them to datetimes
         span_start_dt = convert_to_datetime(span_start, self.tzinfo)
         span_stop_dt = convert_to_datetime(span_stop, self.tzinfo)
@@ -629,12 +632,12 @@ class ComponentAdapter(ABC):
         return self._component.get("UID", str(id(self._component)))
 
     @classmethod
-    def collect_components(cls, source: Component, suppress_errors: tuple[Exception]) -> Sequence[Series]:
+    def collect_series_from(cls, source: Component, suppress_errors: tuple[Exception]) -> Sequence[Series]:
         """Collect all components for this adapter.
 
         This is a shortcut.
         """
-        return CollectComponentsByName(cls.component_name(), cls).collect_components(source, suppress_errors)
+        return ComponentsWithName(cls.component_name(), cls).collect_series_from(source, suppress_errors)
 
     def as_component(self, start: Time, stop: Time, keep_recurrence_attributes: bool):  # noqa: FBT001
         """Create a shallow copy of the source event and modify some attributes."""
@@ -905,26 +908,26 @@ class Occurrence:
         return self.id == other.id
 
 
-class CollectComponents(ABC):
-    """Abstract class to collect components from a calendar."""
+class SelectComponents(ABC):
+    """Abstract class to select components from a calendar."""
 
     @abstractmethod
-    def collect_components(
+    def collect_series_from(
         self, source: Component, suppress_errors: tuple[Exception]
     ) -> Sequence[Series]:
-        """Collect all components from the source component.
+        """Collect all components from the source grouped together into a series.
 
         suppress_errors - a list of errors that should be suppressed.
             A Series of events with such an error is removed from all results.
         """
 
-class CollectComponentsByName(CollectComponents):
+class ComponentsWithName(SelectComponents):
     """This is a component collecttion strategy.
 
     Components can be collected in different ways.
     This class allows extension of the functionality by
     - subclassing to filter the resulting components
-    - composition to combine collection behavior
+    - composition to combine collection behavior (see AllKnownComponents)
     """
 
     component_adapters = [EventAdapter, TodoAdapter, JournalAdapter]
@@ -937,7 +940,13 @@ class CollectComponentsByName(CollectComponents):
         }
 
     def __init__(self, name: str, adapter : type[ComponentAdapter]|None=None, series: type[Series] = Series, occurrence: type[Occurrence] = Occurrence) -> None:
-        """Create a new way of collecting components."""
+        """Create a new way of collecting components.
+        
+        name - the name of the component to collect ("VEVENT", "VTODO", "VJOURNAL")
+        adapter - the adapter to use for these components with that name
+        series - the series class that hold a series of components
+        occurrence - the occurrence class that creates the resulting components
+        """
         if adapter is None:
             if name not in self._component_adapters:
                 raise ValueError(
@@ -954,7 +963,7 @@ class CollectComponentsByName(CollectComponents):
         self._series = series
         self._adapter = adapter
 
-    def collect_components(self, source: Component, suppress_errors: tuple[Exception]) -> Sequence[Series]:
+    def collect_series_from(self, source: Component, suppress_errors: tuple[Exception]) -> Sequence[Series]:
         """Collect all components from the source component.
 
         suppress_errors - a list of errors that should be suppressed.
@@ -971,39 +980,44 @@ class CollectComponentsByName(CollectComponents):
         return result
 
 
-class CollectKnownComponents(CollectComponents):
-    """Collect all known components."""
+class AllKnownComponents(SelectComponents):
+    """Group all known components into series."""
 
     @property
-    def component_adapters(self) -> Sequence[ComponentAdapter]:
+    def _component_adapters(self) -> Sequence[ComponentAdapter]:
         """Return all known component adapters."""
-        return CollectComponentsByName.component_adapters
+        return ComponentsWithName.component_adapters
 
     @property
     def names(self) -> list[str]:
         """Return the names of the components to collect."""
-        return [adapter.component_name() for adapter in self.component_adapters]
+        return [adapter.component_name() for adapter in self._component_adapters]
     
     def __init__(self,
                  series: type[Series] = Series,
                  occurrence: type[Occurrence] = Occurrence,
-                 collector:type[CollectComponentsByName] = CollectComponentsByName,
+                 collector:type[ComponentsWithName] = ComponentsWithName,
             ) -> None:
-        """Collect all known components and overide the series and occurrence."""
+        """Collect all known components and overide the series and occurrence.
+        
+        series - the Series class to override that is queried for Occurrences
+        occurrence - the occurrence class that creates the resulting components
+        collector - if you want to override the SelectComponentsByName class
+        """
         self._series = series
         self._occurrence = occurrence
         self._collector = collector
     
-    def collect_components(self, source: Component, suppress_errors: tuple[Exception]) -> Sequence[Series]:
-        """Collect the components."""
+    def collect_series_from(self, source: Component, suppress_errors: tuple[Exception]) -> Sequence[Series]:
+        """Collect the components from the source groups into a series."""
         result = []
         for name in self.names:
             collector = self._collector(name, series = self._series, occurrence = self._occurrence)
-            result.extend(collector.collect_components(source, suppress_errors))
+            result.extend(collector.collect_series_from(source, suppress_errors))
         return result
 
 if sys.version_info >= (3, 10):
-    T_COMPONENTS = Sequence[str | type[ComponentAdapter] | CollectComponents]
+    T_COMPONENTS = Sequence[str | type[ComponentAdapter] | SelectComponents]
 else:
     # see https://github.com/python/cpython/issues/86399#issuecomment-1093889925
     T_COMPONENTS = Sequence[str]
@@ -1023,6 +1037,7 @@ class CalendarQuery:
     """
 
     suppressed_errors = [BadRuleStringFormat, PeriodEndBeforeStart]
+    ComponentsWithName = ComponentsWithName
 
     def __init__(
         self,
@@ -1049,11 +1064,11 @@ class CalendarQuery:
         self._skip_errors = tuple(self.suppressed_errors) if skip_bad_series else ()
         for component_adapter_id in components:
             if isinstance(component_adapter_id, str):
-                component_adapter = CollectComponentsByName(component_adapter_id)
+                component_adapter = self.ComponentsWithName(component_adapter_id)
             else:
                 component_adapter = component_adapter_id
             self.series.extend(
-                component_adapter.collect_components(calendar, self._skip_errors)
+                component_adapter.collect_series_from(calendar, self._skip_errors)
             )
 
     @staticmethod
@@ -1226,7 +1241,7 @@ __all__ = [
     "Time",
     "RecurrenceID",
     "RecurrenceIDs",
-    "CollectComponents",
-    "CollectComponentsByName",
+    "SelectComponents",
+    "ComponentsWithName",
     "T_COMPONENTS",
 ]

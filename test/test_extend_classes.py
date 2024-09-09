@@ -3,14 +3,15 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Generator, Sequence
 
+import pytest
 from icalendar.cal import Component
 
 from recurring_ical_events import (
-    CollectComponents,
-    CollectKnownComponents,
+    AllKnownComponents,
     EventAdapter,
     JournalAdapter,
     Occurrence,
+    SelectComponents,
     Series,
     TodoAdapter,
     of,
@@ -20,25 +21,55 @@ if TYPE_CHECKING:
     from icalendar.cal import Component
 
 
-class CollectOneUIDEvent(CollectComponents):
+class SelectUID1(SelectComponents):
     """Collect only one UID."""
 
     def __init__(self, uid:str) -> None:
         self.uid = uid
 
-    def collect_components(self, source: Component, suppress_errors: tuple[Exception]) -> Sequence[Series]:
+    def collect_series_from(self, source: Component, suppress_errors: tuple[Exception]) -> Sequence[Series]:
         return [
             series
             for adapter in [EventAdapter, JournalAdapter, TodoAdapter]
-            for series in adapter.collect_components(source, suppress_errors)
+            for series in adapter.collect_series_from(source, suppress_errors)
             if series.uid == self.uid
         ]
 
 
-def test_collect_only_one_uid(calendars):
+class SelectUID2(AllKnownComponents):
+
+    def __init__(self, uid:str) -> None:
+        super().__init__()
+        self.uid = uid
+
+    def collect_series_from(self, source: Component, suppress_errors: tuple[Exception]) -> Sequence[Series]:
+        return [
+            series
+            for series in super().collect_series_from(source, suppress_errors)
+            if series.uid == self.uid
+        ]
+
+
+class SelectUID3(SelectComponents):
+
+    def __init__(self, uid:str) -> None:
+        self.uid = uid
+
+    def collect_series_from(self, source: Component, suppress_errors: tuple[Exception]) -> Sequence[Series]:
+        components : list[Component] = []
+        for component in source.walk("VEVENT"):
+            if component.get("UID") == self.uid:
+                components.append(EventAdapter(component))
+        return [Series(components)] if components else []
+
+
+@pytest.mark.parametrize(
+    "collector", [SelectUID1, SelectUID2, SelectUID3]
+)
+def test_collect_only_one_uid(calendars, collector):
     """Test that only one UID is used."""
-    one_uid = CollectOneUIDEvent("4mm2ak3in2j3pllqdk1ubtbp9p@google.com")
-    query = of(calendars.raw.machbar_16_feb_2019, components=[one_uid])
+    uid = "4mm2ak3in2j3pllqdk1ubtbp9p@google.com"
+    query = of(calendars.raw.machbar_16_feb_2019, components=[collector(uid)])
     assert query.count() == 1
 
 
@@ -53,6 +84,6 @@ class MyOccurrence(Occurrence):
 
 def test_added_attributes(calendars):
     """Test that attributes are added."""
-    query = of(calendars.raw.one_event, components=[CollectKnownComponents(occurrence=MyOccurrence)])
+    query = of(calendars.raw.one_event, components=[AllKnownComponents(occurrence=MyOccurrence)])
     event = next(query.all())
     assert event["X-MY-ATTRIBUTE"] == "my occurrence"
