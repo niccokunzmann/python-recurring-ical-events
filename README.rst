@@ -332,16 +332,17 @@ Passing ``skip_bad_series=True`` as ``of()`` argument will totally skip theses e
 
 .. code:: Python
 
+    # Create a calendar that contains broken events.
     >>> calendar_file = CALENDARS / "bad_rrule_missing_until_event.ics"
     >>> calendar_with_bad_event = icalendar.Calendar.from_ical(calendar_file.read_bytes())
 
-     # default: error
+     # By default, broken events result in errors.
     >>> recurring_ical_events.of(calendar_with_bad_event, skip_bad_series=False).count()
     Traceback (most recent call last):
       ...
     recurring_ical_events.BadRuleStringFormat: UNTIL parameter is missing: FREQ=WEEKLY;BYDAY=TH;WKST=SU;UNTL=20191023
 
-    # skip the bad events
+    # With skip_bad_series=True we skip the series that we cannot handle.
     >>> recurring_ical_events.of(calendar_with_bad_event, skip_bad_series=True).count()
     0
 
