@@ -17,15 +17,15 @@ from __future__ import annotations
 import contextlib
 import datetime
 import re
+import sys
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from functools import wraps
 from typing import TYPE_CHECKING, Callable, Generator, Optional, Sequence, Union
-import sys
 
-from icalendar.cal import Component
 import x_wr_timezone
 from dateutil.rrule import rruleset, rrulestr
+from icalendar.cal import Component
 from icalendar.prop import vDDDTypes
 
 if TYPE_CHECKING:
@@ -306,7 +306,7 @@ def get_any(dictionary: dict, keys: Sequence[object], default: object = None):
 
 class Series:
     """Base class for components that result in a series of occurrences."""
-    
+
     @property
     def occurrence(self) -> type[Occurrence]:
         """A way to override the occurrence class."""
@@ -504,7 +504,7 @@ class Series:
 
     def between(self, span_start: Time, span_stop: Time) -> Generator[Occurrence]:
         """Components between the start (inclusive) and end (exclusive).
-        
+
         The result does not need to be ordered.
         """
         # make dates comparable, rrule converts them to datetimes
@@ -632,12 +632,16 @@ class ComponentAdapter(ABC):
         return self._component.get("UID", str(id(self._component)))
 
     @classmethod
-    def collect_series_from(cls, source: Component, suppress_errors: tuple[Exception]) -> Sequence[Series]:
+    def collect_series_from(
+        cls, source: Component, suppress_errors: tuple[Exception]
+    ) -> Sequence[Series]:
         """Collect all components for this adapter.
 
         This is a shortcut.
         """
-        return ComponentsWithName(cls.component_name(), cls).collect_series_from(source, suppress_errors)
+        return ComponentsWithName(cls.component_name(), cls).collect_series_from(
+            source, suppress_errors
+        )
 
     def as_component(self, start: Time, stop: Time, keep_recurrence_attributes: bool):  # noqa: FBT001
         """Create a shallow copy of the source event and modify some attributes."""
@@ -921,6 +925,7 @@ class SelectComponents(ABC):
             A Series of events with such an error is removed from all results.
         """
 
+
 class ComponentsWithName(SelectComponents):
     """This is a component collecttion strategy.
 
@@ -939,9 +944,15 @@ class ComponentsWithName(SelectComponents):
             adapter.component_name(): adapter for adapter in self.component_adapters
         }
 
-    def __init__(self, name: str, adapter : type[ComponentAdapter]|None=None, series: type[Series] = Series, occurrence: type[Occurrence] = Occurrence) -> None:
+    def __init__(
+        self,
+        name: str,
+        adapter: type[ComponentAdapter] | None = None,
+        series: type[Series] = Series,
+        occurrence: type[Occurrence] = Occurrence,
+    ) -> None:
         """Create a new way of collecting components.
-        
+
         name - the name of the component to collect ("VEVENT", "VTODO", "VJOURNAL")
         adapter - the adapter to use for these components with that name
         series - the series class that hold a series of components
@@ -957,13 +968,17 @@ class ComponentsWithName(SelectComponents):
             adapter = self._component_adapters[name]
         if occurrence is not Occurrence:
             _occurrence = occurrence
+
             class series(series):  # noqa: N801
                 occurrence = _occurrence
+
         self._name = name
         self._series = series
         self._adapter = adapter
 
-    def collect_series_from(self, source: Component, suppress_errors: tuple[Exception]) -> Sequence[Series]:
+    def collect_series_from(
+        self, source: Component, suppress_errors: tuple[Exception]
+    ) -> Sequence[Series]:
         """Collect all components from the source component.
 
         suppress_errors - a list of errors that should be suppressed.
@@ -992,14 +1007,15 @@ class AllKnownComponents(SelectComponents):
     def names(self) -> list[str]:
         """Return the names of the components to collect."""
         return [adapter.component_name() for adapter in self._component_adapters]
-    
-    def __init__(self,
-                 series: type[Series] = Series,
-                 occurrence: type[Occurrence] = Occurrence,
-                 collector:type[ComponentsWithName] = ComponentsWithName,
-            ) -> None:
+
+    def __init__(
+        self,
+        series: type[Series] = Series,
+        occurrence: type[Occurrence] = Occurrence,
+        collector: type[ComponentsWithName] = ComponentsWithName,
+    ) -> None:
         """Collect all known components and overide the series and occurrence.
-        
+
         series - the Series class to override that is queried for Occurrences
         occurrence - the occurrence class that creates the resulting components
         collector - if you want to override the SelectComponentsByName class
@@ -1007,20 +1023,26 @@ class AllKnownComponents(SelectComponents):
         self._series = series
         self._occurrence = occurrence
         self._collector = collector
-    
-    def collect_series_from(self, source: Component, suppress_errors: tuple[Exception]) -> Sequence[Series]:
+
+    def collect_series_from(
+        self, source: Component, suppress_errors: tuple[Exception]
+    ) -> Sequence[Series]:
         """Collect the components from the source groups into a series."""
         result = []
         for name in self.names:
-            collector = self._collector(name, series = self._series, occurrence = self._occurrence)
+            collector = self._collector(
+                name, series=self._series, occurrence=self._occurrence
+            )
             result.extend(collector.collect_series_from(source, suppress_errors))
         return result
+
 
 if sys.version_info >= (3, 10):
     T_COMPONENTS = Sequence[str | type[ComponentAdapter] | SelectComponents]
 else:
     # see https://github.com/python/cpython/issues/86399#issuecomment-1093889925
     T_COMPONENTS = Sequence[str]
+
 
 class CalendarQuery:
     """A calendar that can unfold its events at a certain time.
@@ -1210,7 +1232,7 @@ def of(
     keep_recurrence_attributes=False,
     components: T_COMPONENTS = ("VEVENT",),
     skip_bad_series: bool = False,  # noqa: FBT001
-    calendar_query : type[CalendarQuery] = CalendarQuery,
+    calendar_query: type[CalendarQuery] = CalendarQuery,
 ) -> CalendarQuery:
     """Unfold recurring events of a_calendar
 
