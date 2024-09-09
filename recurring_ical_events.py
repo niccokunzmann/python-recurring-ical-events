@@ -310,6 +310,7 @@ class Series:
 
         check_exdates_datetime: set[RecurrenceID] = set()
         check_exdates_date: set[datetime.date] = set()
+        replace_ends: dict[RecurrenceID, Time] = {}
         
         def as_occurrence(self, start: Time, stop: Time, occurrence:type[Occurrence]) -> Occurrence:
             raise NotImplementedError("This code should never be reached.")
