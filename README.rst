@@ -345,6 +345,61 @@ Passing ``skip_bad_series=True`` as ``of()`` argument will totally skip theses e
     >>> recurring_ical_events.of(calendar_with_bad_event, skip_bad_series=True).count()
     0
 
+Architecture
+------------
+
+.. image:: img/architecture.png
+   :alt: Architecture Diagram showing the components interacting
+
+Each icalendar **Calendar** can contain Events, Journal entries,
+TODOs and others, called **Components**.
+Those entries are grouped by their ``UID``.
+Such a ``UID`` defines a **Series** of **Occurrences** that take place at
+a given time.
+Since each **Component** is different, the **ComponentAdapter** offers a unified
+interface to interact with them.
+The **Calendar** gets filtered and for each ``UID``,
+a **Series** can use one or more **ComponentAdapters** to create 
+**Occurrences** of what happens in a time span.
+These **Occurrences** are used internally and convert to **Components** for further use.
+
+Extending ``recurring-ical-events``
+***********************************
+
+All the functionality of ``recurring-ical-events`` can be extended and modified.
+To understand where to extend, have a look at the `Architecture`_.
+
+The first place for extending is the collection of components.
+Components are collected into a ``Series`` that belongs together because it has the same ``UID``.
+In this example, we collect any Journal, Event or TODO which matches a certain UID:
+
+.. code:: Python
+
+    >>> from recurring_ical_events import CollectComponents, EventAdapter, JournalAdapter, TodoAdapter, Series
+    >>> from icalendar.cal import Component
+    >>> from typing import Sequence
+    >>> class CollectOneUIDEvent(CollectComponents):
+    ...     """Collect only one UID."""
+    ...     def __init__(self, uid:str) -> None:
+    ...         self.uid = uid
+    ...     def collect_components(self, source: Component, suppress_errors: tuple[Exception]) -> Sequence[Series]:
+    ...         return [
+    ...             series
+    ...             for adapter in [EventAdapter, JournalAdapter, TodoAdapter]
+    ...             for series in adapter.collect_components(source, suppress_errors)
+    ...             if series.uid == self.uid
+    ...         ]
+
+    # create the calendar
+    >>> calendar_file = CALENDARS / "machbar_16_feb_2019.ics"
+    >>> machbar_calendar = icalendar.Calendar.from_ical(calendar_file.read_bytes())
+
+    # collect only one UID: 4mm2ak3in2j3pllqdk1ubtbp9p@google.com
+    >>> one_uid = CollectOneUIDEvent("4mm2ak3in2j3pllqdk1ubtbp9p@google.com")
+    >>> query = recurring_ical_events.of(machbar_calendar, components=[one_uid])
+    >>> query.count()  # the event has no recurrence and thus there is only one
+    1
+
 
 Version Fixing
 **************
@@ -429,23 +484,6 @@ To release new versions,
 
 6. notify the issues about their release
 
-Architecture
-------------
-
-.. image:: img/architecture.png
-   :alt: Architecture Diagram showing the components interacting
-
-Each icalendar **Calendar** can contain Events, Journal entries,
-TODOs and others, called **Components**.
-Those entries are grouped by their ``UID``.
-Such a ``UID`` defines a **Series** of **Occurrences** that take place at
-a given time.
-Since each **Component** is different, the **ComponentAdapter** offers a unified
-interface to interact with them.
-The **Calendar** gets filtered and for each ``UID``,
-a **Series** can use one or more **ComponentAdapters** to create 
-**Occurrences** of what happens in a time span.
-These **Occurrences** are used internally and convert to **Components** for further use.
 
 Changelog
 ---------
