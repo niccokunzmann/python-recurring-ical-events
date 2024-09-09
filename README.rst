@@ -387,7 +387,7 @@ In this example, we collect one VEVENT which matches a certain UID:
     >>> class CollectOneUIDEvent(SelectComponents):
     ...     def __init__(self, uid:str) -> None:
     ...         self.uid = uid
-    ...     def collect_series_from(self, source: Component, suppress_errors: tuple[Exception]) -> Sequence[Series]:
+    ...     def collect_series_from(self, source: Component, suppress_errors: tuple) -> Sequence[Series]:
     ...         components : list[Component] = []
     ...         for component in source.walk("VEVENT"):
     ...             if component.get("UID") == self.uid:
