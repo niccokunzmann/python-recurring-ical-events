@@ -10,6 +10,7 @@ This file should be tests, too:
     Hello World!
 
 """
+
 import doctest
 import importlib
 import pathlib
@@ -25,6 +26,7 @@ PYTHON_FILES = list(PROJECT_PATH.rglob("*.py"))
 MODULE_NAMES = [
     "recurring_ical_events",
 ]
+
 
 @pytest.mark.parametrize("module_name", MODULE_NAMES)
 def test_docstring_of_python_file(module_name):
@@ -44,7 +46,12 @@ def test_documentation_file(document, env_for_doctest):
 
     functions are also replaced to work.
     """
-    test_result = doctest.testfile(str(document), module_relative=False, globs=env_for_doctest, raise_on_error=False)
+    test_result = doctest.testfile(
+        str(document),
+        module_relative=False,
+        globs=env_for_doctest,
+        raise_on_error=False,
+    )
     assert test_result.failed == 0, f"{test_result.failed} errors in {document.name}"
 
 

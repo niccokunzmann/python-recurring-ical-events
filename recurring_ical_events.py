@@ -304,25 +304,30 @@ def get_any(dictionary: dict, keys: Sequence[object], default: object = None):
 
 class Series:
     """Base class for components that result in a series of occurrences."""
-    
+
     class NoRecurrence:
         """A strategy to deal with not having a core with rrules."""
 
         check_exdates_datetime: set[RecurrenceID] = set()
         check_exdates_date: set[datetime.date] = set()
         replace_ends: dict[RecurrenceID, Time] = {}
-        
-        def as_occurrence(self, start: Time, stop: Time, occurrence:type[Occurrence]) -> Occurrence:
+
+        def as_occurrence(
+            self, start: Time, stop: Time, occurrence: type[Occurrence]
+        ) -> Occurrence:
             raise NotImplementedError("This code should never be reached.")
 
         @property
         def core(self) -> ComponentAdapter:
             raise NotImplementedError("This code should never be reached.")
 
-        def rrule_between(self, span_start: Time, span_stop: Time) -> Generator[Time, None, None]:  # noqa: ARG002
+        def rrule_between(
+            self,
+            span_start: Time,  # noqa: ARG002
+            span_stop: Time,  # noqa: ARG002
+        ) -> Generator[Time, None, None]:
             """No repetition."""
             yield from []
-
 
     class RecurrenceRules:
         """A strategy if we have an actual core with recurrences."""
@@ -383,7 +388,8 @@ class Series:
             """Helper to create an rrule from a rule_string
 
             The rrule is starting at the start of the component.
-            Since the creation is a bit more complex, this function handles special cases.
+            Since the creation is a bit more complex,
+            this function handles special cases.
             """
             try:
                 return self.rrulestr(rule_string)
@@ -417,7 +423,10 @@ class Series:
                         ) from None
                     until_string += "Z"  # https://stackoverflow.com/a/49991809
                 new_rule_string = (
-                    rule_list[0] + rule_list[1][date_end_index:] + ";UNTIL=" + until_string
+                    rule_list[0]
+                    + rule_list[1][date_end_index:]
+                    + ";UNTIL="
+                    + until_string
                 )
                 return self.rrulestr(new_rule_string)
 
@@ -469,14 +478,17 @@ class Series:
             self.start = convert_to_datetime(self.start, self.tzinfo)
 
             self.end = convert_to_datetime(self.end, self.tzinfo)
-            self.rdates = {convert_to_datetime(rdate, self.tzinfo) for rdate in self.rdates}
+            self.rdates = {
+                convert_to_datetime(rdate, self.tzinfo) for rdate in self.rdates
+            }
             self.exdates = {
                 convert_to_datetime(exdate, self.tzinfo) for exdate in self.exdates
             }
 
         def rrule_between(self, span_start: Time, span_stop: Time) -> Generator[Time]:
             """Recalculate the rrules so that minor mistakes are corrected."""
-            yield from self.rule_set  # TODO: optimize and only return what is in the span
+            # TODO: optimize and only return what is in the span
+            yield from self.rule_set
             # make dates comparable, rrule converts them to datetimes
             span_start_dt = convert_to_datetime(span_start, self.tzinfo)
             span_stop_dt = convert_to_datetime(span_stop, self.tzinfo)
@@ -484,11 +496,17 @@ class Series:
                 # do not exclude an component if it spans across the time span
                 span_start_dt -= self.core.duration
             # we have to account for pytz timezones not being properly calculated
-            # at the timezone changes. This is a heuristic: most changes are only 1 hour.
-            # This will still create problems at the fringes of timezone definition changes.
+            # at the timezone changes. This is a heuristic:
+            #   most changes are only 1 hour.
+            # This will still create problems at the fringes of
+            #   timezone definition changes.
             if is_pytz(self.tzinfo):
-                span_start_dt = normalize_pytz(span_start_dt - datetime.timedelta(hours=1))
-                span_stop_dt = normalize_pytz(span_stop_dt + datetime.timedelta(hours=1))
+                span_start_dt = normalize_pytz(
+                    span_start_dt - datetime.timedelta(hours=1)
+                )
+                span_stop_dt = normalize_pytz(
+                    span_stop_dt + datetime.timedelta(hours=1)
+                )
             for rule in self.rrules:
                 for start in rule.between(span_start_dt, span_stop_dt, inc=True):
                     if is_pytz_dt(start):
@@ -498,7 +516,7 @@ class Series:
                     # value. This is tested by test/test_issue_20_exdate_ignored.py.
                     if rule.until is None or not compare_greater(start, rule.until):
                         yield start
-                        
+
         def convert_to_original_type(self, date):
             """Convert a date back if this is possible.
 
@@ -507,20 +525,25 @@ class Series:
             up with the type (date/datetime) that was specified in the icalendar
             component.
             """
-            if not isinstance(self.original_start, datetime.datetime) and not isinstance(
+            if not isinstance(
+                self.original_start, datetime.datetime
+            ) and not isinstance(
                 self.original_end,
                 datetime.datetime,
             ):
                 return convert_to_date(date)
             return date
 
-        def as_occurrence(self, start: Time, stop: Time, occurrence:type[Occurrence]) -> Occurrence:
+        def as_occurrence(
+            self, start: Time, stop: Time, occurrence: type[Occurrence]
+        ) -> Occurrence:
             """Return this as an occurrence at a specific time."""
             return occurrence(
-                    self.core,
-                    self.convert_to_original_type(start),
-                    self.convert_to_original_type(stop),
-                )
+                self.core,
+                self.convert_to_original_type(start),
+                self.convert_to_original_type(stop),
+            )
+
     def __init__(self, components: Sequence[ComponentAdapter]):
         """Create an component which may have repetitions in it."""
         if len(components) == 0:
@@ -547,7 +570,9 @@ class Series:
             self.recurrence_id_to_modification.values()
         )
         del component
-        self.recurrence = self.NoRecurrence() if core is None else self.RecurrenceRules(core)
+        self.recurrence = (
+            self.NoRecurrence() if core is None else self.RecurrenceRules(core)
+        )
 
     def between(self, span_start: Time, span_stop: Time) -> Generator[Occurrence]:
         """components between the start (inclusive) and end (exclusive)"""
@@ -586,13 +611,13 @@ class Series:
             # we assume that the modifications are actually included
             if (
                 modification in returned_modifications
-                or self.recurrence.check_exdates_datetime & set(modification.recurrence_ids)
+                or self.recurrence.check_exdates_datetime
+                & set(modification.recurrence_ids)
             ):
                 continue
             if modification.is_in_span(span_start, span_stop):
                 returned_modifications.add(modification)
                 yield Occurrence(modification)
-
 
     @property
     def uid(self):
