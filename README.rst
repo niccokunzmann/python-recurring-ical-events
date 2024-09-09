@@ -416,6 +416,8 @@ Below, you can choose to collect all components. Subclasses can be created for t
 
     # You can override the Occurrence and Series classes for all computable components
     >>> select_all_known = AllKnownComponents(series=Series, occurrence=Occurrence)
+    >>> select_all_known.names  # these are the supported types of components
+    ['VEVENT', 'VTODO', 'VJOURNAL']
     >>> query_all_known = recurring_ical_events.of(one_event, components=[select_all_known])
 
     # There should be exactly one event.
@@ -444,7 +446,7 @@ a unified interface for all the components with the same name (``VEVENT`` for ex
     >>> recurring_ical_events.of(one_event, components=[select_journals]).count()
     0
 
-So, if you for example would like to modify all events that are returned by the query,
+So, if you would like to modify all events that are returned by the query,
 you can do that subclassing the ``Occurrence`` class.
 
 
@@ -463,6 +465,18 @@ you can do that subclassing the ``Occurrence`` class.
     >>> event["X-MY-ATTRIBUTE"]
     'my occurrence'
 
+This library allows extension of functionality during the selection of components to calculate using these classes:
+
+* ``ComponentsWithName`` - for components of a certain name
+* ``AllKnownComponents`` - for all components known
+* ``SelectComponents`` - the interface to provide
+
+You can further customize behaviour by subclassing these:
+
+* ``ComponentAdapter`` such as ``EventAdapter``, ``JournalAdapter`` or ``TodoAdapter``.
+* ``Series``
+* ``Occurrence``
+* ``CalendarQuery``
 
 Version Fixing
 **************

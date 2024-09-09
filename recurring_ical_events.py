@@ -1210,6 +1210,7 @@ def of(
     keep_recurrence_attributes=False,
     components: T_COMPONENTS = ("VEVENT",),
     skip_bad_series: bool = False,  # noqa: FBT001
+    calendar_query : type[CalendarQuery] = CalendarQuery,
 ) -> CalendarQuery:
     """Unfold recurring events of a_calendar
 
@@ -1217,10 +1218,13 @@ def of(
     - keep_recurrence_attributes - whether to keep attributes that are only used
       to calculate the recurrence.
     - components is a list of component type names of which the recurrences
-      should be returned.
+      should be returned. This can also be instances of SelectComponents.
+    - skip_bad_series - whether to skip a series of components that contains
+      errors.
+    - calendar_query - The calendar query class to use.
     """
     a_calendar = x_wr_timezone.to_standard(a_calendar)
-    return CalendarQuery(
+    return calendar_query(
         a_calendar, keep_recurrence_attributes, components, skip_bad_series
     )
 
