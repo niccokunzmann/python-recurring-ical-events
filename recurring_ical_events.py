@@ -305,7 +305,7 @@ def get_any(dictionary: dict, keys: Sequence[object], default: object = None):
 class Series:
     """Base class for components that result in a series of occurrences."""
     
-    class NoCore:
+    class NoRecurrence:
         """A strategy to deal with not having a core with rrules."""
 
         check_exdates_datetime: set[RecurrenceID] = set()
@@ -323,7 +323,7 @@ class Series:
             yield from []
 
 
-    class Core:
+    class RecurrenceRules:
         """A strategy if we have an actual core with recurrences."""
 
         def __init__(self, core: ComponentAdapter):
@@ -546,8 +546,7 @@ class Series:
             self.recurrence_id_to_modification.values()
         )
         del component
-        self.core = self.NoCore() if core is None else self.Core(core)
-
+        self.recurrence = self.NoRecurrence() if core is None else self.RecurrenceRules(core)
 
     def between(self, span_start: Time, span_stop: Time) -> Generator[Occurrence]:
         """components between the start (inclusive) and end (exclusive)"""
@@ -555,24 +554,24 @@ class Series:
         returned_modifications: set[ComponentAdapter] = set()
         # NOTE: If in the following line, we get an error, datetime and date
         # may still be mixed because RDATE, EXDATE, start and rule.
-        for start in self.core.rrule_between(span_start, span_stop):
+        for start in self.recurrence.rrule_between(span_start, span_stop):
             recurrence_ids = to_recurrence_ids(start)
             if (
                 start in returned_starts
-                or convert_to_date(start) in self.core.check_exdates_date
-                or self.core.check_exdates_datetime & set(recurrence_ids)
+                or convert_to_date(start) in self.recurrence.check_exdates_date
+                or self.recurrence.check_exdates_datetime & set(recurrence_ids)
             ):
                 continue
             adapter: ComponentAdapter = get_any(
-                self.recurrence_id_to_modification, recurrence_ids, self.core.core
+                self.recurrence_id_to_modification, recurrence_ids, self.recurrence.core
             )
-            if adapter is self.core.core:
+            if adapter is self.recurrence.core:
                 stop = get_any(
-                    self.core.replace_ends,
+                    self.recurrence.replace_ends,
                     recurrence_ids,
-                    normalize_pytz(start + self.core.core.duration),
+                    normalize_pytz(start + self.recurrence.core.duration),
                 )
-                occurrence = self.core.as_occurrence(start, stop, Occurrence)
+                occurrence = self.recurrence.as_occurrence(start, stop, Occurrence)
                 returned_starts.add(start)
             else:
                 # We found a modification
@@ -586,7 +585,7 @@ class Series:
             # we assume that the modifications are actually included
             if (
                 modification in returned_modifications
-                or self.core.check_exdates_datetime & set(modification.recurrence_ids)
+                or self.recurrence.check_exdates_datetime & set(modification.recurrence_ids)
             ):
                 continue
             if modification.is_in_span(span_start, span_stop):
@@ -597,7 +596,7 @@ class Series:
     @property
     def uid(self):
         """The UID that identifies this series."""
-        return getattr(self.core, "uid", "invalid")
+        return getattr(self.recurrence, "uid", "invalid")
 
     def __repr__(self):
         """A string representation."""
