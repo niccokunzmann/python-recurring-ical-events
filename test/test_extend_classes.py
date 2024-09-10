@@ -16,6 +16,7 @@ from recurring_ical_events import (
     Series,
     TodoAdapter,
     of,
+    ComponentsWithName
 )
 
 if TYPE_CHECKING:
@@ -67,6 +68,7 @@ class SelectUID3(SelectComponents):
         for component in source.walk("VEVENT"):
             if component.get("UID") == self.uid:
                 components.append(EventAdapter(component))  # noqa: PERF401
+        print(components)
         return [Series(components)] if components else []
 
 
@@ -96,3 +98,31 @@ def test_added_attributes(calendars):
     )
     event = next(query.all())
     assert event["X-MY-ATTRIBUTE"] == "my occurrence"
+
+
+@pytest.mark.parametrize(
+    ("calendar", "count", "collector"),
+    [
+        # all
+        ("one_event", 1, AllKnownComponents()),
+        ("issue_97_simple_todo", 1, AllKnownComponents()),
+        ("issue_97_simple_journal", 1, AllKnownComponents()),
+        # events
+        ("one_event", 1, ComponentsWithName("VEVENT")),
+        ("issue_97_simple_todo", 0, ComponentsWithName("VEVENT")),
+        ("issue_97_simple_journal", 0, ComponentsWithName("VEVENT")),
+        # todos
+        ("one_event", 0, ComponentsWithName("VTODO")),
+        ("issue_97_simple_todo", 1, ComponentsWithName("VTODO")),
+        ("issue_97_simple_journal", 0, ComponentsWithName("VTODO")),
+        # journals
+        ("one_event", 0, ComponentsWithName("VJOURNAL")),
+        ("issue_97_simple_todo", 0, ComponentsWithName("VJOURNAL")),
+        ("issue_97_simple_journal", 1, ComponentsWithName("VJOURNAL")),
+    ]
+)
+def test_we_collect_all_components(calendars, calendar, count, collector:SelectComponents):
+    """Check that the calendars have the right amount of series collected."""
+    series = collector.collect_series_from(calendars.raw[calendar], [])
+    print(series)
+    assert len(series) == count

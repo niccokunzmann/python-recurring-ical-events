@@ -561,6 +561,7 @@ class Series:
         self.recurrence_id_to_modification: dict[
             RecurrenceID, ComponentAdapter
         ] = {}  # RECURRENCE-ID -> adapter
+        self._uid = components[0].uid
         core: ComponentAdapter | None = None
         for component in components:
             if component.is_modification():
@@ -632,7 +633,7 @@ class Series:
     @property
     def uid(self):
         """The UID that identifies this series."""
-        return getattr(self.recurrence, "uid", "invalid")
+        return self._uid
 
     def __repr__(self):
         """A string representation."""
