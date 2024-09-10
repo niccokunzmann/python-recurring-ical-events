@@ -55,6 +55,6 @@ def test_documentation_file(document, env_for_doctest):
     assert test_result.failed == 0, f"{test_result.failed} errors in {document.name}"
 
 
-def test_can_import_zoneinfo(env_for_doctest):
+def test_can_import_zoneinfo(env_for_doctest):  # noqa: ARG001
     """Allow importing zoneinfo for tests."""
     assert "zoneinfo" in sys.modules

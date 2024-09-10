@@ -17,6 +17,7 @@ from __future__ import annotations
 import contextlib
 import datetime
 import re
+import sys
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from functools import wraps
@@ -24,6 +25,7 @@ from typing import TYPE_CHECKING, Callable, Generator, Optional, Sequence, Union
 
 import x_wr_timezone
 from dateutil.rrule import rruleset, rrulestr
+from icalendar.cal import Component
 from icalendar.prop import vDDDTypes
 
 if TYPE_CHECKING:
@@ -305,6 +307,11 @@ def get_any(dictionary: dict, keys: Sequence[object], default: object = None):
 class Series:
     """Base class for components that result in a series of occurrences."""
 
+    @property
+    def occurrence(self) -> type[Occurrence]:
+        """A way to override the occurrence class."""
+        return Occurrence
+
     class NoRecurrence:
         """A strategy to deal with not having a core with rrules."""
 
@@ -554,6 +561,7 @@ class Series:
         self.recurrence_id_to_modification: dict[
             RecurrenceID, ComponentAdapter
         ] = {}  # RECURRENCE-ID -> adapter
+        self._uid = components[0].uid
         core: ComponentAdapter | None = None
         for component in components:
             if component.is_modification():
@@ -575,7 +583,10 @@ class Series:
         )
 
     def between(self, span_start: Time, span_stop: Time) -> Generator[Occurrence]:
-        """components between the start (inclusive) and end (exclusive)"""
+        """Components between the start (inclusive) and end (exclusive).
+
+        The result does not need to be ordered.
+        """
         returned_starts: set[Time] = set()
         returned_modifications: set[ComponentAdapter] = set()
         # NOTE: If in the following line, we get an error, datetime and date
@@ -597,14 +608,14 @@ class Series:
                     recurrence_ids,
                     normalize_pytz(start + self.recurrence.core.duration),
                 )
-                occurrence = self.recurrence.as_occurrence(start, stop, Occurrence)
+                occurrence = self.recurrence.as_occurrence(start, stop, self.occurrence)
                 returned_starts.add(start)
             else:
                 # We found a modification
                 if adapter in returned_modifications:
                     continue
                 returned_modifications.add(adapter)
-                occurrence = Occurrence(adapter)
+                occurrence = self.occurrence(adapter)
             if occurrence.is_in_span(span_start, span_stop):
                 yield occurrence
         for modification in self.modifications:
@@ -617,12 +628,12 @@ class Series:
                 continue
             if modification.is_in_span(span_start, span_stop):
                 returned_modifications.add(modification)
-                yield Occurrence(modification)
+                yield self.occurrence(modification)
 
     @property
     def uid(self):
         """The UID that identifies this series."""
-        return getattr(self.recurrence, "uid", "invalid")
+        return self._uid
 
     def __repr__(self):
         """A string representation."""
@@ -671,23 +682,16 @@ class ComponentAdapter(ABC):
         return self._component.get("UID", str(id(self._component)))
 
     @classmethod
-    def collect_components(
+    def collect_series_from(
         cls, source: Component, suppress_errors: tuple[Exception]
     ) -> Sequence[Series]:
-        """Collect all components from the source component.
+        """Collect all components for this adapter.
 
-        suppress_errors - a list of errors that should be suppressed.
-            A Series of events with such an error is removed from all results.
+        This is a shortcut.
         """
-        components: dict[str, list[Component]] = defaultdict(list)  # UID -> components
-        for component in source.walk(cls.component_name()):
-            adapter = cls(component)
-            components[adapter.uid].append(adapter)
-        result = []
-        for components in components.values():
-            with contextlib.suppress(suppress_errors):
-                result.append(Series(components))
-        return result
+        return ComponentsWithName(cls.component_name(), cls).collect_series_from(
+            source, suppress_errors
+        )
 
     def as_component(self, start: Time, stop: Time, keep_recurrence_attributes: bool):  # noqa: FBT001
         """Create a shallow copy of the source event and modify some attributes."""
@@ -958,6 +962,138 @@ class Occurrence:
         return self.id == other.id
 
 
+class SelectComponents(ABC):
+    """Abstract class to select components from a calendar."""
+
+    @abstractmethod
+    def collect_series_from(
+        self, source: Component, suppress_errors: tuple[Exception]
+    ) -> Sequence[Series]:
+        """Collect all components from the source grouped together into a series.
+
+        suppress_errors - a list of errors that should be suppressed.
+            A Series of events with such an error is removed from all results.
+        """
+
+
+class ComponentsWithName(SelectComponents):
+    """This is a component collecttion strategy.
+
+    Components can be collected in different ways.
+    This class allows extension of the functionality by
+    - subclassing to filter the resulting components
+    - composition to combine collection behavior (see AllKnownComponents)
+    """
+
+    component_adapters = [EventAdapter, TodoAdapter, JournalAdapter]
+
+    @cached_property
+    def _component_adapters(self) -> dict[str : type[ComponentAdapter]]:
+        """A mapping of component adapters."""
+        return {
+            adapter.component_name(): adapter for adapter in self.component_adapters
+        }
+
+    def __init__(
+        self,
+        name: str,
+        adapter: type[ComponentAdapter] | None = None,
+        series: type[Series] = Series,
+        occurrence: type[Occurrence] = Occurrence,
+    ) -> None:
+        """Create a new way of collecting components.
+
+        name - the name of the component to collect ("VEVENT", "VTODO", "VJOURNAL")
+        adapter - the adapter to use for these components with that name
+        series - the series class that hold a series of components
+        occurrence - the occurrence class that creates the resulting components
+        """
+        if adapter is None:
+            if name not in self._component_adapters:
+                raise ValueError(
+                    f'"{name}" is an unknown name for a '
+                    'recurring component. '
+                    f"I only know these: { ', '.join(self._component_adapters)}."
+                )
+            adapter = self._component_adapters[name]
+        if occurrence is not Occurrence:
+            _occurrence = occurrence
+
+            class series(series):  # noqa: N801
+                occurrence = _occurrence
+
+        self._name = name
+        self._series = series
+        self._adapter = adapter
+
+    def collect_series_from(
+        self, source: Component, suppress_errors: tuple[Exception]
+    ) -> Sequence[Series]:
+        """Collect all components from the source component.
+
+        suppress_errors - a list of errors that should be suppressed.
+            A Series of events with such an error is removed from all results.
+        """
+        components: dict[str, list[Component]] = defaultdict(list)  # UID -> components
+        for component in source.walk(self._name):
+            adapter = self._adapter(component)
+            components[adapter.uid].append(adapter)
+        result = []
+        for components in components.values():
+            with contextlib.suppress(suppress_errors):
+                result.append(self._series(components))
+        return result
+
+
+class AllKnownComponents(SelectComponents):
+    """Group all known components into series."""
+
+    @property
+    def _component_adapters(self) -> Sequence[ComponentAdapter]:
+        """Return all known component adapters."""
+        return ComponentsWithName.component_adapters
+
+    @property
+    def names(self) -> list[str]:
+        """Return the names of the components to collect."""
+        return [adapter.component_name() for adapter in self._component_adapters]
+
+    def __init__(
+        self,
+        series: type[Series] = Series,
+        occurrence: type[Occurrence] = Occurrence,
+        collector: type[ComponentsWithName] = ComponentsWithName,
+    ) -> None:
+        """Collect all known components and overide the series and occurrence.
+
+        series - the Series class to override that is queried for Occurrences
+        occurrence - the occurrence class that creates the resulting components
+        collector - if you want to override the SelectComponentsByName class
+        """
+        self._series = series
+        self._occurrence = occurrence
+        self._collector = collector
+
+    def collect_series_from(
+        self, source: Component, suppress_errors: tuple[Exception]
+    ) -> Sequence[Series]:
+        """Collect the components from the source groups into a series."""
+        result = []
+        for name in self.names:
+            collector = self._collector(
+                name, series=self._series, occurrence=self._occurrence
+            )
+            result.extend(collector.collect_series_from(source, suppress_errors))
+        return result
+
+
+if sys.version_info >= (3, 10):
+    T_COMPONENTS = Sequence[str | type[ComponentAdapter] | SelectComponents]
+else:
+    # see https://github.com/python/cpython/issues/86399#issuecomment-1093889925
+    T_COMPONENTS = Sequence[str]
+
+
 class CalendarQuery:
     """A calendar that can unfold its events at a certain time.
 
@@ -972,22 +1108,14 @@ class CalendarQuery:
     component_adapters - a list of component adapters
     """
 
-    component_adapters = [EventAdapter, TodoAdapter, JournalAdapter]
-
-    @cached_property
-    def _component_adapters(self) -> dict[str : type[ComponentAdapter]]:
-        """A mapping of component adapters."""
-        return {
-            adapter.component_name(): adapter for adapter in self.component_adapters
-        }
-
     suppressed_errors = [BadRuleStringFormat, PeriodEndBeforeStart]
+    ComponentsWithName = ComponentsWithName
 
     def __init__(
         self,
         calendar: Component,
         keep_recurrence_attributes: bool = False,  # noqa: FBT001
-        components: Sequence[str | type[ComponentAdapter]] = ("VEVENT",),
+        components: T_COMPONENTS = ("VEVENT",),
         skip_bad_series: bool = False,  # noqa: FBT001
     ):
         """Create an unfoldable calendar from a given calendar.
@@ -1008,17 +1136,11 @@ class CalendarQuery:
         self._skip_errors = tuple(self.suppressed_errors) if skip_bad_series else ()
         for component_adapter_id in components:
             if isinstance(component_adapter_id, str):
-                if component_adapter_id not in self._component_adapters:
-                    raise ValueError(
-                        f'"{component_adapter_id}" is an unknown name for a '
-                        'recurring component. '
-                        f"I only know these: { ', '.join(self._component_adapters)}."
-                    )
-                component_adapter = self._component_adapters[component_adapter_id]
+                component_adapter = self.ComponentsWithName(component_adapter_id)
             else:
                 component_adapter = component_adapter_id
             self.series.extend(
-                component_adapter.collect_components(calendar, self._skip_errors)
+                component_adapter.collect_series_from(calendar, self._skip_errors)
             )
 
     @staticmethod
@@ -1158,8 +1280,9 @@ class CalendarQuery:
 def of(
     a_calendar: Component,
     keep_recurrence_attributes=False,
-    components: Sequence[str | type[ComponentAdapter]] = ("VEVENT",),
+    components: T_COMPONENTS = ("VEVENT",),
     skip_bad_series: bool = False,  # noqa: FBT001
+    calendar_query: type[CalendarQuery] = CalendarQuery,
 ) -> CalendarQuery:
     """Unfold recurring events of a_calendar
 
@@ -1167,10 +1290,13 @@ def of(
     - keep_recurrence_attributes - whether to keep attributes that are only used
       to calculate the recurrence.
     - components is a list of component type names of which the recurrences
-      should be returned.
+      should be returned. This can also be instances of SelectComponents.
+    - skip_bad_series - whether to skip a series of components that contains
+      errors.
+    - calendar_query - The calendar query class to use.
     """
     a_calendar = x_wr_timezone.to_standard(a_calendar)
-    return CalendarQuery(
+    return calendar_query(
         a_calendar, keep_recurrence_attributes, components, skip_bad_series
     )
 
@@ -1191,4 +1317,7 @@ __all__ = [
     "Time",
     "RecurrenceID",
     "RecurrenceIDs",
+    "SelectComponents",
+    "ComponentsWithName",
+    "T_COMPONENTS",
 ]
