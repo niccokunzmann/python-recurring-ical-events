@@ -569,6 +569,8 @@ Changelog
 
   - Make tests work with ``icalendar`` version 5
   - Restructure README to be tested with ``doctest``
+  - Remove ``DURATION`` from the result, see `Issue 139 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/139>`_
+  - Document new way of extending the functionality, see `Issue 133 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/133>`_ and `PR 175 <https://github.com/niccokunzmann/python-recurring-ical-events/pull/175>`_
 
 - v3.2.0
 
