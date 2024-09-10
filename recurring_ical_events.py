@@ -697,6 +697,7 @@ class ComponentAdapter(ABC):
         """Create a shallow copy of the source event and modify some attributes."""
         copied_component = self._component.copy()
         copied_component["DTSTART"] = vDDDTypes(start)
+        copied_component.pop("DURATION", None)  # remove duplication in event length
         if self.end_property is not None:
             copied_component[self.end_property] = vDDDTypes(stop)
         if not keep_recurrence_attributes:
