@@ -27,7 +27,7 @@ assignees: ''
 
 **Version:**
 <!-- Which Version do you use? -->
-![](https://raster.shields.io/badge/version-0.1.12b0-brightgreen.png)
+![](https://raster.shields.io/badge/version-3.3.0-brightgreen.png)
 
 <!-- Sometimes, the problems are in other packages. You can provide an overview
      by running this command and passing the output:
