@@ -16,7 +16,7 @@ assignees: ''
 **ICS file**
 <!-- Please paste an ICS file here which does not work or attach it with a .txt ending. -->
 
-```
+```ics
 ```
 
 **Expected behavior**
