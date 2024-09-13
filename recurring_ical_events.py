@@ -360,7 +360,11 @@ class Series:
                     # we have a period as rdate
                     self.rdates.add(rdate[0])
                     for recurrence_id in to_recurrence_ids(rdate[0]):
-                        self.replace_ends[recurrence_id] = rdate[1]
+                        self.replace_ends[recurrence_id] =  (
+                            normalize_pytz(rdate[0] + rdate[1])
+                            if isinstance(rdate[1], datetime.timedelta) else
+                            rdate[1]
+                        )
                 else:
                     # we have a date/datetime
                     self.rdates.add(rdate)
@@ -922,7 +926,6 @@ class Occurrence:
         - start - the start date/datetime to replace
         - stop - the end date/datetime to replace
         """
-        print("Occurrence", start, end)
         self._adapter = adapter
         self.start = adapter.start if start is None else start
         self.end = adapter.end if end is None else end
