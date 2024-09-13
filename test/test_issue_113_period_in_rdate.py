@@ -13,7 +13,7 @@ See https://github.com/niccokunzmann/python-recurring-ical-events/issues/113
 
 """
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import pytz
 
@@ -34,3 +34,11 @@ def test_end_of_rdate(calendars):
     assert event["DTEND"].dt == pytz.timezone("America/Vancouver").localize(
         datetime(2023, 12, 13, 15, 0)
     )
+
+def test_rdate_with_a_period_with_duration(calendars):
+    """Check that we can process RDATE with a duration as second value."""
+    events = calendars.issue_113_period_rdate_duration.at("20240913")
+    assert len(events) == 1, "We found the event with the rdate."
+    event = events[0]
+    duration = event["DTEND"].dt - event["DTSTART"].dt
+    assert duration == timedelta(hours=2)

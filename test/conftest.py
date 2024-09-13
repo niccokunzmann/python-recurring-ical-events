@@ -154,10 +154,13 @@ def utc(request):
     """Return all the UTC implementations."""
     return request.param
 
+
 class DoctestZoneInfo(_zoneinfo.ZoneInfo):
     """Constent ZoneInfo representation for tests."""
+
     def __repr__(self):
         return f"ZoneInfo(key={self.key!r})"
+
 
 def doctest_print(obj):
     """doctest print"""
@@ -165,12 +168,14 @@ def doctest_print(obj):
         obj = obj.decode("UTF-8")
     print(str(obj).strip().replace("\r\n", "\n").replace("\r", "\n"))
 
+
 @pytest.fixture()
 def env_for_doctest(monkeypatch):
     """Modify the environment to make doctests run."""
     monkeypatch.setitem(sys.modules, "zoneinfo", _zoneinfo)
     monkeypatch.setattr(_zoneinfo, "ZoneInfo", DoctestZoneInfo)
     from icalendar.timezone.zoneinfo import ZONEINFO
+
     monkeypatch.setattr(ZONEINFO, "utc", _zoneinfo.ZoneInfo("UTC"))
     return {
         "print": doctest_print,

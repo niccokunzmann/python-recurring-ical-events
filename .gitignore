@@ -12,3 +12,4 @@ env-2
 /htmlcov
 .coverage
 .venv
+rfc5545.html
