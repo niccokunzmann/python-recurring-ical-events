@@ -914,7 +914,7 @@ class Occurrence:
         self,
         adapter: ComponentAdapter,
         start: Time | None = None,
-        end: Time | None = None,
+        end: Time | None | datetime.timedelta = None,
     ):
         """Create an event repetition.
 
@@ -922,6 +922,7 @@ class Occurrence:
         - start - the start date/datetime to replace
         - stop - the end date/datetime to replace
         """
+        print("Occurrence", start, end)
         self._adapter = adapter
         self.start = adapter.start if start is None else start
         self.end = adapter.end if end is None else end
