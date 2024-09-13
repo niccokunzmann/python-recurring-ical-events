@@ -360,7 +360,11 @@ class Series:
                     # we have a period as rdate
                     self.rdates.add(rdate[0])
                     for recurrence_id in to_recurrence_ids(rdate[0]):
-                        self.replace_ends[recurrence_id] = rdate[1]
+                        self.replace_ends[recurrence_id] =  (
+                            normalize_pytz(rdate[0] + rdate[1])
+                            if isinstance(rdate[1], datetime.timedelta) else
+                            rdate[1]
+                        )
                 else:
                     # we have a date/datetime
                     self.rdates.add(rdate)
@@ -914,7 +918,7 @@ class Occurrence:
         self,
         adapter: ComponentAdapter,
         start: Time | None = None,
-        end: Time | None = None,
+        end: Time | None | datetime.timedelta = None,
     ):
         """Create an event repetition.
 
