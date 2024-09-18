@@ -22,12 +22,12 @@ import pytest
     [
         ("20240901", "ORIGINAL EVENT"),
         ("20240911", "ORIGINAL EVENT"),
-        ("20240913", "MODIFIED EVENT"), # it span to start of day so no modified
+        ("20240913", "MODIFIED EVENT"),
         ("20240915", "MODIFIED EVENT"),
         ("20240917", "MODIFIED EVENT"),
         ("20240919", "MODIFIED EVENT"),
         ("20240921", "MODIFIED EVENT"),
-        ("20240923", "EDITED EVENT"), # it span to start of day so no edited
+        ("20240923", "EDITED EVENT"),
         ("20240924", "EDITED EVENT"),  # RDATE
         ("20240925", "EDITED EVENT"),
     ],
