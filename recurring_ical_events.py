@@ -499,6 +499,7 @@ class Series:
         def rrule_between(self, span_start: Time, span_stop: Time) -> Generator[Time]:
             """Recalculate the rrules so that minor mistakes are corrected."""
             # TODO: optimize and only return what is in the span
+            
             yield from self.rule_set
             # make dates comparable, rrule converts them to datetimes
             span_start_dt = convert_to_datetime(span_start, self.tzinfo)
@@ -596,7 +597,7 @@ class Series:
         # NOTE: If in the following line, we get an error, datetime and date
         # may still be mixed because RDATE, EXDATE, start and rule.
         prev_adapter = None
-        for start in self.recurrence.rrule_between(span_start, span_stop):
+        for start in sorted(self.recurrence.rrule_between(span_start, span_stop)):
             recurrence_ids = to_recurrence_ids(start)
             if (
                 start in returned_starts

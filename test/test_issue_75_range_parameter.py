@@ -28,7 +28,7 @@ import pytest
         ("20240919", "MODIFIED EVENT"),
         ("20240921", "MODIFIED EVENT"),
         ("20240923", "EDITED EVENT"), # it span to start of day so no edited
-        #("20240924", "EDITED EVENT"),  # RDATE:need to work on
+        ("20240924", "EDITED EVENT"),  # RDATE
         ("20240925", "EDITED EVENT"),
     ],
 )
