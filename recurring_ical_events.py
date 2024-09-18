@@ -519,7 +519,7 @@ class Series:
                     span_stop_dt + datetime.timedelta(hours=1)
                 )
             for rule in self.rrules:
-                for start in rule.between(span_start_dt, span_stop_dt, inc=True):
+                for start in rule.between(rule._dtstart, span_stop_dt, inc=True):
                     if is_pytz_dt(start):
                         # update the time zone in case of summer/winter time change
                         start = start.tzinfo.localize(start.replace(tzinfo=None))  # noqa: PLW2901
@@ -595,6 +595,7 @@ class Series:
         returned_modifications: set[ComponentAdapter] = set()
         # NOTE: If in the following line, we get an error, datetime and date
         # may still be mixed because RDATE, EXDATE, start and rule.
+        prev_adapter = None
         for start in self.recurrence.rrule_between(span_start, span_stop):
             recurrence_ids = to_recurrence_ids(start)
             if (
@@ -606,7 +607,18 @@ class Series:
             adapter: ComponentAdapter = get_any(
                 self.recurrence_id_to_modification, recurrence_ids, self.recurrence.core
             )
-            if adapter is self.recurrence.core:
+            if prev_adapter and adapter is self.recurrence.core:
+                start_dt = datetime.datetime.combine(start.date(), prev_adapter.start.time())
+                stop = get_any(
+                    self.recurrence.replace_ends,
+                    recurrence_ids,
+                    normalize_pytz(start_dt + prev_adapter.duration),
+                )
+                core = self.recurrence.core
+                self.recurrence.core = prev_adapter
+                occurrence = self.recurrence.as_occurrence(start_dt, stop, self.occurrence)
+                self.recurrence.core = core
+            elif adapter is self.recurrence.core:
                 stop = get_any(
                     self.recurrence.replace_ends,
                     recurrence_ids,
@@ -620,6 +632,8 @@ class Series:
                     continue
                 returned_modifications.add(adapter)
                 occurrence = self.occurrence(adapter)
+                if adapter.thisandfuture:
+                    prev_adapter = adapter
             if occurrence.is_in_span(span_start, span_stop):
                 yield occurrence
         for modification in self.modifications:
@@ -650,7 +664,7 @@ class Series:
 class ComponentAdapter(ABC):
     """A unified interface to work with icalendar components."""
 
-    ATTRIBUTES_TO_DELETE_ON_COPY = ["RRULE", "RDATE", "EXDATE"]
+    ATTRIBUTES_TO_DELETE_ON_COPY = ["RRULE", "RDATE", "EXDATE", "RECURRENCE-ID"]
 
     @staticmethod
     @abstractmethod
@@ -719,6 +733,18 @@ class ComponentAdapter(ABC):
         if recurrence_id is None:
             return ()
         return to_recurrence_ids(recurrence_id.dt)
+
+    @cached_property
+    def thisandfuture(self) -> bool:
+        
+        """The recurrence ids has a thisand future range property"""
+        recurrence_id = self._component.get("RECURRENCE-ID")
+        if recurrence_id is None:
+            return False
+        if "RANGE" in recurrence_id.params:
+            return recurrence_id.params["RANGE"] == "THISANDFUTURE"
+        return False
+        
 
     def is_modification(self) -> bool:
         """Whether the adapter is a modification."""
@@ -912,7 +938,7 @@ class JournalAdapter(ComponentAdapter):
 class Occurrence:
     """A repetition of an event."""
 
-    ATTRIBUTES_TO_DELETE_ON_COPY = ["RRULE", "RDATE", "EXDATE"]
+    ATTRIBUTES_TO_DELETE_ON_COPY = ["RRULE", "RDATE", "EXDATE", "RECURRENCE-ID"]
 
     def __init__(
         self,
