@@ -598,17 +598,16 @@ class Series:
         # may still be mixed because RDATE, EXDATE, start and rule.
         prev_adapter = None
         starts = sorted(self.recurrence.rrule_between(span_start, span_stop))
-        rangestarts = []
-        rangemax = convert_to_datetime(DATE_MIN_DT, self.recurrence.tzinfo)
-        for modification in self.modifications:
-            if modification.thisandfuture and convert_to_datetime(span_start, self.recurrence.tzinfo) > modification.start:
-                if modification.start > rangemax:
-                    prev_adapter = modification
-                    rangemax = modification.start
-                rangestarts.append(modification.start)
-        if rangestarts:
-            rangestarts.sort()
-            starts = [starts[0], rangestarts[-1]-self.recurrence.core.duration, * starts[1:]]
+        if type(self.recurrence) != Series.NoRecurrence:
+            mindatetime = convert_to_datetime(DATE_MIN_DT, self.recurrence.tzinfo)
+            rangestarts = mindatetime
+            for modification in self.modifications:
+                if modification.thisandfuture and convert_to_datetime(span_start, self.recurrence.tzinfo) > modification.start:
+                    if modification.start > rangestarts:
+                        prev_adapter = modification
+                        rangestarts = modification.start
+            if rangestarts != mindatetime:
+                starts = [starts[0], rangestarts, * starts[1:]]
         for start in starts:
             recurrence_ids = to_recurrence_ids(start)
             if (
