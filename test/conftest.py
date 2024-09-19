@@ -1,13 +1,7 @@
-import sys,os
+import sys
 import time
 from datetime import timezone
 from pathlib import Path
-try:
-    DESKTOPPATH = Path(__file__).resolve().parent
-except:
-    print("error encontrando ruta de la aplicacione")
-sys.path.append(os.path.join(Path(__file__).resolve().parent, 'inc'))
-print(os.path.join(Path(__file__).resolve().parent, 'inc'))
 import dateutil
 import icalendar
 import pytest
