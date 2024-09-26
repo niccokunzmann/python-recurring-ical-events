@@ -320,7 +320,11 @@ class Series:
         replace_ends: dict[RecurrenceID, Time] = {}
 
         def as_occurrence(
-            self, start: Time, stop: Time, occurrence: type[Occurrence], core: ComponentAdapter
+            self,
+            start: Time,
+            stop: Time,
+            occurrence: type[Occurrence],
+            core: ComponentAdapter,
         ) -> Occurrence:
             raise NotImplementedError("This code should never be reached.")
 
@@ -360,10 +364,10 @@ class Series:
                     # we have a period as rdate
                     self.rdates.add(rdate[0])
                     for recurrence_id in to_recurrence_ids(rdate[0]):
-                        self.replace_ends[recurrence_id] =  (
+                        self.replace_ends[recurrence_id] = (
                             normalize_pytz(rdate[0] + rdate[1])
-                            if isinstance(rdate[1], datetime.timedelta) else
-                            rdate[1]
+                            if isinstance(rdate[1], datetime.timedelta)
+                            else rdate[1]
                         )
                 else:
                     # we have a date/datetime
@@ -499,7 +503,7 @@ class Series:
         def rrule_between(self, span_start: Time, span_stop: Time) -> Generator[Time]:
             """Recalculate the rrules so that minor mistakes are corrected."""
             # TODO: optimize and only return what is in the span
-            
+
             yield from self.rule_set
             # make dates comparable, rrule converts them to datetimes
             span_start_dt = convert_to_datetime(span_start, self.tzinfo)
@@ -547,7 +551,11 @@ class Series:
             return date
 
         def as_occurrence(
-            self, start: Time, stop: Time, occurrence: type[Occurrence], core: ComponentAdapter
+            self,
+            start: Time,
+            stop: Time,
+            occurrence: type[Occurrence],
+            core: ComponentAdapter,
         ) -> Occurrence:
             """Return this as an occurrence at a specific time."""
             return occurrence(
@@ -566,17 +574,21 @@ class Series:
         self.recurrence_id_to_modification: dict[
             RecurrenceID, ComponentAdapter
         ] = {}  # RECURRENCE-ID -> adapter
+        self.this_and_future = []
         self._uid = components[0].uid
         core: ComponentAdapter | None = None
         for component in components:
             if component.is_modification():
-                for recurrence_id in component.recurrence_ids:
+                recurrence_ids = component.recurrence_ids
+                for recurrence_id in recurrence_ids:
                     self.recurrence_id_to_modification[recurrence_id] = (
                         with_highest_sequence(
                             self.recurrence_id_to_modification.get(recurrence_id),
                             component,
                         )
                     )
+                if component.this_and_future:
+                    self.this_and_future.append(recurrence_ids[0])
             else:
                 core = with_highest_sequence(core, component)
         self.modifications: set[ComponentAdapter] = set(
@@ -586,6 +598,21 @@ class Series:
         self.recurrence = (
             self.NoRecurrence() if core is None else self.RecurrenceRules(core)
         )
+        self.this_and_future.sort()
+
+    def get_component_for_recurrence_id(
+        self, recurrence_id: RecurrenceID
+    ) -> ComponentAdapter:
+        """Get the component which contains all information for the recurrence id.
+
+        This concerns this modifications that have RANGE=THISANDFUTURE set.
+        """
+        # We assume the the recurrence_id is of the correct timezone.
+        component = self.recurrence.core
+        for modification_id in self.this_and_future:
+            if modification_id < recurrence_id:
+                component = self.recurrence_id_to_modification[modification_id]
+        return component
 
     def between(self, span_start: Time, span_stop: Time) -> Generator[Occurrence]:
         """Components between the start (inclusive) and end (exclusive).
@@ -596,19 +623,7 @@ class Series:
         returned_modifications: set[ComponentAdapter] = set()
         # NOTE: If in the following line, we get an error, datetime and date
         # may still be mixed because RDATE, EXDATE, start and rule.
-        prev_adapter = None
-        starts = sorted(self.recurrence.rrule_between(span_start, span_stop))
-        if type(self.recurrence) != Series.NoRecurrence:
-            mindatetime = convert_to_datetime(DATE_MIN_DT, self.recurrence.tzinfo)
-            rangestarts = mindatetime
-            for modification in self.modifications:
-                if modification.thisandfuture and convert_to_datetime(span_start, self.recurrence.tzinfo) > modification.start:
-                    if modification.start > rangestarts:
-                        prev_adapter = modification
-                        rangestarts = modification.start
-            if rangestarts != mindatetime:
-                starts = [starts[0], rangestarts, * starts[1:]]
-        for start in starts:
+        for start in self.recurrence.rrule_between(span_start, span_stop):
             recurrence_ids = to_recurrence_ids(start)
             if (
                 start in returned_starts
@@ -619,30 +634,24 @@ class Series:
             adapter: ComponentAdapter = get_any(
                 self.recurrence_id_to_modification, recurrence_ids, self.recurrence.core
             )
-            if starts[0] != start and prev_adapter and adapter is self.recurrence.core:
-                start_dt = datetime.datetime.combine(start.date(), prev_adapter.start.time())
-                stop = get_any(
-                    self.recurrence.replace_ends,
-                    recurrence_ids,
-                    normalize_pytz(start_dt + prev_adapter.duration),
-                )
-                occurrence = self.recurrence.as_occurrence(start_dt, stop, self.occurrence, prev_adapter)
-            elif adapter is self.recurrence.core:
+            if adapter is self.recurrence.core:
+                # We have no modification for this recurrence, so we record the date
                 stop = get_any(
                     self.recurrence.replace_ends,
                     recurrence_ids,
                     normalize_pytz(start + self.recurrence.core.duration),
                 )
-                occurrence = self.recurrence.as_occurrence(start, stop, self.occurrence, self.recurrence.core)
+                component = self.get_component_for_recurrence_id(recurrence_ids[0])
+                occurrence = self.recurrence.as_occurrence(
+                    start, stop, self.occurrence, component
+                )
                 returned_starts.add(start)
             else:
-                # We found a modification
+                # We found a modification, so we record the modification
                 if adapter in returned_modifications:
                     continue
                 returned_modifications.add(adapter)
                 occurrence = self.occurrence(adapter)
-                if adapter.thisandfuture:
-                    prev_adapter = adapter
             if occurrence.is_in_span(span_start, span_stop):
                 yield occurrence
         for modification in self.modifications:
@@ -744,8 +753,7 @@ class ComponentAdapter(ABC):
         return to_recurrence_ids(recurrence_id.dt)
 
     @cached_property
-    def thisandfuture(self) -> bool:
-        
+    def this_and_future(self) -> bool:
         """The recurrence ids has a thisand future range property"""
         recurrence_id = self._component.get("RECURRENCE-ID")
         if recurrence_id is None:
@@ -753,7 +761,6 @@ class ComponentAdapter(ABC):
         if "RANGE" in recurrence_id.params:
             return recurrence_id.params["RANGE"] == "THISANDFUTURE"
         return False
-        
 
     def is_modification(self) -> bool:
         """Whether the adapter is a modification."""

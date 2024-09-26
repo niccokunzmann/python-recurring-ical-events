@@ -1,4 +1,3 @@
-
 """This tests the range parameter for ics file.
 see https://github.com/niccokunzmann/python-recurring-ical-events/issues/75
 Description:  This parameter can be specified on a property that
@@ -23,7 +22,7 @@ import pytest
         ("20240901", "ORIGINAL EVENT"),
         ("20240911", "ORIGINAL EVENT"),
         ("20240913", "MODIFIED EVENT"),
-        ("20240915", "MODIFIED EVENT"), # Normal recurrence-id
+        ("20240915", "MODIFIED EVENT"),  # Normal recurrence-id
         ("20240917", "MODIFIED EVENT"),
         ("20240919", "MODIFIED EVENT"),
         ("20240921", "MODIFIED EVENT"),
@@ -38,31 +37,55 @@ def test_issue_75_RANGE_AT_parameter(calendars, date, summary):
     event = events[0]
     assert str(event["SUMMARY"]) == summary
 
+
 @pytest.mark.parametrize(
-    ("start", "end", "summary","total"),
+    ("start", "end", "summary", "total"),
     [
-        ("20240901T000000Z", "20240911T235959Z", "ORIGINAL EVENT",6),
-        ("20240901T000000Z", "20240913T000000Z", "ORIGINAL EVENT",6),
-        ("20240901T000000Z", "20240913T235959Z", "MODIFIED EVENT",7),
-        ("20240901T000000Z", "20240915T235959Z", "MODIFIED EVENT",8), # Normal recurrence-id
-        ("20240901T000000Z", "20240917T235959Z", "MODIFIED EVENT",9),
-        ("20240901T000000Z", "20240919T235959Z", "MODIFIED EVENT",10),
-        ("20240901T000000Z", "20240921T235959Z", "MODIFIED EVENT",11),
-        ("20240901T000000Z", "20240922T000000Z", "MODIFIED EVENT",11),
-        ("20240901T000000Z", "20240922T235959Z", "EDITED EVENT",12),
-        ("20240901T000000Z", "20240923T000000Z", "EDITED EVENT",12),
-        ("20240901T000000Z", "20240923T235959Z", "EDITED EVENT",13),
-        ("20240901T000000Z", "20240924T235959Z", "EDITED EVENT",14),  # RDATE
-        ("20240901T000000Z", "20240925T235959Z", "EDITED EVENT",15),
-        ("20240913T000000Z", "20240922T000000Z", "MODIFIED EVENT",5), # out of query bounds
-        ("20240913T000000Z", "20240922T235959Z", "EDITED EVENT",6), # out of query bounds
-        ("20240924T000000Z", "20240925T235959Z", "EDITED EVENT",2), # out of query bounds
+        ("20240901T000000Z", "20240911T235959Z", "ORIGINAL EVENT", 6),
+        ("20240901T000000Z", "20240913T000000Z", "ORIGINAL EVENT", 6),
+        ("20240901T000000Z", "20240913T235959Z", "MODIFIED EVENT", 7),
+        (
+            "20240901T000000Z",
+            "20240915T235959Z",
+            "MODIFIED EVENT",
+            8,
+        ),  # Normal recurrence-id
+        ("20240901T000000Z", "20240917T235959Z", "MODIFIED EVENT", 9),
+        ("20240901T000000Z", "20240919T235959Z", "MODIFIED EVENT", 10),
+        ("20240901T000000Z", "20240921T235959Z", "MODIFIED EVENT", 11),
+        ("20240901T000000Z", "20240922T000000Z", "MODIFIED EVENT", 11),
+        ("20240901T000000Z", "20240922T235959Z", "EDITED EVENT", 12),
+        ("20240901T000000Z", "20240923T000000Z", "EDITED EVENT", 12),
+        ("20240901T000000Z", "20240923T235959Z", "EDITED EVENT", 13),
+        ("20240901T000000Z", "20240924T235959Z", "EDITED EVENT", 14),  # RDATE
+        ("20240901T000000Z", "20240925T235959Z", "EDITED EVENT", 15),
+        (
+            "20240913T000000Z",
+            "20240922T000000Z",
+            "MODIFIED EVENT",
+            5,
+        ),  # out of query bounds
+        (
+            "20240913T000000Z",
+            "20240922T235959Z",
+            "EDITED EVENT",
+            6,
+        ),  # out of query bounds
+        (
+            "20240924T000000Z",
+            "20240925T235959Z",
+            "EDITED EVENT",
+            2,
+        ),  # out of query bounds
     ],
 )
 def test_issue_75_RANGE_BETWEEN_parameter(calendars, start, end, summary, total):
-    events = calendars.issue_75_range_parameter.between(start,end)
-    assert len(events) == total, f"Expecting {total} events at range {start}, {end}, get {len(events)}"
+    events = calendars.issue_75_range_parameter.between(start, end)
+    assert (
+        len(events) == total
+    ), f"Expecting {total} events at range {start}, {end}, get {len(events)}"
     event = events[-1]
     assert str(event["SUMMARY"]) == summary
 
-# TODO: Test DTSTART and DTEND 
+
+# TODO: Test DTSTART and DTEND
