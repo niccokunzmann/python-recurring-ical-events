@@ -68,6 +68,7 @@ class ICSCalendars:
         return f"{self.__class__.__name__}({self.tzp.__name__})"
 
 
+_calendar_names = []
 for calendar_path in CALENDARS_FOLDER.iterdir():
     content = calendar_path.read_bytes()
 
@@ -75,8 +76,9 @@ for calendar_path in CALENDARS_FOLDER.iterdir():
     def get_calendar(self, content=content):  # noqa: PLR0206
         return self.get_calendar(content)
 
-    attribute_name = calendar_path.stem.replace("-", "_")
+    attribute_name = calendar_path.stem
     setattr(ICSCalendars, attribute_name, get_calendar)
+    _calendar_names.append(attribute_name)
 
 
 class Calendars(ICSCalendars):
@@ -181,3 +183,12 @@ def env_for_doctest(monkeypatch):
         "print": doctest_print,
         "CALENDARS": CALENDARS_FOLDER,
     }
+
+
+# remove invalid names
+_calendar_names.remove("end_before_start_event")
+_calendar_names.sort()
+@pytest.fixture(scope="module", params=_calendar_names)
+def calendar_name(request) -> str:
+    """All the calendar names."""
+    return request.param

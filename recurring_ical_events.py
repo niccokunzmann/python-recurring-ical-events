@@ -340,8 +340,12 @@ class Series:
             """No repetition."""
             yield from []
 
+        has_core = False
+
     class RecurrenceRules:
         """A strategy if we have an actual core with recurrences."""
+
+        has_core = True
 
         def __init__(self, core: ComponentAdapter):
             self.core = core
@@ -600,6 +604,24 @@ class Series:
         )
         self.this_and_future.sort()
 
+        # get the span extension
+        self._subtract_from_start = self._add_to_stop = datetime.timedelta(0)
+        for adapter in self.this_and_future_components:
+            subtract_from_start, add_to_stop = adapter.extend_query_span_by
+            self._subtract_from_start = max(
+                subtract_from_start, self._subtract_from_start
+            )
+            self._add_to_stop = max(add_to_stop, self._add_to_stop)
+        print(f"self._subtract_from_start = {self._subtract_from_start} self._add_to_stop = {self._add_to_stop}")
+
+    @property
+    def this_and_future_components(self) -> Generator[ComponentAdapter]:
+        """All components that influence future events."""
+        if self.recurrence.has_core:
+            yield self.recurrence.core
+        for recurrence_id in self.this_and_future:
+            yield self.recurrence_id_to_modification[recurrence_id]
+
     def get_component_for_recurrence_id(
         self, recurrence_id: RecurrenceID
     ) -> ComponentAdapter:
@@ -614,6 +636,13 @@ class Series:
                 component = self.recurrence_id_to_modification[modification_id]
         return component
 
+    def rrule_between(self, span_start: Time, span_stop: Time) -> Generator[Time]:
+        """Modify the rrule generation span and yield recurrences."""
+        yield from self.recurrence.rrule_between(
+            normalize_pytz(span_start - self._subtract_from_start),
+            normalize_pytz(span_stop + self._add_to_stop)
+        )
+
     def between(self, span_start: Time, span_stop: Time) -> Generator[Occurrence]:
         """Components between the start (inclusive) and end (exclusive).
 
@@ -623,7 +652,7 @@ class Series:
         returned_modifications: set[ComponentAdapter] = set()
         # NOTE: If in the following line, we get an error, datetime and date
         # may still be mixed because RDATE, EXDATE, start and rule.
-        for start in self.recurrence.rrule_between(span_start, span_stop):
+        for start in self.rrule_between(span_start, span_stop):
             recurrence_ids = to_recurrence_ids(start)
             if (
                 start in returned_starts
@@ -819,6 +848,32 @@ class ComponentAdapter(ABC):
     def is_in_span(self, span_start: Time, span_stop: Time) -> bool:
         """Return whether the component is in the span."""
         return time_span_contains_event(span_start, span_stop, self.start, self.end)
+
+    @cached_property
+    def extend_query_span_by(self) -> tuple[datetime.timedelta, datetime.timedelta]:
+        """Calculate how much we extend the query span.
+
+        If an event is long, we need to extend the query span by the event's duration.
+        If an event has moved, we need to make sure that that is included, too.
+
+        This is so that the RECURRENCE-ID falls within the modified span.
+        Imagine if the span is exactly a second. How much would we need to query
+        forward and backward to capture the recurrence id?
+
+        Returns two positive spans: (subtract_from_start, add_to_stop)
+        """
+        subtract_from_start = self.duration
+        add_to_stop = datetime.timedelta(0)
+        recurrence_id_prop = self._component.get("RECURRENCE-ID")
+        if recurrence_id_prop:
+            start, end, recurrence_id = make_comparable(
+                (self.start, self.end, recurrence_id_prop.dt)
+            )
+            if start < recurrence_id:
+                add_to_stop = recurrence_id - start
+            if start > recurrence_id:
+                add_to_stop = end - recurrence_id
+        return subtract_from_start, add_to_stop
 
 
 class EventAdapter(ComponentAdapter):

@@ -109,14 +109,14 @@ def test_exdate_date(calendars):
 
 
 @pytest.mark.parametrize(
-    "date,count",
+    ("date", "count"),
     [
         ("20240923", 0),
         ("20240924", 3),
         ("20240925", 0),
         ("20240926", 3),
         ("20240927", 0),
-    ]
+    ],
 )
 def test_same_events_at_same_time(calendars, date, count):
     """Make sure that events can be moved to the same time."""
