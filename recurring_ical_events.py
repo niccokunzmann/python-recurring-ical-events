@@ -320,7 +320,7 @@ class Series:
         replace_ends: dict[RecurrenceID, Time] = {}
 
         def as_occurrence(
-            self, start: Time, stop: Time, occurrence: type[Occurrence]
+            self, start: Time, stop: Time, occurrence: type[Occurrence], core: ComponentAdapter
         ) -> Occurrence:
             raise NotImplementedError("This code should never be reached.")
 
@@ -499,6 +499,7 @@ class Series:
         def rrule_between(self, span_start: Time, span_stop: Time) -> Generator[Time]:
             """Recalculate the rrules so that minor mistakes are corrected."""
             # TODO: optimize and only return what is in the span
+            
             yield from self.rule_set
             # make dates comparable, rrule converts them to datetimes
             span_start_dt = convert_to_datetime(span_start, self.tzinfo)
@@ -546,11 +547,11 @@ class Series:
             return date
 
         def as_occurrence(
-            self, start: Time, stop: Time, occurrence: type[Occurrence]
+            self, start: Time, stop: Time, occurrence: type[Occurrence], core: ComponentAdapter
         ) -> Occurrence:
             """Return this as an occurrence at a specific time."""
             return occurrence(
-                self.core,
+                core,
                 self.convert_to_original_type(start),
                 self.convert_to_original_type(stop),
             )
@@ -595,7 +596,19 @@ class Series:
         returned_modifications: set[ComponentAdapter] = set()
         # NOTE: If in the following line, we get an error, datetime and date
         # may still be mixed because RDATE, EXDATE, start and rule.
-        for start in self.recurrence.rrule_between(span_start, span_stop):
+        prev_adapter = None
+        starts = sorted(self.recurrence.rrule_between(span_start, span_stop))
+        if type(self.recurrence) != Series.NoRecurrence:
+            mindatetime = convert_to_datetime(DATE_MIN_DT, self.recurrence.tzinfo)
+            rangestarts = mindatetime
+            for modification in self.modifications:
+                if modification.thisandfuture and convert_to_datetime(span_start, self.recurrence.tzinfo) > modification.start:
+                    if modification.start > rangestarts:
+                        prev_adapter = modification
+                        rangestarts = modification.start
+            if rangestarts != mindatetime:
+                starts = [starts[0], rangestarts, * starts[1:]]
+        for start in starts:
             recurrence_ids = to_recurrence_ids(start)
             if (
                 start in returned_starts
@@ -606,13 +619,21 @@ class Series:
             adapter: ComponentAdapter = get_any(
                 self.recurrence_id_to_modification, recurrence_ids, self.recurrence.core
             )
-            if adapter is self.recurrence.core:
+            if starts[0] != start and prev_adapter and adapter is self.recurrence.core:
+                start_dt = datetime.datetime.combine(start.date(), prev_adapter.start.time())
+                stop = get_any(
+                    self.recurrence.replace_ends,
+                    recurrence_ids,
+                    normalize_pytz(start_dt + prev_adapter.duration),
+                )
+                occurrence = self.recurrence.as_occurrence(start_dt, stop, self.occurrence, prev_adapter)
+            elif adapter is self.recurrence.core:
                 stop = get_any(
                     self.recurrence.replace_ends,
                     recurrence_ids,
                     normalize_pytz(start + self.recurrence.core.duration),
                 )
-                occurrence = self.recurrence.as_occurrence(start, stop, self.occurrence)
+                occurrence = self.recurrence.as_occurrence(start, stop, self.occurrence, self.recurrence.core)
                 returned_starts.add(start)
             else:
                 # We found a modification
@@ -620,6 +641,8 @@ class Series:
                     continue
                 returned_modifications.add(adapter)
                 occurrence = self.occurrence(adapter)
+                if adapter.thisandfuture:
+                    prev_adapter = adapter
             if occurrence.is_in_span(span_start, span_stop):
                 yield occurrence
         for modification in self.modifications:
@@ -650,7 +673,7 @@ class Series:
 class ComponentAdapter(ABC):
     """A unified interface to work with icalendar components."""
 
-    ATTRIBUTES_TO_DELETE_ON_COPY = ["RRULE", "RDATE", "EXDATE"]
+    ATTRIBUTES_TO_DELETE_ON_COPY = ["RRULE", "RDATE", "EXDATE", "RECURRENCE-ID"]
 
     @staticmethod
     @abstractmethod
@@ -719,6 +742,18 @@ class ComponentAdapter(ABC):
         if recurrence_id is None:
             return ()
         return to_recurrence_ids(recurrence_id.dt)
+
+    @cached_property
+    def thisandfuture(self) -> bool:
+        
+        """The recurrence ids has a thisand future range property"""
+        recurrence_id = self._component.get("RECURRENCE-ID")
+        if recurrence_id is None:
+            return False
+        if "RANGE" in recurrence_id.params:
+            return recurrence_id.params["RANGE"] == "THISANDFUTURE"
+        return False
+        
 
     def is_modification(self) -> bool:
         """Whether the adapter is a modification."""
@@ -911,8 +946,6 @@ class JournalAdapter(ComponentAdapter):
 
 class Occurrence:
     """A repetition of an event."""
-
-    ATTRIBUTES_TO_DELETE_ON_COPY = ["RRULE", "RDATE", "EXDATE"]
 
     def __init__(
         self,

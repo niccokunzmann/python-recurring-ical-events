@@ -2,7 +2,6 @@ import sys
 import time
 from datetime import timezone
 from pathlib import Path
-
 import dateutil
 import icalendar
 import pytest
