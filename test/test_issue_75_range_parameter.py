@@ -14,6 +14,7 @@ Description:  This parameter can be specified on a property that
 """
 
 import pytest
+from datetime import time
 
 
 @pytest.mark.parametrize(
@@ -88,4 +89,20 @@ def test_issue_75_RANGE_BETWEEN_parameter(calendars, start, end, summary, total)
     assert str(event["SUMMARY"]) == summary
 
 
-# TODO: Test DTSTART and DTEND
+@pytest.mark.parametrize(
+    ("date", "start", "end"),
+    [
+        ((2024, 9, 13, 9), (9, 0), (16, 0)),  # The modification itself
+        ((2024, 9, 15, 9), (9, 0), (16, 0)),  # The recurrence after this moved
+        ((2024, 9, 22, 14, 22), (14, 22), (16, 13)),  # The modification itself
+        ((2024, 9, 24, 14, 22), (14, 22), (16, 13)),  # The modification itself
+    ]
+)
+def test_the_length_of_modified_events(calendars, date, start, end):
+    """There should be one event exactly starting and ending at these times."""
+    events = calendars.issue_75_range_parameter.at(date)
+    assert len(events) != 0, "The calculation could not find an event!"
+    assert len(events) == 1, "Modify the test to yield one event only!"
+    event = events[0]
+    assert event["DTSTART"].dt.time() == time(*start)
+    assert event["DTEND"].dt.time() == time(*end)

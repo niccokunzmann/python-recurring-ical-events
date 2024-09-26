@@ -56,6 +56,7 @@ Let's put our expertise together and build a tool that can solve this!
 * `EXDATE <https://www.kanzaki.com/docs/ical/exdate.html>`_ (DONE)
 * `X-WR-TIMEZONE` compatibilty (DONE)
 * non-gregorian event repetitions (TODO)
+* RECURRENCE-ID with THISANDFUTURE - modify all future events (DONE)
 
 Not included:
 
