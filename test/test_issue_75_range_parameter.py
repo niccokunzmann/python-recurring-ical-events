@@ -17,10 +17,14 @@ Description:  This parameter can be specified on a property that
 
 from datetime import time
 from datetime import timedelta as td
+from typing import TYPE_CHECKING
 
 import pytest
 
 from recurring_ical_events import EventAdapter
+
+if TYPE_CHECKING:
+    from calendar import Calendar
 
 
 @pytest.mark.parametrize(
@@ -29,13 +33,13 @@ from recurring_ical_events import EventAdapter
         ("20240901", "ORIGINAL EVENT"),
         ("20240911", "ORIGINAL EVENT"),
         ("20240913", "MODIFIED EVENT"),
+        ("20240914", "MODIFIED EVENT"),  # RDATE
         ("20240915", "MODIFIED EVENT"),  # Normal recurrence-id
         ("20240917", "MODIFIED EVENT"),
         ("20240919", "MODIFIED EVENT"),
-        ("20240921", "MODIFIED EVENT"),
         ("20240922", "EDITED EVENT"),
-        ("20240924", "EDITED EVENT"),  # RDATE
-        ("20240925", "EDITED EVENT"),
+        ("20240924", "EDITED EVENT"),
+        ("20240926", "EDITED EVENT"),
     ],
 )
 def test_issue_75_RANGE_AT_parameter(calendars, date, summary):
@@ -51,21 +55,22 @@ def test_issue_75_RANGE_AT_parameter(calendars, date, summary):
         ("20240901T000000Z", "20240911T235959Z", "ORIGINAL EVENT", 6),
         ("20240901T000000Z", "20240913T000000Z", "ORIGINAL EVENT", 6),
         ("20240901T000000Z", "20240913T235959Z", "MODIFIED EVENT", 7),
+        ("20240901T000000Z", "20240914T235959Z", "MODIFIED EVENT", 8),  # RDATE
         (
             "20240901T000000Z",
             "20240915T235959Z",
             "MODIFIED EVENT",
-            8,
+            9,
         ),  # Normal recurrence-id
-        ("20240901T000000Z", "20240917T235959Z", "MODIFIED EVENT", 9),
-        ("20240901T000000Z", "20240919T235959Z", "MODIFIED EVENT", 10),
+        ("20240901T000000Z", "20240917T235959Z", "MODIFIED EVENT", 10),
+        ("20240901T000000Z", "20240919T235959Z", "MODIFIED EVENT", 11),
         ("20240901T000000Z", "20240921T235959Z", "MODIFIED EVENT", 11),
         ("20240901T000000Z", "20240922T000000Z", "MODIFIED EVENT", 11),
         ("20240901T000000Z", "20240922T235959Z", "EDITED EVENT", 12),
         ("20240901T000000Z", "20240923T000000Z", "EDITED EVENT", 12),
-        ("20240901T000000Z", "20240923T235959Z", "EDITED EVENT", 13),
-        ("20240901T000000Z", "20240924T235959Z", "EDITED EVENT", 14),  # RDATE
-        ("20240901T000000Z", "20240925T235959Z", "EDITED EVENT", 15),
+        ("20240901T000000Z", "20240923T235959Z", "EDITED EVENT", 12),
+        ("20240901T000000Z", "20240924T235959Z", "EDITED EVENT", 13),
+        ("20240901T000000Z", "20240925T235959Z", "EDITED EVENT", 13),
         (
             "20240913T000000Z",
             "20240922T000000Z",
@@ -82,7 +87,7 @@ def test_issue_75_RANGE_AT_parameter(calendars, date, summary):
             "20240924T000000Z",
             "20240925T235959Z",
             "EDITED EVENT",
-            2,
+            1,
         ),  # out of query bounds
     ],
 )
@@ -100,7 +105,7 @@ def test_issue_75_RANGE_BETWEEN_parameter(calendars, start, end, summary, total)
     [
         # moved by 3 hours forward
         ((2024, 9, 13, 9), (9, 0), (16, 0)),  # The modification itself
-        ((2024, 9, 15, 9), (9, 0), (16, 0)),  # The recurrence after this moved
+        ((2024, 9, 17, 9), (9, 0), (16, 0)),  # The recurrence after this moved
         # moved by 2h22m backward
         ((2024, 9, 22, 14, 22), (14, 22), (16, 13)),  # The modification itself
         ((2024, 9, 24, 14, 22), (14, 22), (16, 13)),  # The recurrence after this moved
@@ -126,9 +131,16 @@ def test_the_length_of_modified_events(calendars, date, start, end):
         # we have a duration added on top
         ("one_event", 0, td(minutes=30), td(0)),
         # we move to a later date, +1 day
-        ("same_event_recurring_at_same_time", 1, td(0), td(days=1, hours=1)),
+        ("same_event_recurring_at_same_time", 1, td(days=1, hours=1), td(0)),
         # we move to the front, so we should still add the duration
-        ("same_event_recurring_at_same_time", 2, td(hours=1), td(0)),
+        ("same_event_recurring_at_same_time", 2, td(0), td(hours=1)),
+        # we moved with the THISANDFUTURE
+        (
+            "issue_75_range_parameter",
+            3,
+            td(days=1, hours=2, minutes=22) + td(hours=1, minutes=51),
+            td(0),
+        ),
     ],
 )
 def test_span_extension(
@@ -210,7 +222,28 @@ def test_deletion_of_THISANDFUTURE_by_SEQUENCE():
     """We need to make sure that the components we have only work on what is actual."""
     pytest.skip("TODO")
 
+
 def test_RDATE_with_PERIOD():
-    """When an RDATE has a PERIOD, we can assume that that defines the new length.
-    """
+    """When an RDATE has a PERIOD, we can assume that that defines the new length."""
     pytest.skip("TODO")
+
+
+@pytest.mark.parametrize(
+    ("calendar_name", "event_index", "delta"),
+    [
+        ("one_event", 0, td(0)),
+        ("same_event_recurring_at_same_time", 0, td(0)),
+        ("issue_75_range_parameter", 1, td(hours=-3)),
+        ("issue_75_range_parameter", 3, td(days=1, hours=2, minutes=22)),
+    ],
+)
+def test_move_by_time(calendars, calendar_name, event_index, delta):
+    """Check the moving of events."""
+    cal: Calendar = calendars.raw[calendar_name]
+    event = list(cal.walk("VEVENT"))[event_index]
+    adapter = EventAdapter(event)
+    assert adapter.move_recurrences_by == delta
+
+
+# TODO: Test event with DTSTART = DATE - does it occur properly as it is
+#       one day long, I believe. Loot at the RFC 5545.

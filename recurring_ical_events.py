@@ -357,7 +357,9 @@ class Series:
             self.check_exdates_datetime: set[RecurrenceID] = set()  # should be in UTC
             self.check_exdates_date: set[datetime.date] = set()  # should be in UTC
             self.rdates: set[Time] = set()
-            self.replace_ends: dict[RecurrenceID, Time] = {}  # for periods, in UTC
+            self.replace_ends: dict[
+                RecurrenceID, datetime.timedelta
+            ] = {}  # for periods, in UTC
             # fill the attributes
             for exdate in self.core.exdates:
                 self.exdates.add(exdate)
@@ -370,9 +372,9 @@ class Series:
                     self.rdates.add(rdate[0])
                     for recurrence_id in to_recurrence_ids(rdate[0]):
                         self.replace_ends[recurrence_id] = (
-                            normalize_pytz(rdate[0] + rdate[1])
+                            rdate[1]
                             if isinstance(rdate[1], datetime.timedelta)
-                            else rdate[1]
+                            else rdate[1] - rdate[0]
                         )
                 else:
                     # we have a date/datetime
@@ -385,8 +387,9 @@ class Series:
             self.make_all_dates_comparable()
 
             # Calculate the rules with the same timezones
-            self.rule_set = rruleset(cache=True)
-            self.rrules = []
+            rule_set = rruleset(cache=True)
+            rule_set.until = None
+            self.rrules = [rule_set]
             last_until: Time | None = None
             for rrule_string in self.core.rrules:
                 rule = self.create_rule_with_start(rrule_string)
@@ -399,10 +402,10 @@ class Series:
             for exdate in self.exdates:
                 self.check_exdates_datetime.add(exdate)
             for rdate in self.rdates:
-                self.rule_set.rdate(rdate)
+                rule_set.rdate(rdate)
 
             if not last_until or not compare_greater(self.start, last_until):
-                self.rule_set.rdate(self.start)
+                rule_set.rdate(self.start)
 
         @property
         def extend_query_span_by(self) -> tuple[datetime.timedelta, datetime.timedelta]:
@@ -512,9 +515,6 @@ class Series:
 
         def rrule_between(self, span_start: Time, span_stop: Time) -> Generator[Time]:
             """Recalculate the rrules so that minor mistakes are corrected."""
-            # TODO: optimize and only return what is in the span
-
-            yield from self.rule_set
             # make dates comparable, rrule converts them to datetimes
             span_start_dt = convert_to_datetime(span_start, self.tzinfo)
             span_stop_dt = convert_to_datetime(span_stop, self.tzinfo)
@@ -620,9 +620,6 @@ class Series:
                 subtract_from_start, self._subtract_from_start
             )
             self._add_to_stop = max(add_to_stop, self._add_to_stop)
-        print(
-            f"self._subtract_from_start = {self._subtract_from_start} self._add_to_stop = {self._add_to_stop}"
-        )
 
     @property
     def this_and_future_components(self) -> Generator[ComponentAdapter]:
@@ -644,13 +641,17 @@ class Series:
         for modification_id in self.this_and_future:
             if modification_id < recurrence_id:
                 component = self.recurrence_id_to_modification[modification_id]
+            else:
+                break
         return component
 
     def rrule_between(self, span_start: Time, span_stop: Time) -> Generator[Time]:
         """Modify the rrule generation span and yield recurrences."""
+        expanded_start = normalize_pytz(span_start - self._subtract_from_start)
+        expanded_stop = normalize_pytz(span_stop + self._add_to_stop)
         yield from self.recurrence.rrule_between(
-            normalize_pytz(span_start - self._subtract_from_start),
-            normalize_pytz(span_stop + self._add_to_stop),
+            expanded_start,
+            expanded_stop,
         )
 
     def between(self, span_start: Time, span_stop: Time) -> Generator[Occurrence]:
@@ -675,16 +676,24 @@ class Series:
             )
             if adapter is self.recurrence.core:
                 # We have no modification for this recurrence, so we record the date
-                stop = get_any(
-                    self.recurrence.replace_ends,
-                    recurrence_ids,
-                    normalize_pytz(start + self.recurrence.core.duration),
-                )
-                component = self.get_component_for_recurrence_id(recurrence_ids[0])
-                occurrence = self.recurrence.as_occurrence(
-                    start, stop, self.occurrence, component
-                )
                 returned_starts.add(start)
+                # This component is the base for this occurrence.
+                # It usually is the core. However, we may also find a modification
+                # with RANGE=THISANDFUTURE.
+                component = self.get_component_for_recurrence_id(recurrence_ids[0])
+                occurrence_start = normalize_pytz(start + component.move_recurrences_by)
+                # Consider the RDATE with a PERIOD value
+                occurrence_end = normalize_pytz(
+                    occurrence_start
+                    + get_any(
+                        self.recurrence.replace_ends,
+                        recurrence_ids,
+                        component.duration,
+                    )
+                )
+                occurrence = self.recurrence.as_occurrence(
+                    occurrence_start, occurrence_end, self.occurrence, component
+                )
             else:
                 # We found a modification, so we record the modification
                 if adapter in returned_modifications:
@@ -882,8 +891,33 @@ class ComponentAdapter(ABC):
             if start < recurrence_id:
                 add_to_stop = recurrence_id - start
             if start > recurrence_id:
-                add_to_stop = end - recurrence_id
+                subtract_from_start = end - recurrence_id
         return subtract_from_start, add_to_stop
+
+    @cached_property
+    def move_recurrences_by(self) -> datetime.timedelta:
+        """Occurrences of this component should be moved by this amount.
+
+        Usually, the occurrence starts at the new start time.
+        However, if we have a RANGE=THISANDFUTURE, we need to move the occurrence.
+
+        RFC 5545:
+
+            When the given recurrence instance is
+            rescheduled, all subsequent instances are also rescheduled by the
+            same time difference.  For instance, if the given recurrence
+            instance is rescheduled to start 2 hours later, then all
+            subsequent instances are also rescheduled 2 hours later.
+            Similarly, if the duration of the given recurrence instance is
+            modified, then all subsequence instances are also modified to have
+            this same duration.
+        """
+        if self.this_and_future:
+            recurrence_id_prop = self._component.get("RECURRENCE-ID")
+            assert recurrence_id_prop, "RANGE=THISANDFUTURE implies RECURRENCE-ID."
+            start, recurrence_id = make_comparable((self.start, recurrence_id_prop.dt))
+            return start - recurrence_id
+        return datetime.timedelta(0)
 
 
 class EventAdapter(ComponentAdapter):
