@@ -206,6 +206,11 @@ def test_can_calculate_query_span_extension_on_all_events(calendars, calendar_na
         assert end_delta >= td(0), message
 
 
-def _test_deletion_of_THISANDFUTURE_by_SEQUENCE():
+def test_deletion_of_THISANDFUTURE_by_SEQUENCE():
     """We need to make sure that the components we have only work on what is actual."""
-    assert False, "TODO"
+    pytest.skip("TODO")
+
+def test_RDATE_with_PERIOD():
+    """When an RDATE has a PERIOD, we can assume that that defines the new length.
+    """
+    pytest.skip("TODO")

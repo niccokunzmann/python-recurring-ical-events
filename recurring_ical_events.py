@@ -341,6 +341,7 @@ class Series:
             yield from []
 
         has_core = False
+        extend_query_span_by = (datetime.timedelta(0), datetime.timedelta(0))
 
     class RecurrenceRules:
         """A strategy if we have an actual core with recurrences."""
@@ -402,6 +403,11 @@ class Series:
 
             if not last_until or not compare_greater(self.start, last_until):
                 self.rule_set.rdate(self.start)
+
+        @property
+        def extend_query_span_by(self) -> tuple[datetime.timedelta, datetime.timedelta]:
+            """The extension of the time span we need for this component's core."""
+            return self.core.extend_query_span_by
 
         def create_rule_with_start(self, rule_string) -> rrule:
             """Helper to create an rrule from a rule_string
@@ -512,9 +518,6 @@ class Series:
             # make dates comparable, rrule converts them to datetimes
             span_start_dt = convert_to_datetime(span_start, self.tzinfo)
             span_stop_dt = convert_to_datetime(span_stop, self.tzinfo)
-            if compare_greater(span_start_dt, self.start):
-                # do not exclude an component if it spans across the time span
-                span_start_dt -= self.core.duration
             # we have to account for pytz timezones not being properly calculated
             # at the timezone changes. This is a heuristic:
             #   most changes are only 1 hour.
@@ -604,15 +607,22 @@ class Series:
         )
         self.this_and_future.sort()
 
-        # get the span extension
-        self._subtract_from_start = self._add_to_stop = datetime.timedelta(0)
+        self.compute_span_extension()
+
+    def compute_span_extension(self):
+        """Compute how much to extend the span for the rrule to cover all events."""
+        self._subtract_from_start, self._add_to_stop = (
+            self.recurrence.extend_query_span_by
+        )
         for adapter in self.this_and_future_components:
             subtract_from_start, add_to_stop = adapter.extend_query_span_by
             self._subtract_from_start = max(
                 subtract_from_start, self._subtract_from_start
             )
             self._add_to_stop = max(add_to_stop, self._add_to_stop)
-        print(f"self._subtract_from_start = {self._subtract_from_start} self._add_to_stop = {self._add_to_stop}")
+        print(
+            f"self._subtract_from_start = {self._subtract_from_start} self._add_to_stop = {self._add_to_stop}"
+        )
 
     @property
     def this_and_future_components(self) -> Generator[ComponentAdapter]:
@@ -640,7 +650,7 @@ class Series:
         """Modify the rrule generation span and yield recurrences."""
         yield from self.recurrence.rrule_between(
             normalize_pytz(span_start - self._subtract_from_start),
-            normalize_pytz(span_stop + self._add_to_stop)
+            normalize_pytz(span_stop + self._add_to_stop),
         )
 
     def between(self, span_start: Time, span_stop: Time) -> Generator[Occurrence]:

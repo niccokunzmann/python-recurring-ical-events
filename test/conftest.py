@@ -188,6 +188,8 @@ def env_for_doctest(monkeypatch):
 # remove invalid names
 _calendar_names.remove("end_before_start_event")
 _calendar_names.sort()
+
+
 @pytest.fixture(scope="module", params=_calendar_names)
 def calendar_name(request) -> str:
     """All the calendar names."""
