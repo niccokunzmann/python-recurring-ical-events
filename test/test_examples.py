@@ -106,3 +106,18 @@ def test_exdate_date(calendars):
     See https://github.com/niccokunzmann/python-recurring-ical-events/pull/121
     """
     assert calendars.date_exclude.at("20231216") == []
+
+
+@pytest.mark.parametrize(
+    ("date", "count"),
+    [
+        ("20240923", 0),
+        ("20240924", 3),
+        ("20240925", 0),
+        ("20240926", 3),
+        ("20240927", 0),
+    ],
+)
+def test_same_events_at_same_time(calendars, date, count):
+    """Make sure that events can be moved to the same time."""
+    assert len(calendars.same_event_recurring_at_same_time.at(date)) == count

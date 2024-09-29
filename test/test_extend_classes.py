@@ -9,6 +9,7 @@ from icalendar.cal import Component
 
 from recurring_ical_events import (
     AllKnownComponents,
+    ComponentsWithName,
     EventAdapter,
     JournalAdapter,
     Occurrence,
@@ -16,7 +17,6 @@ from recurring_ical_events import (
     Series,
     TodoAdapter,
     of,
-    ComponentsWithName
 )
 
 if TYPE_CHECKING:
@@ -119,9 +119,11 @@ def test_added_attributes(calendars):
         ("one_event", 0, ComponentsWithName("VJOURNAL")),
         ("issue_97_simple_todo", 0, ComponentsWithName("VJOURNAL")),
         ("issue_97_simple_journal", 1, ComponentsWithName("VJOURNAL")),
-    ]
+    ],
 )
-def test_we_collect_all_components(calendars, calendar, count, collector:SelectComponents):
+def test_we_collect_all_components(
+    calendars, calendar, count, collector: SelectComponents
+):
     """Check that the calendars have the right amount of series collected."""
     series = collector.collect_series_from(calendars.raw[calendar], [])
     print(series)
