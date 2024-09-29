@@ -77,6 +77,9 @@ On Debian/Ubuntu, you use the package manager to install `python-recurring-ical-
 
     sudo apt-get install python-recurring-ical-events
 
+If you would like to use this functionality on the command line or in the shell, you can use
+`ics-query <https://github.com/niccokunzmann/ics-query#readme>`_.
+
 Support
 -------
 
