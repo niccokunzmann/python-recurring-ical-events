@@ -572,6 +572,7 @@ Changelog
 - v3.3.1
 
   - Support RDATE with PERIOD value type where the end is a duration, see `PR 180 <https://github.com/niccokunzmann/python-recurring-ical-events/pull/180>`_
+  - Support modifying all events in the future (RECURRENCE-ID with RANGE=THISANDFUTURE), see `Issue 75 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/75>`_
 
 - v3.3.0
 
