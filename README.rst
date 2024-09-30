@@ -569,6 +569,10 @@ To release new versions,
 Changelog
 ---------
 
+- v3.3.2
+
+  - Update x-wr-timezone
+
 - v3.3.1
 
   - Support RDATE with PERIOD value type where the end is a duration, see `PR 180 <https://github.com/niccokunzmann/python-recurring-ical-events/pull/180>`_
