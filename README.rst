@@ -79,7 +79,7 @@ On Debian/Ubuntu, you use the package manager to install `python-recurring-ical-
     sudo apt-get install python-recurring-ical-events
 
 If you would like to use this functionality on the command line or in the shell, you can use
-`ics-query <https://github.com/niccokunzmann/ics-query#readme>`_.
+`ics-query`_.
 
 Support
 -------
@@ -762,6 +762,9 @@ Related Projects
 - `Open Web Calendar <https://github.com/niccokunzmann/open-web-calendar>`_ - a web calendar to embed into websites which uses this library
 - `icspy <https://icspy.readthedocs.io/>`_ - to create your own calendar events
 - `pyICSParser <https://pypi.org/project/pyICSParser/>`_ - parse icalendar files and return event times (`GitHub <https://github.com/oberron/pyICSParser>`__)
+- `ics-query`_ - a **command line** impementation of ``recurring-ical-events``
+
+.. _`ics-query`: https://github.com/niccokunzmann/ics-query#readme
 
 Media
 -----
