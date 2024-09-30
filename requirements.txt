@@ -3,6 +3,7 @@
 
 icalendar >= 5.0.0, < 7.0.0
 python-dateutil >= 2.8.1, < 3.0.0
-x-wr-timezone == 0.*
+x-wr-timezone == 1.*; python_version >= "3.9"
+x-wr-timezone == 0.*; python_version <= "3.8"
 backports.zoneinfo; python_version == "3.7" or python_version == "3.8"
 tzdata; python_version >= "3.7"
