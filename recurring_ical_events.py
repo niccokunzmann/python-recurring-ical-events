@@ -1050,6 +1050,18 @@ class JournalAdapter(ComponentAdapter):
         return self.start
 
 
+class AlarmAdapter(ComponentAdapter):
+    """Adapter for alarms.
+    
+    The "VALARM" calendar component MUST only appear within either a
+    "VEVENT" or "VTODO" calendar component. - RFC 5545
+    """
+
+    @staticmethod
+    def component_name() -> str:
+        """The icalendar component name."""
+        return "VALARM"
+
 class Occurrence:
     """A repetition of an event."""
 
@@ -1129,7 +1141,7 @@ class ComponentsWithName(SelectComponents):
     - composition to combine collection behavior (see AllKnownComponents)
     """
 
-    component_adapters = [EventAdapter, TodoAdapter, JournalAdapter]
+    component_adapters = [EventAdapter, TodoAdapter, JournalAdapter, AlarmAdapter]
 
     @cached_property
     def _component_adapters(self) -> dict[str : type[ComponentAdapter]]:
@@ -1420,6 +1432,15 @@ class CalendarQuery:
             i += 1
         return i
 
+    @property
+    def first(self) -> Component:
+        """Return the first recurring component in this calendar.
+
+        If there is no recurring component, an IndexError is raised.
+        """
+        for component in self.all():
+            return component
+        raise IndexError("No components found.")
 
 def of(
     a_calendar: Component,
