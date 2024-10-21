@@ -569,6 +569,10 @@ To release new versions,
 Changelog
 ---------
 
+- v3.3.3
+
+  -  Fix: Events with DTSTART of type date have a duration of one day, see `Issue 179 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/179>`_
+
 - v3.3.2
 
   - Update x-wr-timezone
