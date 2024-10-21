@@ -952,7 +952,10 @@ class EventAdapter(ComponentAdapter):
         duration = self._component.get("DURATION")
         if duration is not None:
             return normalize_pytz(self._component["DTSTART"].dt + duration.dt)
-        return self._component["DTSTART"].dt
+        start = self._component["DTSTART"].dt
+        if is_date(start):
+            return start + datetime.timedelta(days=1)
+        return start
 
 
 class TodoAdapter(ComponentAdapter):

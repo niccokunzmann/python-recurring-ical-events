@@ -127,8 +127,8 @@ def calendars(request, tzp):
     return request.param(tzp)
 
 
-@pytest.fixture()
-def todo():  # noqa: PT004
+@pytest.fixture
+def todo():
     """Skip a test because it needs to be written first."""
     pytest.skip("This test is not yet implemented.")
 
@@ -171,7 +171,7 @@ def doctest_print(obj):
     print(str(obj).strip().replace("\r\n", "\n").replace("\r", "\n"))
 
 
-@pytest.fixture()
+@pytest.fixture
 def env_for_doctest(monkeypatch):
     """Modify the environment to make doctests run."""
     monkeypatch.setitem(sys.modules, "zoneinfo", _zoneinfo)
