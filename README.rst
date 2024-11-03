@@ -177,10 +177,6 @@ The start and end are inclusive. As an example: if an event is longer than one d
     0
     >>> len(query.at(datetime.date(2023, 1, 1))) # the first day in 2023
     0
-    >>> len(query.at(datetime.date.today()))     # today
-    0
-    >>> len(query.at(datetime.datetime.now()))   # this exact second
-    0
 
 The resulting ``events`` are a list of `icalendar events <https://icalendar.readthedocs.io/en/latest/api.html#icalendar.cal.Event>`_, see below.
 
