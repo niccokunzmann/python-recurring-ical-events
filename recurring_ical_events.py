@@ -29,6 +29,7 @@ from icalendar.cal import Component
 from icalendar.prop import vDDDTypes
 
 if TYPE_CHECKING:
+    from icalendar import Alarm
     from icalendar.cal import Component
 
     Time = Union[datetime.date, datetime.datetime]
@@ -119,6 +120,8 @@ def convert_to_datetime(date: Time, tzinfo: Optional[datetime.tzinfo]):  # noqa:
     Datetimes receive tzinfo as a timezone if they do not have a timezone.
     Datetimes retain their timezone if they have one already (tzinfo is not None).
     """
+    if is_date(date):
+        date = datetime.datetime(date.year, date.month, date.day)  # noqa: DTZ001
     if isinstance(date, datetime.datetime):
         if date.tzinfo is None:
             if tzinfo is not None:
@@ -128,8 +131,6 @@ def convert_to_datetime(date: Time, tzinfo: Optional[datetime.tzinfo]):  # noqa:
         elif tzinfo is None:
             return normalize_pytz(date).replace(tzinfo=None)
         return date
-    if isinstance(date, datetime.date):
-        return datetime.datetime(date.year, date.month, date.day, tzinfo=tzinfo)
     return date
 
 
@@ -1028,9 +1029,8 @@ class JournalAdapter(ComponentAdapter):
         return "VJOURNAL"
 
     @property
-    def end_property(self) -> str:
+    def end_property(self) -> None:
         """There is no end property"""
-        return None
 
     @cached_property
     def start(self) -> Time:
@@ -1049,18 +1049,6 @@ class JournalAdapter(ComponentAdapter):
         ## consider it to have zero duration if a timestamp is given.
         return self.start
 
-
-class AlarmAdapter(ComponentAdapter):
-    """Adapter for alarms.
-    
-    The "VALARM" calendar component MUST only appear within either a
-    "VEVENT" or "VTODO" calendar component. - RFC 5545
-    """
-
-    @staticmethod
-    def component_name() -> str:
-        """The icalendar component name."""
-        return "VALARM"
 
 class Occurrence:
     """A repetition of an event."""
@@ -1141,7 +1129,7 @@ class ComponentsWithName(SelectComponents):
     - composition to combine collection behavior (see AllKnownComponents)
     """
 
-    component_adapters = [EventAdapter, TodoAdapter, JournalAdapter, AlarmAdapter]
+    component_adapters = [EventAdapter, TodoAdapter, JournalAdapter]
 
     @cached_property
     def _component_adapters(self) -> dict[str : type[ComponentAdapter]]:
@@ -1241,6 +1229,107 @@ class AllKnownComponents(SelectComponents):
             )
             result.extend(collector.collect_series_from(source, suppress_errors))
         return result
+
+
+class AbsuluteAlarmAdapter(ComponentAdapter):
+    """Adapter for absolute alarms."""
+
+    def __init__(self, alarm: Alarm, parent: ComponentAdapter):
+        """Create a new adapter."""
+        super().__init__(alarm)
+        self.parent = parent
+
+class AbsoluteAlarmOccurrence(Occurrence):
+    """Adapter for absolute alarms."""
+
+    def __init__(self, dt: datetime.datetime,alarm: Alarm, parent: ComponentAdapter) -> None:
+        super().__init__(alarm, dt, dt)
+        self.parent = parent
+        self.alarm = alarm
+    
+    def as_component(self, keep_recurrence_attributes):
+        """Return the alarm's parent as a modified component."""
+        parent = self.parent.as_component(
+            self.parent.start,
+            self.parent.end,
+            keep_recurrence_attributes
+        )
+        alarm_once = self.alarm.copy()
+        alarm_once.TRIGGER = self.start
+        alarm_once.REPEAT = 0
+        parent.subcomponents = [alarm_once]
+        return parent
+
+class AbsoluteAlarmSeries:
+    """A series of absolute alarms."""
+
+    tzinfo = datetime.timezone.utc
+
+    def __init__(self):
+        """Create a new series of absolute alarms."""
+        self.times = rruleset(cache=True)
+        self.times2occurence : dict[datetime.datetime, Occurrence]= defaultdict(list)
+
+    def add(self, alarm:Alarm, parent:ComponentAdapter):
+        """Add an absolute alarm with a parent component."""
+        trigger = alarm.TRIGGER
+        self._add(trigger, alarm, parent)
+        for i in range(alarm.REPEAT):
+            trigger += alarm.DURATION
+            self._add(trigger, alarm, parent)
+
+    def _add(self, dt: datetime.datetime, alarm:Alarm, parent:ComponentAdapter):
+        """Add an alarm at a specific time."""
+        self.times.rdate(dt)
+        print("add", dt)
+        self.times2occurence[dt].append(self.occurrence(dt, alarm, parent))
+
+    def between(self, span_start: Time, span_stop: Time) -> Generator[Occurrence]:
+        """Components between the start (inclusive) and end (exclusive).
+
+        The result does not need to be ordered.
+        """
+        span_start_dt = convert_to_datetime(span_start, self.tzinfo)
+        span_stop_dt = convert_to_datetime(span_stop, self.tzinfo)
+        print("AbsoluteAlarmSeries.between -> ", self.times, span_start_dt, span_stop_dt)
+        for dt in self.times.between(span_start_dt, span_stop_dt, inc=True):
+            for occurrence in self.times2occurence[dt]:
+                print("AbsoluteAlarmSeries.between -> ", dt)
+                if occurrence.is_in_span(span_start_dt, span_stop_dt):
+                    yield occurrence
+
+    def occurrence(self, dt:datetime.datetime, alarm: Alarm, parent: ComponentAdapter) -> Occurrence:
+        """Create a new occurrence."""
+        return AbsoluteAlarmOccurrence(dt, alarm, parent)
+
+
+class Alarms(SelectComponents):
+    """Select alarms and find their times."""
+
+    parents = [EventAdapter, TodoAdapter]
+
+    def collect_parent_series_from(
+        self, source: Component, suppress_errors: tuple[Exception]
+    ) -> Sequence[Series]:
+        """Collect the parent components of alarms."""
+        return ComponentsWithName("VEVENT").collect_series_from(source, suppress_errors)
+
+    def collect_series_from(
+        self, source: Component, suppress_errors: tuple[Exception]
+    ) -> Sequence[Series]:
+        """Collect all TODOs and Alarms from VEVENTs and VTODOs.
+
+        suppress_errors - a list of errors that should be suppressed.
+            A Series of events with such an error is removed from all results.
+        """
+        absolute_alarms = AbsoluteAlarmSeries()
+        for parent_adapter in self.parents:
+            for parent in source.walk(parent_adapter.component_name()):
+                for alarm in parent.walk("VALARM"):
+                    with contextlib.suppress(suppress_errors):
+                        if isinstance(alarm.TRIGGER, datetime.datetime):
+                            absolute_alarms.add(alarm, parent_adapter(parent))
+        return [absolute_alarms]
 
 
 if sys.version_info >= (3, 10):
@@ -1468,6 +1557,7 @@ def of(
 
 __all__ = [
     "of",
+    "Alarms",
     "InvalidCalendar",
     "PeriodEndBeforeStart",
     "BadRuleStringFormat",

@@ -8,7 +8,7 @@ import icalendar
 import pytest
 import pytz
 
-from recurring_ical_events import of
+from recurring_ical_events import Alarms, of
 
 try:
     import zoneinfo as _zoneinfo
@@ -201,5 +201,5 @@ def alarms(calendars) -> ICSCalendars:
 
     This modifies the calendars fixture.
     """
-    calendars.components = ["VALARM"]
+    calendars.components = [Alarms()]
     return calendars
