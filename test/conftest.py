@@ -8,7 +8,7 @@ import icalendar
 import pytest
 import pytz
 
-from recurring_ical_events import of
+from recurring_ical_events import Alarms, of
 
 try:
     import zoneinfo as _zoneinfo
@@ -122,7 +122,7 @@ def tzp(request):
 
 # for parametrizing fixtures, see https://docs.pytest.org/en/latest/fixture.html#parametrizing-fixtures
 @pytest.fixture(params=[Calendars, ReversedCalendars], scope="module")
-def calendars(request, tzp):
+def calendars(request, tzp) -> ICSCalendars:
     """The calendars we can use in the tests."""
     return request.param(tzp)
 
@@ -194,3 +194,12 @@ _calendar_names.sort()
 def calendar_name(request) -> str:
     """All the calendar names."""
     return request.param
+
+@pytest.fixture()
+def alarms(calendars) -> ICSCalendars:
+    """The calendars to query for alarms.
+
+    This modifies the calendars fixture.
+    """
+    calendars.components = [Alarms()]
+    return calendars
