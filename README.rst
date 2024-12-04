@@ -565,6 +565,10 @@ To release new versions,
 Changelog
 ---------
 
+- v3.3.4
+
+  - Allow x-wr-timezone 1.* and 2.* for this lib to remove dependency update problems.
+
 - v3.3.3
 
   -  Fix: Events with DTSTART of type date have a duration of one day, see `Issue 179 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/179>`_
