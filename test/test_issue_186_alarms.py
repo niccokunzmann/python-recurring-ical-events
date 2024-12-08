@@ -29,6 +29,13 @@ def test_can_find_absolute_alarm(alarms, when, count):
         t = e.alarms.times[0]
         assert t.trigger == datetime(2024,10,3,13,0,0, tzinfo=timezone.utc)
 
+def test_edited_alarm_is_moved(alarms):
+    """When an absolute alarm is edited, the old one does not occur."""
+    assert len(alarms.alarm_absolute_edited.at("20241004")) == 1, "New alarm is found"
+    assert len(alarms.alarm_absolute_edited.at("20241003")) == 0, "Old alarm is removed"
+
+
+
 
 @pytest.mark.parametrize(
     ("when", "deltas"),
