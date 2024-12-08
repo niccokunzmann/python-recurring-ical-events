@@ -100,7 +100,7 @@ The `recurring_ical_events <https://pypi.org/project/recurring-ical-events/>`_ m
 
 To import this module, write
 
-.. code:: Python
+.. code-block:: python
 
     >>> import recurring_ical_events
 
@@ -155,7 +155,7 @@ A date can be a year, e.g. ``2023``, a month of a year e.g. January in 2023 ``(2
 
 The start and end are inclusive. As an example: if an event is longer than one day it is still included if it takes place at ``a_date``.
 
-.. code:: Python
+.. code-block:: python
 
     >>> import datetime
 
@@ -192,7 +192,7 @@ The resulting ``events`` are a list of `icalendar events <https://icalendar.read
 Additionally, the ``end`` argument can be a ``datetime.timedelta`` to express that the end is relative to the ``start``.
 For examples of arguments, see ``at(a_date)`` above.
 
-.. code:: Python
+.. code-block:: python
 
     >>> query = recurring_ical_events.of(a_calendar)
 
@@ -209,7 +209,7 @@ The resulting ``events`` are in a list of `icalendar events`_, see below.
 You can retrieve events that happen after a time or date using ``after(earliest_end)``.
 Events that are happening during the ``earliest_end`` are included in the iteration.
 
-.. code:: Python
+.. code-block:: python
 
     >>> earlierst_end = 2023
     >>> for i, event in enumerate(query.after(earlierst_end)):
@@ -238,7 +238,7 @@ and forgets them, reducing memory overhead.
 
 This example shows the first event that takes place in the calendar:
 
-.. code:: Python
+.. code-block:: python
 
     >>> first_event = next(query.all()) # not all events are generated
     >>> print(f"The first event is {first_event['SUMMARY']}")
@@ -249,7 +249,7 @@ This example shows the first event that takes place in the calendar:
 
 You can count occurrences of events and other components using ``count()``.
 
-.. code:: Python
+.. code-block:: python
 
     >>> number_of_TODOs = recurring_ical_events.of(a_calendar, components=["VTODO"]).count()
     >>> print(f"You have {number_of_TODOs} things to do!")
@@ -281,7 +281,7 @@ Generator - ``after()`` and ``all()``
 If the resulting components are ordered when ``after(earliest_end)`` or ``all()`` is used.
 The result is an iterator that returns the events in order.
 
-.. code:: Python
+.. code-block:: python
 
     for event in recurring_ical_events.of(an_icalendar_object).after(datetime.datetime.now()):
         print(event["DTSTART"]) # The start is ordered
@@ -293,23 +293,46 @@ By default the ``recurring_ical_events`` only selects events as the name already
 However, there are different `components <https://icalendar.readthedocs.io/en/latest/api.html#icalendar.cal.Component>`_ available in a `calendar <https://icalendar.readthedocs.io/en/latest/api.html#icalendar.cal.Calendar>`_.
 You can select which components you like to have returned by passing ``components`` to the ``of`` function:
 
-.. code:: Python
+.. code-block:: python
 
     of(a_calendar, components=["VEVENT"])
 
 Here is a template code for choosing the supported types of components:
 
-.. code:: Python
+.. code-block:: python
 
-   >>> query_events = recurring_ical_events.of(a_calendar)
-   >>> query_journals = recurring_ical_events.of(a_calendar, components=["VJOURNAL"])
-   >>> query_todos = recurring_ical_events.of(a_calendar, components=["VTODO"])
-   >>> query_all = recurring_ical_events.of(a_calendar, components=["VTODO", "VEVENT", "VJOURNAL"])
+    >>> query_events = recurring_ical_events.of(a_calendar)
+    >>> query_journals = recurring_ical_events.of(a_calendar, components=["VJOURNAL"])
+    >>> query_todos = recurring_ical_events.of(a_calendar, components=["VTODO"])
+    >>> query_all = recurring_ical_events.of(a_calendar, components=["VTODO", "VEVENT", "VJOURNAL"])
 
 If a type of component is not listed here, it can be added.
 Please create an issue for this in the source code repository.
 
 For further customization, please refer to the section on how to extend the default functionality.
+
+Alarms
+******
+
+Generally, when you collect events or todos, the subcomponents will be copied.
+The subcomponents can be alarms.
+``icalendar`` allows you to compute the alarm times for these events.
+
+.. code-block:: python
+
+    # read an .ics file with an alarm
+    >>> calendar_file_with_alarm : Path = CALENDARS / "alarm_15_min_before_event_snoozed.ics"
+    >>> calendar_with_alarm = icalendar.Calendar.from_ical(calendar_file_with_alarm.read_bytes())
+    >>> query_with_alarm = recurring_ical_events.of(calendar_with_alarm)
+    >>> event = query_with_alarm.first
+
+    # You can use the event.alarms property to get intel on alarms
+    >>> len(event.alarms.times)
+    1
+
+    # The alarm happens 15 min (900 seconds) before the event
+    >>> event.start - event.alarms.times[0].trigger
+    datetime.timedelta(seconds=900)
 
 Speed
 *****
@@ -317,7 +340,7 @@ Speed
 If you use ``between()`` or ``at()``
 several times, it is faster to re-use the object coming from ``of()``.
 
-.. code:: Python
+.. code-block:: python
 
     >>> query = recurring_ical_events.of(a_calendar)
     >>> events_of_day_1 = query.at((2019, 2, 1))
@@ -332,7 +355,7 @@ Skip bad formatted ical events
 Some events may be badly formatted and therefore cannot be handled by ``recurring-ical-events``.
 Passing ``skip_bad_series=True`` as ``of()`` argument will totally skip theses events.
 
-.. code:: Python
+.. code-block:: python
 
     # Create a calendar that contains broken events.
     >>> calendar_file = CALENDARS / "bad_rrule_missing_until_event.ics"
@@ -377,7 +400,7 @@ Components are collected into a ``Series``.
 A series belongs together because all components have the same ``UID``.
 In this example, we collect one VEVENT which matches a certain UID:
 
-.. code:: Python
+.. code-block:: python
 
     >>> from recurring_ical_events import SelectComponents, EventAdapter, Series
     >>> from icalendar.cal import Component
@@ -410,7 +433,7 @@ These can be subclassed or composed.
 Below, you can choose to collect all components. Subclasses can be created for the
 ``Series`` and the ``Occurrence``. 
 
-.. code:: Python
+.. code-block:: python
 
     >>> from recurring_ical_events import AllKnownComponents, Series, Occurrence
 
@@ -432,7 +455,7 @@ This example shows that the behavior for specific types of components can be ext
 Additional to the series, you can change the ``ComponentAdapter`` that provides
 a unified interface for all the components with the same name (``VEVENT`` for example).
 
-.. code:: Python
+.. code-block:: python
 
     >>> from recurring_ical_events import ComponentsWithName, EventAdapter, JournalAdapter, TodoAdapter
 
@@ -454,7 +477,7 @@ So, if you would like to modify all events that are returned by the query,
 you can do that subclassing the ``Occurrence`` class.
 
 
-.. code:: Python
+.. code-block:: python
 
     # This occurence changes adds a new attribute to the resulting events
     >>> class MyOccurrence(Occurrence):
