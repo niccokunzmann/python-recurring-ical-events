@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import contextlib
 import datetime
+from itertools import chain
 import re
 import sys
 from abc import ABC, abstractmethod
@@ -343,6 +344,7 @@ class Series:
 
         has_core = False
         extend_query_span_by = (datetime.timedelta(0), datetime.timedelta(0))
+        components = []
 
     class RecurrenceRules:
         """A strategy if we have an actual core with recurrences."""
@@ -572,6 +574,11 @@ class Series:
                 self.convert_to_original_type(stop),
             )
 
+        @property
+        def components(self) -> list[ComponentAdapter]:
+            """The components in this recurrence calculation."""
+            return [self.core]
+
     def __init__(self, components: Sequence[ComponentAdapter]):
         """Create an component which may have repetitions in it."""
         if len(components) == 0:
@@ -621,6 +628,15 @@ class Series:
                 subtract_from_start, self._subtract_from_start
             )
             self._add_to_stop = max(add_to_stop, self._add_to_stop)
+
+    @property
+    def components(self) -> list[ComponentAdapter]:
+        """All the components in this sequence.
+
+        Components with the same UID might not occur if the SEQUENCE
+        number suggests that they are obsolete.
+        """
+        return self.recurrence.components + list(self.modifications)
 
     @property
     def this_and_future_components(self) -> Generator[ComponentAdapter]:
@@ -743,6 +759,11 @@ class ComponentAdapter(ABC):
         self._component = component
 
     @property
+    def alarms(self) -> list[Alarm]:
+        """The alarms in this component."""
+        return self._component.walk("VALARM")
+
+    @property
     def end_property(self) -> str | None:
         """The name of the end property."""
         return None
@@ -778,13 +799,18 @@ class ComponentAdapter(ABC):
             source, suppress_errors
         )
 
-    def as_component(self, start: Time, stop: Time, keep_recurrence_attributes: bool):  # noqa: FBT001
+    def as_component(
+            self,
+            start: Optional[Time]=None,
+            stop: Optional[Time]=None,
+            keep_recurrence_attributes: bool=True  # noqa: FBT001
+        ):
         """Create a shallow copy of the source event and modify some attributes."""
         copied_component = self._component.copy()
-        copied_component["DTSTART"] = vDDDTypes(start)
+        copied_component["DTSTART"] = vDDDTypes(self.start if start is None else start)
         copied_component.pop("DURATION", None)  # remove duplication in event length
         if self.end_property is not None:
-            copied_component[self.end_property] = vDDDTypes(stop)
+            copied_component[self.end_property] = vDDDTypes(self.end if stop is None else stop)
         if not keep_recurrence_attributes:
             for attribute in self.ATTRIBUTES_TO_DELETE_ON_COPY:
                 if attribute in copied_component:
@@ -1231,7 +1257,7 @@ class AllKnownComponents(SelectComponents):
         return result
 
 
-class AbsuluteAlarmAdapter(ComponentAdapter):
+class AbsoluteAlarmAdapter(ComponentAdapter):
     """Adapter for absolute alarms."""
 
     def __init__(self, alarm: Alarm, parent: ComponentAdapter):
@@ -1242,18 +1268,14 @@ class AbsuluteAlarmAdapter(ComponentAdapter):
 class AbsoluteAlarmOccurrence(Occurrence):
     """Adapter for absolute alarms."""
 
-    def __init__(self, dt: datetime.datetime,alarm: Alarm, parent: ComponentAdapter) -> None:
-        super().__init__(alarm, dt, dt)
+    def __init__(self, trigger: datetime.datetime, alarm: Alarm, parent: ComponentAdapter|Occurrence) -> None:
+        super().__init__(alarm, trigger, trigger)
         self.parent = parent
         self.alarm = alarm
     
     def as_component(self, keep_recurrence_attributes):
         """Return the alarm's parent as a modified component."""
-        parent = self.parent.as_component(
-            self.parent.start,
-            self.parent.end,
-            keep_recurrence_attributes
-        )
+        parent = self.parent.as_component(keep_recurrence_attributes=keep_recurrence_attributes)
         alarm_once = self.alarm.copy()
         alarm_once.TRIGGER = self.start
         alarm_once.REPEAT = 0
@@ -1281,7 +1303,6 @@ class AbsoluteAlarmSeries:
     def _add(self, dt: datetime.datetime, alarm:Alarm, parent:ComponentAdapter):
         """Add an alarm at a specific time."""
         self.times.rdate(dt)
-        print("add", dt)
         self.times2occurence[dt].append(self.occurrence(dt, alarm, parent))
 
     def between(self, span_start: Time, span_stop: Time) -> Generator[Occurrence]:
@@ -1291,16 +1312,45 @@ class AbsoluteAlarmSeries:
         """
         span_start_dt = convert_to_datetime(span_start, self.tzinfo)
         span_stop_dt = convert_to_datetime(span_stop, self.tzinfo)
-        print("AbsoluteAlarmSeries.between -> ", self.times, span_start_dt, span_stop_dt)
         for dt in self.times.between(span_start_dt, span_stop_dt, inc=True):
             for occurrence in self.times2occurence[dt]:
-                print("AbsoluteAlarmSeries.between -> ", dt)
                 if occurrence.is_in_span(span_start_dt, span_stop_dt):
                     yield occurrence
 
     def occurrence(self, dt:datetime.datetime, alarm: Alarm, parent: ComponentAdapter) -> Occurrence:
         """Create a new occurrence."""
         return AbsoluteAlarmOccurrence(dt, alarm, parent)
+
+
+class AlarmSeriesRelativeToStart:
+    """A series of alarms relative to the start of an event."""
+
+    def __init__(self, alarm:Alarm, series:Series) -> None:
+        """Create a series of alarms that are relative to the start of a series."""
+        self._alarm = alarm
+        self._series = series
+        self._offsets : list[datetime.timedelta]= [alarm.TRIGGER]
+        for _ in range(alarm.REPEAT):
+            self._offsets.append(self._offsets[-1] + alarm.DURATION)
+
+    def between(self, span_start: Time, span_stop: Time) -> Generator[Occurrence]:
+        """Components between the start (inclusive) and end (exclusive).
+
+        The result does not need to be ordered.
+        """
+        # TODO: Reduce time span to reduce occurrences
+        for offset in self._offsets:
+            # If we are before the event start (negative offset),
+            # we have to add the time span to request the event later.
+            for parent in self._series.between(
+                    span_start - offset, span_stop - offset):
+                occurrence = self.occurrence(offset, self._alarm, parent)
+                if occurrence.is_in_span(span_start, span_stop):
+                    yield occurrence
+
+    def occurrence(self, offset: datetime.timedelta, alarm: Alarm, parent: Occurrence) -> Occurrence:
+        """Create a new occurrence."""
+        return AbsoluteAlarmOccurrence(offset + parent.start, alarm, parent)
 
 
 class Alarms(SelectComponents):
@@ -1323,13 +1373,16 @@ class Alarms(SelectComponents):
             A Series of events with such an error is removed from all results.
         """
         absolute_alarms = AbsoluteAlarmSeries()
-        for parent_adapter in self.parents:
-            for parent in source.walk(parent_adapter.component_name()):
-                for alarm in parent.walk("VALARM"):
+        result = [absolute_alarms]
+        for series in self.collect_parent_series_from(source, suppress_errors):
+            for component in series.components:
+                for alarm in component.alarms:
                     with contextlib.suppress(suppress_errors):
                         if isinstance(alarm.TRIGGER, datetime.datetime):
-                            absolute_alarms.add(alarm, parent_adapter(parent))
-        return [absolute_alarms]
+                            absolute_alarms.add(alarm, component)
+                        elif alarm.TRIGGER_RELATED == "START":
+                            result.append(AlarmSeriesRelativeToStart(alarm, series))
+        return result
 
 
 if sys.version_info >= (3, 10):

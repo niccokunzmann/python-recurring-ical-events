@@ -61,3 +61,67 @@ def test_can_find_absolute_alarm_with_repeat(alarms, when, deltas):
 
 def test_collect_alarms_from_todos():
     pytest.skip("TODO")
+
+
+def test_series_of_events_with_alarms_but_alarm_removed():
+    pytest.skip("TODO")
+
+
+def test_series_of_events_with_alarms_but_alarm_removed_relative_to_end():
+    pytest.skip("TODO")
+
+
+def test_series_of_events_with_alarms_but_alarm_edited():
+    pytest.skip("TODO")
+
+
+def test_series_of_events_with_alarms_but_alarm_edited_relative_to_end():
+    pytest.skip("TODO")
+
+
+def test_series_of_events_with_alarm_relative_to_end():
+    pytest.skip("TODO")
+
+
+@pytest.mark.parametrize(
+    ("dt", "trigger"),
+    
+    [
+        ("20241126", datetime(2024, 11, 26, 13, 0, 0)),
+        ("20241127", datetime(2024, 11, 27, 13, 0, 0)),
+        ("20241128", datetime(2024, 11, 28, 13, 0, 0)),
+        ("20241129", datetime(2024, 11, 29, 13, 0, 0)),
+        # narrow it down
+        ((2024, 11, 28, 12), None),
+        ((2024, 11, 28, 12, 30), None),
+        ((2024, 11, 28, 13), datetime(2024, 11, 28, 13, 0, 0)),
+        ((2024, 11, 28, 13, 0), datetime(2024, 11, 28, 13, 0, 0)),
+        ((2024, 11, 28, 13, 0, 0), datetime(2024, 11, 28, 13, 0, 0)),
+        ((2024, 11, 28, 13, 0, 1), None),
+        ((2024, 11, 28, 14), None),
+    ]
+)
+def test_series_of_event_with_alarm_relative_to_start(alarms, dt, trigger):
+    """This series of events all are preceded by an alarm.
+
+    The alarm occurs 1h before the event starts.
+    In this test, we narrow down our query time to make sure we find it.
+    """
+    a = alarms.alarm_recurring_and_acknowledged_at_2024_11_27_16_27.at(dt)
+    if trigger is None:
+        assert len(a) == 0
+        return
+    assert len(a) == 1, f"{dt} has {len(a)} alarms"
+    event = a[0]
+    assert len(event.alarms.times) == 1
+    only_trigger = event.alarms.times[0].trigger
+    assert only_trigger.replace(tzinfo=None) == trigger
+    assert icalendar.timezone.tzid_from_dt(only_trigger) == "Europe/London"
+
+
+def test_find_alarm_that_is_a_week_before_the_event():
+    pytest.skip("TODO")
+
+
+def test_alarm_without_trigger_is_ignored_as_invalid():
+    pytest.skip("TODO")
