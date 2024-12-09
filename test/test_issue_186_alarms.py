@@ -125,3 +125,25 @@ def test_find_alarm_that_is_a_week_before_the_event():
 
 def test_alarm_without_trigger_is_ignored_as_invalid():
     pytest.skip("TODO")
+
+
+def test_event_is_not_modified_with_2_alarms(alarms):
+    """The base event should not be modified."""
+    q = alarms.alarm_1_week_before_event
+    assert len(q.at("20241202")) == 1, "We find the alarm"
+    assert len(q.at("20241202")) == 1, "We find the alarm again"
+    assert len(q.at("20241207")) == 1, "We also find the other alarm"
+
+
+def test_repeating_event_is_not_modified_with_repeating_alarm(alarms):
+    """The base event should not be modified."""
+    q = alarms.alarm_absolute_repeat
+    assert len(list(q.all())) == 3, "We find the alarms"
+    assert len(list(q.all())) == 3, "We find the alarm again"
+
+
+def test_repeating_event_is_not_modified(alarms):
+    """The base event should not be modified."""
+    q = alarms.alarm_recurring_and_acknowledged_at_2024_11_27_16_27
+    assert len(q.between("20241126", "20241130")) == 4, "We find the alarms"
+    assert len(q.between("20241126", "20241130")) == 4, "We find the alarm again"

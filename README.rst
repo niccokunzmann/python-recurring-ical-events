@@ -334,6 +334,37 @@ The subcomponents can be alarms.
     >>> event.start - event.alarms.times[0].trigger
     datetime.timedelta(seconds=900)
 
+The above example computes all the alarms of an event. However, you might want to know
+which alarms occur within a certain time span.
+
+In the following example, we get get the alarm and the event.
+The alarm occurs one week before the event.
+
+.. code-block:: python
+
+    # read an .ics file with an event with an alarm
+    >>> calendar_path : Path = CALENDARS / "alarm_1_week_before_event.ics"
+    >>> calendar_with_alarm = icalendar.Calendar.from_ical(calendar_path.read_bytes())
+    >>> alarm_day = "20241202"
+
+    # we get the first alarm inside of the event
+    >>> event = recurring_ical_events.of(calendar_with_alarm, components=("VALARM",)).at(alarm_day)[0]
+    >>> len(event.alarms.times)
+    1
+    >>> alarm = event.alarms.times[0]
+    >>> event.start - alarm.trigger
+    datetime.timedelta(days=7)
+
+    # If we would query the event instead of the alarm we would not find it
+    >>> recurring_ical_events.of(calendar_with_alarm).at(alarm_day)
+    []
+
+    # The event itself has more alarms. These are removed when querying alarms only.
+    >>> event = recurring_ical_events.of(calendar_with_alarm).first
+    >>> len(event.subcomponents)
+    2
+
+
 Speed
 *****
 
@@ -444,7 +475,7 @@ Below, you can choose to collect all components. Subclasses can be created for t
     # You can override the Occurrence and Series classes for all computable components
     >>> select_all_known = AllKnownComponents(series=Series, occurrence=Occurrence)
     >>> select_all_known.names  # these are the supported types of components
-    ['VEVENT', 'VTODO', 'VJOURNAL']
+    ['VALARM', 'VEVENT', 'VJOURNAL', 'VTODO']
     >>> query_all_known = recurring_ical_events.of(one_event, components=[select_all_known])
 
     # There should be exactly one event.

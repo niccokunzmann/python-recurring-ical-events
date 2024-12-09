@@ -1116,7 +1116,7 @@ class Occurrence:
     @cached_property
     def id(self) -> ComponentID:
         """The id of the component."""
-        recurrence_id = ((*self._adapter.recurrence_ids, self.start))[0]
+        recurrence_id = (*self._adapter.recurrence_ids, self.start)[0]
         return (
             self._adapter.component_name(),
             self._adapter.uid,
@@ -1135,6 +1135,11 @@ class Occurrence:
 class SelectComponents(ABC):
     """Abstract class to select components from a calendar."""
 
+    @staticmethod
+    def component_name():
+        """The name of the component if there is only one."""
+        raise NotImplementedError("This should be implemented in subclasses.")
+
     @abstractmethod
     def collect_series_from(
         self, source: Component, suppress_errors: tuple[Exception]
@@ -1146,117 +1151,6 @@ class SelectComponents(ABC):
         """
 
 
-class ComponentsWithName(SelectComponents):
-    """This is a component collecttion strategy.
-
-    Components can be collected in different ways.
-    This class allows extension of the functionality by
-    - subclassing to filter the resulting components
-    - composition to combine collection behavior (see AllKnownComponents)
-    """
-
-    component_adapters = [EventAdapter, TodoAdapter, JournalAdapter]
-
-    @cached_property
-    def _component_adapters(self) -> dict[str : type[ComponentAdapter]]:
-        """A mapping of component adapters."""
-        return {
-            adapter.component_name(): adapter for adapter in self.component_adapters
-        }
-
-    def __init__(
-        self,
-        name: str,
-        adapter: type[ComponentAdapter] | None = None,
-        series: type[Series] = Series,
-        occurrence: type[Occurrence] = Occurrence,
-    ) -> None:
-        """Create a new way of collecting components.
-
-        name - the name of the component to collect ("VEVENT", "VTODO", "VJOURNAL")
-        adapter - the adapter to use for these components with that name
-        series - the series class that hold a series of components
-        occurrence - the occurrence class that creates the resulting components
-        """
-        if adapter is None:
-            if name not in self._component_adapters:
-                raise ValueError(
-                    f'"{name}" is an unknown name for a '
-                    'recurring component. '
-                    f"I only know these: { ', '.join(self._component_adapters)}."
-                )
-            adapter = self._component_adapters[name]
-        if occurrence is not Occurrence:
-            _occurrence = occurrence
-
-            class series(series):  # noqa: N801
-                occurrence = _occurrence
-
-        self._name = name
-        self._series = series
-        self._adapter = adapter
-
-    def collect_series_from(
-        self, source: Component, suppress_errors: tuple[Exception]
-    ) -> Sequence[Series]:
-        """Collect all components from the source component.
-
-        suppress_errors - a list of errors that should be suppressed.
-            A Series of events with such an error is removed from all results.
-        """
-        components: dict[str, list[Component]] = defaultdict(list)  # UID -> components
-        for component in source.walk(self._name):
-            adapter = self._adapter(component)
-            components[adapter.uid].append(adapter)
-        result = []
-        for components in components.values():
-            with contextlib.suppress(suppress_errors):
-                result.append(self._series(components))
-        return result
-
-
-class AllKnownComponents(SelectComponents):
-    """Group all known components into series."""
-
-    @property
-    def _component_adapters(self) -> Sequence[ComponentAdapter]:
-        """Return all known component adapters."""
-        return ComponentsWithName.component_adapters
-
-    @property
-    def names(self) -> list[str]:
-        """Return the names of the components to collect."""
-        return [adapter.component_name() for adapter in self._component_adapters]
-
-    def __init__(
-        self,
-        series: type[Series] = Series,
-        occurrence: type[Occurrence] = Occurrence,
-        collector: type[ComponentsWithName] = ComponentsWithName,
-    ) -> None:
-        """Collect all known components and overide the series and occurrence.
-
-        series - the Series class to override that is queried for Occurrences
-        occurrence - the occurrence class that creates the resulting components
-        collector - if you want to override the SelectComponentsByName class
-        """
-        self._series = series
-        self._occurrence = occurrence
-        self._collector = collector
-
-    def collect_series_from(
-        self, source: Component, suppress_errors: tuple[Exception]
-    ) -> Sequence[Series]:
-        """Collect the components from the source groups into a series."""
-        result = []
-        for name in self.names:
-            collector = self._collector(
-                name, series=self._series, occurrence=self._occurrence
-            )
-            result.extend(collector.collect_series_from(source, suppress_errors))
-        return result
-
-
 class AbsoluteAlarmAdapter(ComponentAdapter):
     """Adapter for absolute alarms."""
 
@@ -1264,6 +1158,7 @@ class AbsoluteAlarmAdapter(ComponentAdapter):
         """Create a new adapter."""
         super().__init__(alarm)
         self.parent = parent
+
 
 class AbsoluteAlarmOccurrence(Occurrence):
     """Adapter for absolute alarms."""
@@ -1281,6 +1176,15 @@ class AbsoluteAlarmOccurrence(Occurrence):
         alarm_once.REPEAT = 0
         parent.subcomponents = [alarm_once]
         return parent
+
+    @cached_property
+    def id(self) -> ComponentID:
+        """The id of the component."""
+        return (
+            self.parent.component_name(),
+            self.parent.uid,
+            self.start,
+        )
 
 class AbsoluteAlarmSeries:
     """A series of absolute alarms."""
@@ -1357,6 +1261,11 @@ class Alarms(SelectComponents):
     """Select alarms and find their times."""
 
     parents = [EventAdapter, TodoAdapter]
+    
+    @staticmethod
+    def component_name():
+        """The name of the component we calculate."""
+        return "VALARM"
 
     def collect_parent_series_from(
         self, source: Component, suppress_errors: tuple[Exception]
@@ -1382,6 +1291,126 @@ class Alarms(SelectComponents):
                             absolute_alarms.add(alarm, component)
                         elif alarm.TRIGGER_RELATED == "START":
                             result.append(AlarmSeriesRelativeToStart(alarm, series))
+        return result
+
+
+class ComponentsWithName(SelectComponents):
+    """This is a component collecttion strategy.
+
+    Components can be collected in different ways.
+    This class allows extension of the functionality by
+    - subclassing to filter the resulting components
+    - composition to combine collection behavior (see AllKnownComponents)
+    """
+
+    component_adapters : list[type[ComponentAdapter]|SelectComponents] = [
+        EventAdapter,
+        TodoAdapter,
+        JournalAdapter,
+        Alarms()
+    ]
+
+    @cached_property
+    def _component_adapters(self) -> dict[str : type[ComponentAdapter]]:
+        """A mapping of component adapters."""
+        return {
+            adapter.component_name(): adapter for adapter in self.component_adapters
+        }
+
+    def __init__(
+        self,
+        name: str,
+        adapter: type[ComponentAdapter] | None = None,
+        series: type[Series] = Series,
+        occurrence: type[Occurrence] = Occurrence,
+    ) -> None:
+        """Create a new way of collecting components.
+
+        name - the name of the component to collect ("VEVENT", "VTODO", "VJOURNAL")
+        adapter - the adapter to use for these components with that name
+        series - the series class that hold a series of components
+        occurrence - the occurrence class that creates the resulting components
+        """
+        if adapter is None:
+            if name not in self._component_adapters:
+                raise ValueError(
+                    f'"{name}" is an unknown name for a '
+                    'recurring component. '
+                    f"I only know these: { ', '.join(self._component_adapters)}."
+                )
+            adapter = self._component_adapters[name]
+        if occurrence is not Occurrence:
+            _occurrence = occurrence
+
+            class series(series):  # noqa: N801
+                occurrence = _occurrence
+
+        self._name = name
+        self._series = series
+        self._adapter = adapter
+
+    def collect_series_from(
+        self, source: Component, suppress_errors: tuple[Exception]
+    ) -> Sequence[Series]:
+        """Collect all components from the source component.
+
+        suppress_errors - a list of errors that should be suppressed.
+            A Series of events with such an error is removed from all results.
+        """
+        if isinstance(self._adapter, SelectComponents):
+            return self._adapter.collect_series_from(source, suppress_errors)
+        components: dict[str, list[Component]] = defaultdict(list)  # UID -> components
+        for component in source.walk(self._name):
+            adapter = self._adapter(component)
+            components[adapter.uid].append(adapter)
+        result = []
+        for components in components.values():
+            with contextlib.suppress(suppress_errors):
+                result.append(self._series(components))
+        return result
+
+
+class AllKnownComponents(SelectComponents):
+    """Group all known components into series."""
+
+    @property
+    def _component_adapters(self) -> Sequence[ComponentAdapter]:
+        """Return all known component adapters."""
+        return ComponentsWithName.component_adapters
+
+    @property
+    def names(self) -> list[str]:
+        """Return the names of the components to collect."""
+        result = [adapter.component_name() for adapter in self._component_adapters]
+        result.sort()
+        return result
+
+    def __init__(
+        self,
+        series: type[Series] = Series,
+        occurrence: type[Occurrence] = Occurrence,
+        collector: type[ComponentsWithName] = ComponentsWithName,
+    ) -> None:
+        """Collect all known components and overide the series and occurrence.
+
+        series - the Series class to override that is queried for Occurrences
+        occurrence - the occurrence class that creates the resulting components
+        collector - if you want to override the SelectComponentsByName class
+        """
+        self._series = series
+        self._occurrence = occurrence
+        self._collector = collector
+
+    def collect_series_from(
+        self, source: Component, suppress_errors: tuple[Exception]
+    ) -> Sequence[Series]:
+        """Collect the components from the source groups into a series."""
+        result = []
+        for name in self.names:
+            collector = self._collector(
+                name, series=self._series, occurrence=self._occurrence
+            )
+            result.extend(collector.collect_series_from(source, suppress_errors))
         return result
 
 
