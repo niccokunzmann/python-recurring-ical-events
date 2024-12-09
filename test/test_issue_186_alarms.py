@@ -132,8 +132,16 @@ def test_series_of_event_with_alarm_relative_to_start(alarms, dt, trigger):
     assert icalendar.timezone.tzid_from_dt(only_trigger) == "Europe/London"
 
 
-def test_alarm_without_trigger_is_ignored_as_invalid():
-    pytest.skip("TODO")
+def test_alarm_without_trigger_is_ignored_as_invalid(alarms):
+    """Alarms can be malformed in many ways. This skips a few possibilities."""
+    alarms.skip_bad_series = True
+    q = alarms.issue_186_invalid_trigger
+    e = list(q.all())
+    for a in e:
+        assert len(a.alarms.times) == 1
+        description = a.alarms.times[0].alarm["DESCRIPTION"]
+        assert description in ("correct trigger", "absolute trigger")
+    assert len(e) == 2
 
 
 def test_event_is_not_modified_with_2_alarms(alarms):

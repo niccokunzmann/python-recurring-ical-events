@@ -34,6 +34,7 @@ class ICSCalendars:
 
     Calendar = icalendar.Calendar
     components = None
+    skip_bad_series = None
 
     def __init__(self, tzp):
         """Create ICS calendars in a specific timezone."""
@@ -60,9 +61,13 @@ class ICSCalendars:
 
     def _of(self, calendar):
         """Return the calendar but also with selected components."""
-        if self.components is None:
-            return of(calendar)
-        return of(calendar, components=self.components)
+        kw = {}
+        if self.skip_bad_series is not None:
+            kw["skip_bad_series"] = self.skip_bad_series
+        if self.components is not None:
+            kw["components"] = self.components
+        print("kw", kw)
+        return of(calendar, **kw)
 
     def __repr__(self):
         return f"{self.__class__.__name__}({self.tzp.__name__})"
@@ -201,5 +206,5 @@ def alarms(calendars) -> ICSCalendars:
 
     This modifies the calendars fixture.
     """
-    calendars.components = [Alarms()]
+    calendars.components = ["VALARM"]
     return calendars

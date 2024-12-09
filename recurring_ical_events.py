@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import contextlib
 import datetime
-from itertools import chain
 import re
 import sys
 from abc import ABC, abstractmethod
@@ -24,6 +23,7 @@ from collections import defaultdict
 from functools import wraps
 from typing import TYPE_CHECKING, Callable, Generator, Optional, Sequence, Union
 
+import icalendar
 import x_wr_timezone
 from dateutil.rrule import rruleset, rrulestr
 from icalendar.cal import Component
@@ -1131,6 +1131,14 @@ class Occurrence:
         """self == other"""
         return self.id == other.id
 
+    def component_name(self) -> str:
+        """The name of this component."""
+        return self._adapter.component_name()
+
+    @property
+    def uid(self) -> str:
+        """The UID of this occurrence."""
+        return self._adapter.uid
 
 class SelectComponents(ABC):
     """Abstract class to select components from a calendar."""
@@ -1306,11 +1314,14 @@ class Alarms(SelectComponents):
             for component in series.components:
                 for alarm in component.alarms:
                     with contextlib.suppress(suppress_errors):
-                        if isinstance(alarm.TRIGGER, datetime.datetime):
+                        trigger = alarm.TRIGGER
+                        if trigger is None:
+                            continue
+                        if isinstance(trigger, datetime.datetime):
                             absolute_alarms.add(alarm, component)
                         elif alarm.TRIGGER_RELATED == "START":
                             result.append(AlarmSeriesRelativeToStart(alarm, series))
-                        else:
+                        elif alarm.TRIGGER_RELATED == "END":
                             result.append(AlarmSeriesRelativeToEnd(alarm, series))
         if not absolute_alarms.is_empty():
             result.append(absolute_alarms)
@@ -1458,7 +1469,7 @@ class CalendarQuery:
     component_adapters - a list of component adapters
     """
 
-    suppressed_errors = [BadRuleStringFormat, PeriodEndBeforeStart]
+    suppressed_errors = [BadRuleStringFormat, PeriodEndBeforeStart, icalendar.InvalidCalendar]
     ComponentsWithName = ComponentsWithName
 
     def __init__(
