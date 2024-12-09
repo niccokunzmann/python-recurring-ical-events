@@ -8,7 +8,7 @@ import icalendar
 import pytest
 import pytz
 
-from recurring_ical_events import Alarms, of
+from recurring_ical_events import of
 
 try:
     import zoneinfo as _zoneinfo
@@ -132,8 +132,8 @@ def calendars(request, tzp) -> ICSCalendars:
     return request.param(tzp)
 
 
-@pytest.fixture()
-def todo():  # noqa: PT004
+@pytest.fixture
+def todo():
     """Skip a test because it needs to be written first."""
     pytest.skip("This test is not yet implemented.")
 
@@ -176,7 +176,7 @@ def doctest_print(obj):
     print(str(obj).strip().replace("\r\n", "\n").replace("\r", "\n"))
 
 
-@pytest.fixture()
+@pytest.fixture
 def env_for_doctest(monkeypatch):
     """Modify the environment to make doctests run."""
     monkeypatch.setitem(sys.modules, "zoneinfo", _zoneinfo)
@@ -200,7 +200,8 @@ def calendar_name(request) -> str:
     """All the calendar names."""
     return request.param
 
-@pytest.fixture()
+
+@pytest.fixture
 def alarms(calendars) -> ICSCalendars:
     """The calendars to query for alarms.
 
