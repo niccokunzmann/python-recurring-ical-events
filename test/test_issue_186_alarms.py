@@ -79,8 +79,21 @@ def test_series_of_events_with_alarms_but_alarm_edited_relative_to_end():
     pytest.skip("TODO")
 
 
-def test_series_of_events_with_alarm_relative_to_end():
-    pytest.skip("TODO")
+def test_series_of_events_with_alarm_relative_to_end(alarms):
+    """We check alarms relative to the end and start.
+
+    DTSTART;TZID=Europe/London:20241004T110000
+    DTEND;TZID=Europe/London:20241004T114500
+
+    15min before start&end
+    15min after start&end
+
+    """
+    q = alarms.alarm_around_event_boundaries
+    assert len(q.at((2024, 10, 4, 10, 45))) == 1, "15 min before start"
+    assert len(q.at((2024, 10, 4, 11, 15))) == 1, "15 min after start"
+    assert len(q.at((2024, 10, 4, 11, 30))) == 1, "15 min before end"
+    assert len(q.at((2024, 10, 4, 12,  0))) == 1, "15 min after end"
 
 
 @pytest.mark.parametrize(
@@ -117,10 +130,6 @@ def test_series_of_event_with_alarm_relative_to_start(alarms, dt, trigger):
     only_trigger = event.alarms.times[0].trigger
     assert only_trigger.replace(tzinfo=None) == trigger
     assert icalendar.timezone.tzid_from_dt(only_trigger) == "Europe/London"
-
-
-def test_find_alarm_that_is_a_week_before_the_event():
-    pytest.skip("TODO")
 
 
 def test_alarm_without_trigger_is_ignored_as_invalid():

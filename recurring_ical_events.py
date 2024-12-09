@@ -1231,7 +1231,7 @@ class AbsoluteAlarmSeries:
 
 
 class AlarmSeriesRelativeToStart:
-    """A series of alarms relative to the start of an event."""
+    """A series of alarms relative to the start of a component."""
 
     def __init__(self, alarm:Alarm, series:Series) -> None:
         """Create a series of alarms that are relative to the start of a series."""
@@ -1260,6 +1260,21 @@ class AlarmSeriesRelativeToStart:
         """Create a new occurrence."""
         return AbsoluteAlarmOccurrence(offset + parent.start, alarm, parent)
 
+
+class AlarmSeriesRelativeToEnd(AlarmSeriesRelativeToStart):
+    """A series of alarms relative to the start of a component."""
+
+    def between(self, span_start, span_stop):
+        """Components between the start (inclusive) and end (exclusive).
+
+        The result does not need to be ordered.
+        """
+        # The end is exclusive. We must adjust the timespan to include it.
+        return super().between(span_start - datetime.timedelta(seconds=1), span_stop)
+
+    def occurrence(self, offset: datetime.timedelta, alarm: Alarm, parent: Occurrence) -> Occurrence:
+        """Create a new occurrence."""
+        return AbsoluteAlarmOccurrence(offset + parent.end, alarm, parent)
 
 class Alarms(SelectComponents):
     """Select alarms and find their times."""
@@ -1295,6 +1310,8 @@ class Alarms(SelectComponents):
                             absolute_alarms.add(alarm, component)
                         elif alarm.TRIGGER_RELATED == "START":
                             result.append(AlarmSeriesRelativeToStart(alarm, series))
+                        else:
+                            result.append(AlarmSeriesRelativeToEnd(alarm, series))
         if not absolute_alarms.is_empty():
             result.append(absolute_alarms)
         return result
