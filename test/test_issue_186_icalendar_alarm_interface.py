@@ -4,7 +4,7 @@ We need to check if icalendar is doinng the right thing.
 Also, recurring ical events now needs to consider alarms
 in a different way.
 """
-from datetime import datetime, date
+from datetime import date, timedelta
 
 import pytest
 
@@ -25,4 +25,4 @@ def test_alarm_time_for_event_is_correctly_computed_for_recurring_instance(calen
     assert len(events) == 1
     event = events[0]
     assert len(event.alarms.times) == 1
-    assert event.alarms.times[0].trigger == event.start
+    assert event.alarms.times[0].trigger == event.start - timedelta(hours=1)

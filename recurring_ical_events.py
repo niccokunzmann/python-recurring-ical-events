@@ -1225,6 +1225,10 @@ class AbsoluteAlarmSeries:
         """Create a new occurrence."""
         return AbsoluteAlarmOccurrence(dt, alarm, parent)
 
+    def is_empty(self) -> bool:
+        """Whether this series is empty."""
+        return not self.times2occurence
+
 
 class AlarmSeriesRelativeToStart:
     """A series of alarms relative to the start of an event."""
@@ -1261,7 +1265,7 @@ class Alarms(SelectComponents):
     """Select alarms and find their times."""
 
     parents = [EventAdapter, TodoAdapter]
-    
+
     @staticmethod
     def component_name():
         """The name of the component we calculate."""
@@ -1282,7 +1286,7 @@ class Alarms(SelectComponents):
             A Series of events with such an error is removed from all results.
         """
         absolute_alarms = AbsoluteAlarmSeries()
-        result = [absolute_alarms]
+        result = []
         for series in self.collect_parent_series_from(source, suppress_errors):
             for component in series.components:
                 for alarm in component.alarms:
@@ -1291,6 +1295,8 @@ class Alarms(SelectComponents):
                             absolute_alarms.add(alarm, component)
                         elif alarm.TRIGGER_RELATED == "START":
                             result.append(AlarmSeriesRelativeToStart(alarm, series))
+        if not absolute_alarms.is_empty():
+            result.append(absolute_alarms)
         return result
 
 
