@@ -1320,7 +1320,10 @@ class Alarms(SelectComponents):
         self, source: Component, suppress_errors: tuple[Exception]
     ) -> Sequence[Series]:
         """Collect the parent components of alarms."""
-        return ComponentsWithName("VEVENT").collect_series_from(source, suppress_errors)
+        return [
+            s for parent in self.parents
+            for s in parent.collect_series_from(source, suppress_errors)
+        ]
 
     def collect_series_from(
         self, source: Component, suppress_errors: tuple[Exception]

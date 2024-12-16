@@ -59,8 +59,48 @@ def test_can_find_absolute_alarm_with_repeat(alarms, when, deltas):
     assert e_deltas == deltas
 
 
-def test_collect_alarms_from_todos():
-    pytest.skip("TODO")
+def test_collect_alarms_from_todos_relative_to_start(alarms):
+    """We also collect alarms from todos."""
+    todos = alarms.alarm_removed_and_moved.at("20231219")
+    assert len(todos) == 1
+    todo = todos[0]
+    assert todo.start.replace(tzinfo=None) == datetime(2023, 12, 19, 9, 0)
+    assert len(todo.alarms.trigger) == 1
+    alarm = todo.alarms.trigger[0]
+    assert alarm.trigger.replace(tzinfo=None) == datetime(2023, 12, 19, 8, 0)
+
+
+def test_collect_alarms_from_todos_relative_to_end(alarms):
+    """We also collect alarms from todos."""
+    todos = alarms.alarm_removed_and_moved.at((2023, 12, 16, 10))
+    assert len(todos) == 1
+    todo = todos[0]
+    assert todo.start.replace(tzinfo=None) == datetime(2023, 12, 19, 9, 0)
+    assert len(todo.alarms.trigger) == 1
+    alarm = todo.alarms.trigger[0]
+    assert alarm.trigger.replace(tzinfo=None) == datetime(2023, 12, 19, 10, 0)
+
+
+def test_todo_occurs(calendars):
+    """The todo should occur so we can find the alarm."""
+    calendars.components = ["VTODO"]
+    todos = calendars.alarm_removed_and_moved.at((2023, 12, 16, 9))
+    for x in todos:
+        print(x.to_ical().decode())
+        print()
+    assert len(todos) == 1
+    todo = todos[0]
+    assert todo.start.replace(tzinfo=None) == datetime(2023, 12, 16, 9, 0)
+
+
+def test_collect_alarms_from_todos_absolute(alarms):
+    """We also collect alarms from todos."""
+    todos = alarms.alarm_removed_and_moved.at((2023, 12, 16, 9))
+    assert len(todos) == 1
+    todo = todos[0]
+    assert len(todo.alarms.trigger) == 1
+    alarm = todo.alarms.trigger[0]
+    assert alarm.trigger.replace(tzinfo=None) == datetime(2023, 12, 16, 9, 0)
 
 
 def test_series_of_events_with_alarms_but_alarm_removed(alarms):
