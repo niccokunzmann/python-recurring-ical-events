@@ -66,7 +66,6 @@ class ICSCalendars:
             kw["skip_bad_series"] = self.skip_bad_series
         if self.components is not None:
             kw["components"] = self.components
-        print("kw", kw)
         return of(calendar, **kw)
 
     def __repr__(self):

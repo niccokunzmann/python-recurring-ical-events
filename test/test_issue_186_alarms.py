@@ -63,15 +63,37 @@ def test_collect_alarms_from_todos():
     pytest.skip("TODO")
 
 
-def test_series_of_events_with_alarms_but_alarm_removed():
-    pytest.skip("TODO")
+def test_series_of_events_with_alarms_but_alarm_removed(alarms):
+    """We test that an alarm is removed and does not turn up."""
+    assert alarms.alarm_removed_and_moved.at("20241221") == []
+
+
+def test_alarm_is_moved(alarms):
+    """The alarm is moved to 30 min before."""
+    a = alarms.alarm_removed_and_moved.at("20241222")
+    assert len(a) == 1
+    e = a[0]
+    assert len(e.alarms.times) == 1
+    alarm = e.alarms.times[0]
+    assert alarm.trigger.hour == 8
+    assert alarm.trigger.minute == 30
+
+
+def test_event_is_moved(alarms):
+    """The event has been moved but the alarm is still 1h before."""
+    a = alarms.alarm_removed_and_moved.at("20241219")
+    for x in a:
+        print(x.to_ical().decode())
+        print()
+    assert len(a) == 1
+    e = a[0]
+    assert len(e.alarms.times) == 1
+    alarm = e.alarms.times[0]
+    assert alarm.trigger.hour == 11
+    assert alarm.trigger.minute == 0
 
 
 def test_series_of_events_with_alarms_but_alarm_removed_relative_to_end():
-    pytest.skip("TODO")
-
-
-def test_series_of_events_with_alarms_but_alarm_edited():
     pytest.skip("TODO")
 
 

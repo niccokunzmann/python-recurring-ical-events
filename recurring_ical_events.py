@@ -1142,6 +1142,10 @@ class Occurrence:
         """The UID of this occurrence."""
         return self._adapter.uid
 
+    def has_alarm(self, alarm: Alarm) -> bool:
+        """Wether this alarm is in this occurrence."""
+        return alarm in self._adapter.alarms
+
 
 class SelectComponents(ABC):
     """Abstract class to select components from a calendar."""
@@ -1272,9 +1276,10 @@ class AlarmSeriesRelativeToStart:
             # If we are before the event start (negative offset),
             # we have to add the time span to request the event later.
             for parent in self._series.between(span_start - offset, span_stop - offset):
-                occurrence = self.occurrence(offset, self._alarm, parent)
-                if occurrence.is_in_span(span_start, span_stop):
-                    yield occurrence
+                if parent.has_alarm(self._alarm):
+                    occurrence = self.occurrence(offset, self._alarm, parent)
+                    if occurrence.is_in_span(span_start, span_stop):
+                        yield occurrence
 
     def occurrence(
         self, offset: datetime.timedelta, alarm: Alarm, parent: Occurrence
@@ -1327,19 +1332,24 @@ class Alarms(SelectComponents):
         """
         absolute_alarms = AbsoluteAlarmSeries()
         result = []
+        # alarms might be copied several times. We only compute them once.
+        used_alarms = []
         for series in self.collect_parent_series_from(source, suppress_errors):
             for component in series.components:
                 for alarm in component.alarms:
                     with contextlib.suppress(suppress_errors):
                         trigger = alarm.TRIGGER
-                        if trigger is None:
+                        if trigger is None or alarm in used_alarms:
                             continue
                         if isinstance(trigger, datetime.datetime):
                             absolute_alarms.add(alarm, component)
+                            used_alarms.append(alarm)
                         elif alarm.TRIGGER_RELATED == "START":
                             result.append(AlarmSeriesRelativeToStart(alarm, series))
+                            used_alarms.append(alarm)
                         elif alarm.TRIGGER_RELATED == "END":
                             result.append(AlarmSeriesRelativeToEnd(alarm, series))
+                            used_alarms.append(alarm)
         if not absolute_alarms.is_empty():
             result.append(absolute_alarms)
         return result
