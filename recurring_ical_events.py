@@ -1307,9 +1307,19 @@ class AlarmSeriesRelativeToEnd(AlarmSeriesRelativeToStart):
 
 
 class Alarms(SelectComponents):
-    """Select alarms and find their times."""
+    """Select alarms and find their times.
 
-    parents = [EventAdapter, TodoAdapter]
+    By default, alarms from TODOs and events are collected.
+    You can use this to change which alarms are collected:
+
+        Alarms((EventAdapter,))
+        Alarms((TodoAdapter,))
+    """
+
+    def __init__(self,
+        parents: tuple[type[ComponentAdapter] | SelectComponents] = (EventAdapter, TodoAdapter)
+        ):
+        self.parents = parents
 
     @staticmethod
     def component_name():
