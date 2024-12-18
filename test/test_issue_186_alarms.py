@@ -239,3 +239,28 @@ def test_repeating_event_is_not_modified(alarms):
     q = alarms.alarm_recurring_and_acknowledged_at_2024_11_27_16_27
     assert len(q.between("20241126", "20241130")) == 4, "We find the alarms"
     assert len(q.between("20241126", "20241130")) == 4, "We find the alarm again"
+
+
+def test_after(alarms):
+    """The after function checks if an event was already returned.
+
+    This is likely to cause problems because it should be there several times.
+    """
+    expected_triggers = [
+        datetime(2024, 12, 18, 8, 0),
+        datetime(2024, 12, 19, 11, 0),
+        datetime(2024, 12, 20, 8, 0),
+        datetime(2024, 12, 21, 8, 0),
+        datetime(2024, 12, 22, 8, 30),
+        datetime(2024, 12, 23, 8, 0),
+    ]
+    found_triggers = []
+    i = 0
+    for expected_trigger, event in zip(expected_triggers, alarms.alarm_removed_and_moved.after(2024)):
+        assert len(event.alarms.times) == 1
+        trigger = event.alarms.times[0].trigger.replace(tzinfo=None)
+        assert trigger == expected_trigger
+        found_triggers.append(trigger)
+        print(f"{i} ok, {trigger}")
+        i += 1  # noqa: SIM113
+    assert found_triggers == expected_triggers
