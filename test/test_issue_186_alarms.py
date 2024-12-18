@@ -256,7 +256,8 @@ def test_after(alarms):
     ]
     found_triggers = []
     i = 0
-    for expected_trigger, event in zip(expected_triggers, alarms.alarm_removed_and_moved.after(2024)):
+    it = alarms.alarm_removed_and_moved.after(2024)
+    for expected_trigger, event in zip(expected_triggers, it):
         assert len(event.alarms.times) == 1
         trigger = event.alarms.times[0].trigger.replace(tzinfo=None)
         assert trigger == expected_trigger
@@ -264,3 +265,5 @@ def test_after(alarms):
         print(f"{i} ok, {trigger}")
         i += 1  # noqa: SIM113
     assert found_triggers == expected_triggers
+    with pytest.raises(StopIteration):
+        next(it)
