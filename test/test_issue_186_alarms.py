@@ -148,11 +148,11 @@ def test_event_is_moved(alarms):
 
 
 def test_series_of_events_with_alarms_but_alarm_removed_relative_to_end():
-    pytest.skip("TODO")
+    pytest.skip("TODO - but probably covered by the calculation relative to start")
 
 
 def test_series_of_events_with_alarms_but_alarm_edited_relative_to_end():
-    pytest.skip("TODO")
+    pytest.skip("TODO - but probably covered by the calculation relative to start")
 
 
 def test_series_of_events_with_alarm_relative_to_end(alarms):
