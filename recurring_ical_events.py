@@ -28,6 +28,8 @@ import x_wr_timezone
 from dateutil.rrule import rruleset, rrulestr
 from icalendar.cal import Component
 from icalendar.prop import vDDDTypes
+from pathlib import Path
+
 
 if TYPE_CHECKING:
     from icalendar import Alarm
@@ -51,6 +53,8 @@ DATE_MIN_DT = datetime.date(*DATE_MIN)
 DATE_MAX = (2038, 1, 1)
 DATE_MAX_DT = datetime.date(*DATE_MAX)
 
+HERE = Path(__file__).parent
+CALENDARS = HERE / "test" / "calendars"
 
 class InvalidCalendar(ValueError):
     """Exception thrown for bad icalendar content."""
@@ -1727,6 +1731,26 @@ def of(
         a_calendar, keep_recurrence_attributes, components, skip_bad_series
     )
 
+
+def example_calendar(name:str="") -> icalendar.Calendar:
+    """Return an example calendar.
+
+    Args:
+        name (str): The name of the example file.
+
+    Returns:
+        icalendar.Calendar: The parsed calendar example.
+    """
+    if not name.endswith(".ics"):
+        name += ".ics"
+    path = CALENDARS / name
+    try:
+        return icalendar.Calendar.from_ical(path.read_bytes())
+    except FileNotFoundError:
+        raise ValueError(  # noqa: B904
+            f"File {name!r} not found. "
+            f"Use one of {', '.join(p.name for p in CALENDARS.glob('*.ics'))!r}."
+        )
 
 __all__ = [
     "of",

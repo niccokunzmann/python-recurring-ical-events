@@ -123,7 +123,7 @@ Example
     BEGIN:VCALENDAR
     VERSION:2.0
     >>> a_calendar = icalendar.Calendar.from_ical(ical_string)
-
+ 
     # request the events in a specific interval
     # start on the 1st of January 2017 0:00
     >>> start_date = (2017, 1, 1)
@@ -321,8 +321,7 @@ The subcomponents can be alarms.
 .. code-block:: python
 
     # read an .ics file with an alarm
-    >>> calendar_file_with_alarm : Path = CALENDARS / "alarm_15_min_before_event_snoozed.ics"
-    >>> calendar_with_alarm = icalendar.Calendar.from_ical(calendar_file_with_alarm.read_bytes())
+    >>> calendar_with_alarm = recurring_ical_events.example_calendar("alarm_15_min_before_event_snoozed")
     >>> query_with_alarm = recurring_ical_events.of(calendar_with_alarm)
     >>> event = query_with_alarm.first
 
@@ -343,8 +342,7 @@ The alarm occurs one week before the event.
 .. code-block:: python
 
     # read an .ics file with an event with an alarm
-    >>> calendar_path : Path = CALENDARS / "alarm_1_week_before_event.ics"
-    >>> calendar_with_alarm = icalendar.Calendar.from_ical(calendar_path.read_bytes())
+    >>> calendar_with_alarm = recurring_ical_events.example_calendar("alarm_1_week_before_event")
     >>> alarm_day = "20241202"
 
     # we get the first alarm inside of the event
@@ -355,8 +353,8 @@ The alarm occurs one week before the event.
     >>> event.start - alarm.trigger
     datetime.timedelta(days=7)
 
-    # If we would query the event instead of the alarm we would not find it
-    >>> recurring_ical_events.of(calendar_with_alarm).at(alarm_day)
+    # If we would query the event instead of the alarm, we would not find it
+    >>> recurring_ical_events.of(calendar_with_alarm, components=("VEVENT",)).at(alarm_day)
     []
 
     # The event itself has more alarms. These are removed when querying alarms only.
