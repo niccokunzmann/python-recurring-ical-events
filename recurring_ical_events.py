@@ -1316,9 +1316,13 @@ class Alarms(SelectComponents):
         Alarms((TodoAdapter,))
     """
 
-    def __init__(self,
-        parents: tuple[type[ComponentAdapter] | SelectComponents] = (EventAdapter, TodoAdapter)
-        ):
+    def __init__(
+        self,
+        parents: tuple[type[ComponentAdapter] | SelectComponents] = (
+            EventAdapter,
+            TodoAdapter,
+        ),
+    ):
         self.parents = parents
 
     @staticmethod
@@ -1331,7 +1335,8 @@ class Alarms(SelectComponents):
     ) -> Sequence[Series]:
         """Collect the parent components of alarms."""
         return [
-            s for parent in self.parents
+            s
+            for parent in self.parents
             for s in parent.collect_series_from(source, suppress_errors)
         ]
 
