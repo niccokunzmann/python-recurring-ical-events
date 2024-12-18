@@ -1287,6 +1287,13 @@ class AlarmSeriesRelativeToStart:
         """Create a new occurrence."""
         return AbsoluteAlarmOccurrence(offset + parent.start, alarm, parent)
 
+    def __repr__(self) -> str:
+        """repr()"""
+        return (
+            f"<{self.__class__.__name__} "
+            f"of {self._alarm} in {self._series} "
+            f"with offsets {', '.join(map(str, self._offsets))}>"
+        )
 
 class AlarmSeriesRelativeToEnd(AlarmSeriesRelativeToStart):
     """A series of alarms relative to the start of a component."""
@@ -1351,8 +1358,8 @@ class Alarms(SelectComponents):
         absolute_alarms = AbsoluteAlarmSeries()
         result = []
         # alarms might be copied several times. We only compute them once.
-        used_alarms = []
         for series in self.collect_parent_series_from(source, suppress_errors):
+            used_alarms = []
             for component in series.components:
                 for alarm in component.alarms:
                     with contextlib.suppress(suppress_errors):

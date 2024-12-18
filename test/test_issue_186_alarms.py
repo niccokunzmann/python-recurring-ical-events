@@ -59,15 +59,29 @@ def test_can_find_absolute_alarm_with_repeat(alarms, when, deltas):
     assert e_deltas == deltas
 
 
-def test_collect_alarms_from_todos_relative_to_start(alarms):
+@pytest.mark.parametrize(
+    "day", [17, 18, 19, 20]
+)
+def test_collect_alarms_from_todos_relative_to_start(alarms, day):
     """We also collect alarms from todos."""
-    todos = alarms.alarm_removed_and_moved.at("20231219")
+    todos = alarms.alarm_removed_and_moved.at((2023, 12, day))
     assert len(todos) == 1
     todo = todos[0]
-    assert todo.start.replace(tzinfo=None) == datetime(2023, 12, 19, 9, 0)
-    assert len(todo.alarms.trigger) == 1
-    alarm = todo.alarms.trigger[0]
-    assert alarm.trigger.replace(tzinfo=None) == datetime(2023, 12, 19, 8, 0)
+    assert len(todo.alarms.times) == 1
+    alarm = todo.alarms.times[0]
+    assert alarm.trigger.replace(tzinfo=None) == datetime(2023, 12, day, 8, 0)
+
+
+@pytest.mark.parametrize(
+    "day", [17, 18, 19, 20]
+)
+def test_collect_todos_with_alarms(calendars, day):
+    """We also collect alarms from todos."""
+    calendars.components = ["VTODO"]
+    todos = calendars.alarm_removed_and_moved.at((2023, 12, day))
+    assert len(todos) == 1
+    todo = todos[0]
+    assert todo.start.replace(tzinfo=None) == datetime(2023, 12, day, 9, 0)
 
 
 def test_collect_alarms_from_todos_relative_to_end(alarms):
@@ -75,10 +89,10 @@ def test_collect_alarms_from_todos_relative_to_end(alarms):
     todos = alarms.alarm_removed_and_moved.at((2023, 12, 16, 10))
     assert len(todos) == 1
     todo = todos[0]
-    assert todo.start.replace(tzinfo=None) == datetime(2023, 12, 19, 9, 0)
-    assert len(todo.alarms.trigger) == 1
-    alarm = todo.alarms.trigger[0]
-    assert alarm.trigger.replace(tzinfo=None) == datetime(2023, 12, 19, 10, 0)
+    assert todo.start.replace(tzinfo=None) == datetime(2023, 12, 16, 9, 0)
+    assert len(todo.alarms.times) == 1
+    alarm = todo.alarms.times[0]
+    assert alarm.trigger.replace(tzinfo=None) == datetime(2023, 12, 16, 10, 0)
 
 
 def test_todo_occurs(calendars):
@@ -95,12 +109,12 @@ def test_todo_occurs(calendars):
 
 def test_collect_alarms_from_todos_absolute(alarms):
     """We also collect alarms from todos."""
-    todos = alarms.alarm_removed_and_moved.at((2023, 12, 16, 9))
+    todos = alarms.alarm_removed_and_moved.at((2023, 12, 13, 18, 0))
     assert len(todos) == 1
     todo = todos[0]
-    assert len(todo.alarms.trigger) == 1
-    alarm = todo.alarms.trigger[0]
-    assert alarm.trigger.replace(tzinfo=None) == datetime(2023, 12, 16, 9, 0)
+    assert len(todo.alarms.times) == 1
+    alarm = todo.alarms.times[0]
+    assert alarm.trigger.replace(tzinfo=None) == datetime(2023, 12, 13, 18, 0)
 
 
 def test_series_of_events_with_alarms_but_alarm_removed(alarms):
