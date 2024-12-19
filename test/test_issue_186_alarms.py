@@ -5,6 +5,7 @@ See also https://github.com/niccokunzmann/python-recurring-ical-events/issues/18
 """
 
 from datetime import datetime, timedelta, timezone
+from pprint import pprint
 
 import icalendar
 import pytest
@@ -241,29 +242,58 @@ def test_repeating_event_is_not_modified(alarms):
     assert len(q.between("20241126", "20241130")) == 4, "We find the alarm again"
 
 
-def test_after(alarms):
+EXPECTED_TRIGGERS = [
+    datetime(2024, 12, 18, 8, 0),
+    datetime(2024, 12, 19, 11, 0),
+    datetime(2024, 12, 20, 8, 0),
+    # datetime(2024, 12, 21, 8, 0),  # event without alarm
+    datetime(2024, 12, 22, 8, 30),
+    datetime(2024, 12, 23, 8, 0),
+]
+EXPECTED_STARTS = [
+    datetime(2024, 12, 18, 9, 0),
+    datetime(2024, 12, 19, 12, 0),
+    datetime(2024, 12, 20, 9, 0),
+    # datetime(2024, 12, 21, 9, 0),  # event without alarm
+    datetime(2024, 12, 22, 9, 0),
+    datetime(2024, 12, 23, 9, 0),
+]
+
+
+def test_after_with_alarms(alarms):
     """The after function checks if an event was already returned.
 
     This is likely to cause problems because it should be there several times.
     """
-    expected_triggers = [
-        datetime(2024, 12, 18, 8, 0),
-        datetime(2024, 12, 19, 11, 0),
-        datetime(2024, 12, 20, 8, 0),
-        datetime(2024, 12, 21, 8, 0),
-        datetime(2024, 12, 22, 8, 30),
-        datetime(2024, 12, 23, 8, 0),
-    ]
     found_triggers = []
     i = 0
     it = alarms.alarm_removed_and_moved.after(2024)
-    for expected_trigger, event in zip(expected_triggers, it):
+    for expected_trigger, event, expected_start in zip(EXPECTED_TRIGGERS, it, EXPECTED_STARTS):
+        print(f"{i} start {event.start} is {('' if event.start.replace(tzinfo=None) == expected_start else 'NOT ')}as expected")
         assert len(event.alarms.times) == 1
         trigger = event.alarms.times[0].trigger.replace(tzinfo=None)
-        assert trigger == expected_trigger
         found_triggers.append(trigger)
-        print(f"{i} ok, {trigger}")
+        print(f"{i} trigger {trigger} is {('' if trigger == expected_trigger else 'NOT ')}as expected")
         i += 1  # noqa: SIM113
-    assert found_triggers == expected_triggers
+        print()
+    print("\n".join(map(str, zip(found_triggers, EXPECTED_TRIGGERS))))
+    assert found_triggers == EXPECTED_TRIGGERS
     with pytest.raises(StopIteration):
         next(it)
+
+
+def test_all_alarms_are_present(alarms):
+    """Check that we find all alarms."""
+    events = alarms.alarm_several_in_one.all()
+    triggers = []
+    for event in events:
+        assert len(event.alarms.times) == 1
+        triggers.append(event.alarms.times[0].trigger - event.start)
+    assert triggers == [
+        timedelta(hours=-1),
+        timedelta(minutes=-15),
+        timedelta(minutes=15),
+        timedelta(hours=1),
+        timedelta(hours=2),
+        timedelta(hours=3),
+    ]

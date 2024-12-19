@@ -834,6 +834,14 @@ class ComponentAdapter(ABC):
         return to_recurrence_ids(recurrence_id.dt)
 
     @cached_property
+    def subcomponents_id(self) -> int:
+        """A hashable object to compare if subcomponents are identical."""
+        result = 0
+        for child in self._component.subcomponents:
+            result ^= id(child)
+        return result
+
+    @cached_property
     def this_and_future(self) -> bool:
         """The recurrence ids has a thisand future range property"""
         recurrence_id = self._component.get("RECURRENCE-ID")
@@ -1129,6 +1137,11 @@ class Occurrence:
             recurrence_id,
         )
 
+    @property
+    def subcomponents_id(self) -> int:
+        """A hashable object to compare if subcomponents are identical."""
+        return self._adapter.subcomponents_id
+
     def __hash__(self) -> int:
         """Hash this for an occurrence."""
         return hash(self.id)
@@ -1210,8 +1223,15 @@ class AbsoluteAlarmOccurrence(Occurrence):
             self.parent.component_name(),
             self.parent.uid,
             self.start,
+            self.parent.subcomponents_id,
         )
 
+    def __repr__(self) -> str:
+        """repr(self)"""
+        return (
+            f"<{self.__class__.__name__} at {self.start} of"
+            f" {self.alarm} in {self.parent}"
+        )
 
 class AbsoluteAlarmSeries:
     """A series of absolute alarms."""
