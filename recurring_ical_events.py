@@ -21,6 +21,7 @@ import sys
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from functools import wraps
+from pathlib import Path
 from typing import TYPE_CHECKING, Callable, Generator, Optional, Sequence, Union
 
 import icalendar
@@ -28,8 +29,6 @@ import x_wr_timezone
 from dateutil.rrule import rruleset, rrulestr
 from icalendar.cal import Component
 from icalendar.prop import vDDDTypes
-from pathlib import Path
-
 
 if TYPE_CHECKING:
     from icalendar import Alarm
@@ -55,6 +54,7 @@ DATE_MAX_DT = datetime.date(*DATE_MAX)
 
 HERE = Path(__file__).parent
 CALENDARS = HERE / "test" / "calendars"
+
 
 class InvalidCalendar(ValueError):
     """Exception thrown for bad icalendar content."""
@@ -1233,6 +1233,7 @@ class AbsoluteAlarmOccurrence(Occurrence):
             f" {self.alarm} in {self.parent}"
         )
 
+
 class AbsoluteAlarmSeries:
     """A series of absolute alarms."""
 
@@ -1318,6 +1319,7 @@ class AlarmSeriesRelativeToStart:
             f"of {self._alarm} in {self._series} "
             f"with offsets {', '.join(map(str, self._offsets))}>"
         )
+
 
 class AlarmSeriesRelativeToEnd(AlarmSeriesRelativeToStart):
     """A series of alarms relative to the start of a component."""
@@ -1752,7 +1754,7 @@ def of(
     )
 
 
-def example_calendar(name:str="") -> icalendar.Calendar:
+def example_calendar(name: str = "") -> icalendar.Calendar:
     """Return an example calendar.
 
     Args:
@@ -1771,6 +1773,7 @@ def example_calendar(name:str="") -> icalendar.Calendar:
             f"File {name!r} not found. "
             f"Use one of {', '.join(p.name for p in CALENDARS.glob('*.ics'))!r}."
         )
+
 
 __all__ = [
     "of",

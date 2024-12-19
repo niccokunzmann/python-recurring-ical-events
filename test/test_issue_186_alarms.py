@@ -5,7 +5,6 @@ See also https://github.com/niccokunzmann/python-recurring-ical-events/issues/18
 """
 
 from datetime import datetime, timedelta, timezone
-from pprint import pprint
 
 import icalendar
 import pytest
@@ -60,9 +59,7 @@ def test_can_find_absolute_alarm_with_repeat(alarms, when, deltas):
     assert e_deltas == deltas
 
 
-@pytest.mark.parametrize(
-    "day", [17, 18, 19, 20]
-)
+@pytest.mark.parametrize("day", [17, 18, 19, 20])
 def test_collect_alarms_from_todos_relative_to_start(alarms, day):
     """We also collect alarms from todos."""
     todos = alarms.alarm_removed_and_moved.at((2023, 12, day))
@@ -73,9 +70,7 @@ def test_collect_alarms_from_todos_relative_to_start(alarms, day):
     assert alarm.trigger.replace(tzinfo=None) == datetime(2023, 12, day, 8, 0)
 
 
-@pytest.mark.parametrize(
-    "day", [17, 18, 19, 20]
-)
+@pytest.mark.parametrize("day", [17, 18, 19, 20])
 def test_collect_todos_with_alarms(calendars, day):
     """We also collect alarms from todos."""
     calendars.components = ["VTODO"]
@@ -268,12 +263,18 @@ def test_after_with_alarms(alarms):
     found_triggers = []
     i = 0
     it = alarms.alarm_removed_and_moved.after(2024)
-    for expected_trigger, event, expected_start in zip(EXPECTED_TRIGGERS, it, EXPECTED_STARTS):
-        print(f"{i} start {event.start} is {('' if event.start.replace(tzinfo=None) == expected_start else 'NOT ')}as expected")
+    for expected_trigger, event, expected_start in zip(
+        EXPECTED_TRIGGERS, it, EXPECTED_STARTS
+    ):
+        print(
+            f"{i} start {event.start} is {('' if event.start.replace(tzinfo=None) == expected_start else 'NOT ')}as expected"
+        )
         assert len(event.alarms.times) == 1
         trigger = event.alarms.times[0].trigger.replace(tzinfo=None)
         found_triggers.append(trigger)
-        print(f"{i} trigger {trigger} is {('' if trigger == expected_trigger else 'NOT ')}as expected")
+        print(
+            f"{i} trigger {trigger} is {('' if trigger == expected_trigger else 'NOT ')}as expected"
+        )
         i += 1  # noqa: SIM113
         print()
     print("\n".join(map(str, zip(found_triggers, EXPECTED_TRIGGERS))))
