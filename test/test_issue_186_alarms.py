@@ -298,3 +298,17 @@ def test_all_alarms_are_present(alarms):
         timedelta(hours=2),
         timedelta(hours=3),
     ]
+
+
+def test_several_alarms_occur_for_a_slightly_different_event(alarms):
+    """Edited subevents have all an alarm that occurs at the same time.
+
+    Thus, they all should appear.
+    """
+    events = list(alarms.alarms_at_the_same_time.all())
+    summaries = {event["SUMMARY" ]for event in events}
+    assert summaries == {
+        "event with alarm at the same time 1",
+        "event with alarm at the same time 2",
+        "event with alarm at the same time 3",
+    }

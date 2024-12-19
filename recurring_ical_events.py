@@ -1150,6 +1150,10 @@ class Occurrence:
         """Wether this alarm is in this occurrence."""
         return alarm in self._adapter.alarms
 
+    @property
+    def recurrence_ids(self) -> RecurrenceIDs:
+        """The recurrence ids."""
+        return self._adapter.recurrence_ids
 
 class SelectComponents(ABC):
     """Abstract class to select components from a calendar."""
@@ -1179,7 +1183,7 @@ class AbsoluteAlarmAdapter(ComponentAdapter):
         self.parent = parent
 
 
-class AbsoluteAlarmOccurrence(Occurrence):
+class AlarmOccurrence(Occurrence):
     """Adapter for absolute alarms."""
 
     def __init__(
@@ -1209,6 +1213,7 @@ class AbsoluteAlarmOccurrence(Occurrence):
         return (
             self.parent.component_name(),
             self.parent.uid,
+            *self.parent.recurrence_ids[:1],
             self.start,
         )
 
@@ -1259,7 +1264,7 @@ class AbsoluteAlarmSeries:
         self, dt: datetime.datetime, alarm: Alarm, parent: ComponentAdapter
     ) -> Occurrence:
         """Create a new occurrence."""
-        return AbsoluteAlarmOccurrence(dt, alarm, parent)
+        return AlarmOccurrence(dt, alarm, parent)
 
     def is_empty(self) -> bool:
         """Whether this series is empty."""
@@ -1296,7 +1301,7 @@ class AlarmSeriesRelativeToStart:
         self, offset: datetime.timedelta, alarm: Alarm, parent: Occurrence
     ) -> Occurrence:
         """Create a new occurrence."""
-        return AbsoluteAlarmOccurrence(offset + parent.start, alarm, parent)
+        return AlarmOccurrence(offset + parent.start, alarm, parent)
 
     def __repr__(self) -> str:
         """repr()"""
@@ -1322,7 +1327,7 @@ class AlarmSeriesRelativeToEnd(AlarmSeriesRelativeToStart):
         self, offset: datetime.timedelta, alarm: Alarm, parent: Occurrence
     ) -> Occurrence:
         """Create a new occurrence."""
-        return AbsoluteAlarmOccurrence(offset + parent.end, alarm, parent)
+        return AlarmOccurrence(offset + parent.end, alarm, parent)
 
 
 class Alarms(SelectComponents):
