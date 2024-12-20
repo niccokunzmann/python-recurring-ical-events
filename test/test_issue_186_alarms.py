@@ -312,3 +312,16 @@ def test_several_alarms_occur_for_a_slightly_different_event(alarms):
         "event with alarm at the same time 2",
         "event with alarm at the same time 3",
     }
+
+
+@pytest.mark.parametrize("dt", ["20241220", "20241221", "20241222"])
+def test_different_alarms_at_the_same_time_merge_into_one(alarms, dt):
+    """If an event has different alarms happening at the same time,
+
+    these alarms are in the event.
+    """
+    events : list[icalendar.Event] = alarms.alarms_different_in_same_event.at(dt)
+    alarm_names = {alarm_time.alarm["DESCRIPTION"] for event in events for alarm_time in event.alarms.times}
+    assert alarm_names >= {"Alarm 1", "Alarm 2", "Alarm 3"}
+    if dt == "20241220":
+        assert "Alarm 4" in alarm_names
