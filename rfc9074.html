@@ -1,0 +1,2396 @@
+
+<!DOCTYPE html>
+<html lang="en" class="RFC">
+<head>
+<meta charset="utf-8">
+<meta content="Common,Latin" name="scripts">
+<meta content="initial-scale=1.0" name="viewport">
+<title>RFC 9074: "VALARM" Extensions for iCalendar</title>
+<meta content="Cyrus Daboo" name="author">
+<meta content="Kenneth Murchison" name="author">
+<meta content='
+       This document defines a set of extensions to the iCalendar
+      "VALARM" component to enhance the use of alarms and improve
+      interoperability between clients and servers. 
+       This document updates RFC 5545. 
+    ' name="description">
+<meta content="xml2rfc 3.9.1" name="generator">
+<meta content="alarms" name="keyword">
+<meta content="calendaring" name="keyword">
+<meta content="iCalendar" name="keyword">
+<meta content="CalDAV" name="keyword">
+<meta content="9074" name="rfc.number">
+<!-- Generator version information:
+  xml2rfc 3.9.1
+    Python 3.6.10
+    appdirs 1.4.4
+    ConfigArgParse 1.2.3
+    google-i18n-address 2.3.5
+    html5lib 1.0.1
+    intervaltree 3.0.2
+    Jinja2 2.11.2
+    kitchen 1.2.6
+    lxml 4.4.2
+    pycairo 1.19.0
+    pycountry 19.8.18
+    pyflakes 2.1.1
+    PyYAML 5.3.1
+    requests 2.22.0
+    setuptools 40.6.2
+    six 1.14.0
+    WeasyPrint 51
+-->
+<link href="rfc9074.xml" rel="alternate" type="application/rfc+xml">
+<link href="#copyright" rel="license">
+<style type="text/css">/*
+
+  NOTE: Changes at the bottom of this file overrides some earlier settings.
+
+  Once the style has stabilized and has been adopted as an official RFC style,
+  this can be consolidated so that style settings occur only in one place, but
+  for now the contents of this file consists first of the initial CSS work as
+  provided to the RFC Formatter (xml2rfc) work, followed by itemized and
+  commented changes found necssary during the development of the v3
+  formatters.
+
+*/
+
+/* fonts */
+@import url('https://fonts.googleapis.com/css?family=Noto+Sans'); /* Sans-serif */
+@import url('https://fonts.googleapis.com/css?family=Noto+Serif'); /* Serif (print) */
+@import url('https://fonts.googleapis.com/css?family=Roboto+Mono'); /* Monospace */
+
+@viewport {
+  zoom: 1.0;
+  width: extend-to-zoom;
+}
+@-ms-viewport {
+  width: extend-to-zoom;
+  zoom: 1.0;
+}
+/* general and mobile first */
+html {
+}
+body {
+  max-width: 90%;
+  margin: 1.5em auto;
+  color: #222;
+  background-color: #fff;
+  font-size: 14px;
+  font-family: 'Noto Sans', Arial, Helvetica, sans-serif;
+  line-height: 1.6;
+  scroll-behavior: smooth;
+}
+.ears {
+  display: none;
+}
+
+/* headings */
+#title, h1, h2, h3, h4, h5, h6 {
+  margin: 1em 0 0.5em;
+  font-weight: bold;
+  line-height: 1.3;
+}
+#title {
+  clear: both;
+  border-bottom: 1px solid #ddd;
+  margin: 0 0 0.5em 0;
+  padding: 1em 0 0.5em;
+}
+.author {
+  padding-bottom: 4px;
+}
+h1 {
+  font-size: 26px;
+  margin: 1em 0;
+}
+h2 {
+  font-size: 22px;
+  margin-top: -20px;  /* provide offset for in-page anchors */
+  padding-top: 33px;
+}
+h3 {
+  font-size: 18px;
+  margin-top: -36px;  /* provide offset for in-page anchors */
+  padding-top: 42px;
+}
+h4 {
+  font-size: 16px;
+  margin-top: -36px;  /* provide offset for in-page anchors */
+  padding-top: 42px;
+}
+h5, h6 {
+  font-size: 14px;
+}
+#n-copyright-notice {
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 1em;
+  margin-bottom: 1em;
+}
+/* general structure */
+p {
+  padding: 0;
+  margin: 0 0 1em 0;
+  text-align: left;
+}
+div, span {
+  position: relative;
+}
+div {
+  margin: 0;
+}
+.alignRight.art-text {
+  background-color: #f9f9f9;
+  border: 1px solid #eee;
+  border-radius: 3px;
+  padding: 1em 1em 0;
+  margin-bottom: 1.5em;
+}
+.alignRight.art-text pre {
+  padding: 0;
+}
+.alignRight {
+  margin: 1em 0;
+}
+.alignRight > *:first-child {
+  border: none;
+  margin: 0;
+  float: right;
+  clear: both;
+}
+.alignRight > *:nth-child(2) {
+  clear: both;
+  display: block;
+  border: none;
+}
+svg {
+  display: block;
+}
+.alignCenter.art-text {
+  background-color: #f9f9f9;
+  border: 1px solid #eee;
+  border-radius: 3px;
+  padding: 1em 1em 0;
+  margin-bottom: 1.5em;
+}
+.alignCenter.art-text pre {
+  padding: 0;
+}
+.alignCenter {
+  margin: 1em 0;
+}
+.alignCenter > *:first-child {
+  border: none;
+  /* this isn't optimal, but it's an existence proof.  PrinceXML doesn't
+     support flexbox yet.
+  */
+  display: table;
+  margin: 0 auto;
+}
+
+/* lists */
+ol, ul {
+  padding: 0;
+  margin: 0 0 1em 2em;
+}
+ol ol, ul ul, ol ul, ul ol {
+  margin-left: 1em;
+}
+li {
+  margin: 0 0 0.25em 0;
+}
+.ulCompact li {
+  margin: 0;
+}
+ul.empty, .ulEmpty {
+  list-style-type: none;
+}
+ul.empty li, .ulEmpty li {
+  margin-top: 0.5em;
+}
+ul.ulBare, li.ulBare {
+  margin-left: 0em !important;
+}
+ul.compact, .ulCompact,
+ol.compact, .olCompact {
+  line-height: 100%;
+  margin: 0 0 0 2em;
+}
+
+/* definition lists */
+dl {
+}
+dl > dt {
+  float: left;
+  margin-right: 1em;
+}
+/* 
+dl.nohang > dt {
+  float: none;
+}
+*/
+dl > dd {
+  margin-bottom: .8em;
+  min-height: 1.3em;
+}
+dl.compact > dd, .dlCompact > dd {
+  margin-bottom: 0em;
+}
+dl > dd > dl {
+  margin-top: 0.5em;
+  margin-bottom: 0em;
+}
+
+/* links */
+a {
+  text-decoration: none;
+}
+a[href] {
+  color: #22e; /* Arlen: WCAG 2019 */
+}
+a[href]:hover {
+  background-color: #f2f2f2;
+}
+figcaption a[href],
+a[href].selfRef {
+  color: #222;
+}
+/* XXX probably not this:
+a.selfRef:hover {
+  background-color: transparent;
+  cursor: default;
+} */
+
+/* Figures */
+tt, code, pre, code {
+  background-color: #f9f9f9;
+  font-family: 'Roboto Mono', monospace;
+}
+pre {
+  border: 1px solid #eee;
+  margin: 0;
+  padding: 1em;
+}
+img {
+  max-width: 100%;
+}
+figure {
+  margin: 0;
+}
+figure blockquote {
+  margin: 0.8em 0.4em 0.4em;
+}
+figcaption {
+  font-style: italic;
+  margin: 0 0 1em 0;
+}
+@media screen {
+  pre {
+    overflow-x: auto;
+    max-width: 100%;
+    max-width: calc(100% - 22px);
+  }
+}
+
+/* aside, blockquote */
+aside, blockquote {
+  margin-left: 0;
+  padding: 1.2em 2em;
+}
+blockquote {
+  background-color: #f9f9f9;
+  color: #111; /* Arlen: WCAG 2019 */
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  margin: 1em 0;
+}
+cite {
+  display: block;
+  text-align: right;
+  font-style: italic;
+}
+
+/* tables */
+table {
+  width: 100%;
+  margin: 0 0 1em;
+  border-collapse: collapse;
+  border: 1px solid #eee;
+}
+th, td {
+  text-align: left;
+  vertical-align: top;
+  padding: 0.5em 0.75em;
+}
+th {
+  text-align: left;
+  background-color: #e9e9e9;
+}
+tr:nth-child(2n+1) > td {
+  background-color: #f5f5f5;
+}
+table caption {
+  font-style: italic;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}
+table p {
+  /* XXX to avoid bottom margin on table row signifiers. If paragraphs should
+     be allowed within tables more generally, it would be far better to select on a class. */
+  margin: 0;
+}
+
+/* pilcrow */
+a.pilcrow {
+  color: #666; /* Arlen: AHDJ 2019 */
+  text-decoration: none;
+  visibility: hidden;
+  user-select: none;
+  -ms-user-select: none;
+  -o-user-select:none;
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+@media screen {
+  aside:hover > a.pilcrow,
+  p:hover > a.pilcrow,
+  blockquote:hover > a.pilcrow,
+  div:hover > a.pilcrow,
+  li:hover > a.pilcrow,
+  pre:hover > a.pilcrow {
+    visibility: visible;
+  }
+  a.pilcrow:hover {
+    background-color: transparent;
+  }
+}
+
+/* misc */
+hr {
+  border: 0;
+  border-top: 1px solid #eee;
+}
+.bcp14 {
+  font-variant: small-caps;
+}
+
+.role {
+  font-variant: all-small-caps;
+}
+
+/* info block */
+#identifiers {
+  margin: 0;
+  font-size: 0.9em;
+}
+#identifiers dt {
+  width: 3em;
+  clear: left;
+}
+#identifiers dd {
+  float: left;
+  margin-bottom: 0;
+}
+#identifiers .authors .author {
+  display: inline-block;
+  margin-right: 1.5em;
+}
+#identifiers .authors .org {
+  font-style: italic;
+}
+
+/* The prepared/rendered info at the very bottom of the page */
+.docInfo {
+  color: #666; /* Arlen: WCAG 2019 */
+  font-size: 0.9em;
+  font-style: italic;
+  margin-top: 2em;
+}
+.docInfo .prepared {
+  float: left;
+}
+.docInfo .prepared {
+  float: right;
+}
+
+/* table of contents */
+#toc  {
+  padding: 0.75em 0 2em 0;
+  margin-bottom: 1em;
+}
+nav.toc ul {
+  margin: 0 0.5em 0 0;
+  padding: 0;
+  list-style: none;
+}
+nav.toc li {
+  line-height: 1.3em;
+  margin: 0.75em 0;
+  padding-left: 1.2em;
+  text-indent: -1.2em;
+}
+/* references */
+.references dt {
+  text-align: right;
+  font-weight: bold;
+  min-width: 7em;
+}
+.references dd {
+  margin-left: 8em;
+  overflow: auto;
+}
+
+.refInstance {
+  margin-bottom: 1.25em;
+}
+
+.references .ascii {
+  margin-bottom: 0.25em;
+}
+
+/* index */
+.index ul {
+  margin: 0 0 0 1em;
+  padding: 0;
+  list-style: none;
+}
+.index ul ul {
+  margin: 0;
+}
+.index li {
+  margin: 0;
+  text-indent: -2em;
+  padding-left: 2em;
+  padding-bottom: 5px;
+}
+.indexIndex {
+  margin: 0.5em 0 1em;
+}
+.index a {
+  font-weight: 700;
+}
+/* make the index two-column on all but the smallest screens */
+@media (min-width: 600px) {
+  .index ul {
+    -moz-column-count: 2;
+    -moz-column-gap: 20px;
+  }
+  .index ul ul {
+    -moz-column-count: 1;
+    -moz-column-gap: 0;
+  }
+}
+
+/* authors */
+address.vcard {
+  font-style: normal;
+  margin: 1em 0;
+}
+
+address.vcard .nameRole {
+  font-weight: 700;
+  margin-left: 0;
+}
+address.vcard .label {
+  font-family: "Noto Sans",Arial,Helvetica,sans-serif;
+  margin: 0.5em 0;
+}
+address.vcard .type {
+  display: none;
+}
+.alternative-contact {
+  margin: 1.5em 0 1em;
+}
+hr.addr {
+  border-top: 1px dashed;
+  margin: 0;
+  color: #ddd;
+  max-width: calc(100% - 16px);
+}
+
+/* temporary notes */
+.rfcEditorRemove::before {
+  position: absolute;
+  top: 0.2em;
+  right: 0.2em;
+  padding: 0.2em;
+  content: "The RFC Editor will remove this note";
+  color: #9e2a00; /* Arlen: WCAG 2019 */
+  background-color: #ffd; /* Arlen: WCAG 2019 */
+}
+.rfcEditorRemove {
+  position: relative;
+  padding-top: 1.8em;
+  background-color: #ffd; /* Arlen: WCAG 2019 */
+  border-radius: 3px;
+}
+.cref {
+  background-color: #ffd; /* Arlen: WCAG 2019 */
+  padding: 2px 4px;
+}
+.crefSource {
+  font-style: italic;
+}
+/* alternative layout for smaller screens */
+@media screen and (max-width: 1023px) {
+  body {
+    padding-top: 2em;
+  }
+  #title {
+    padding: 1em 0;
+  }
+  h1 {
+    font-size: 24px;
+  }
+  h2 {
+    font-size: 20px;
+    margin-top: -18px;  /* provide offset for in-page anchors */
+    padding-top: 38px;
+  }
+  #identifiers dd {
+    max-width: 60%;
+  }
+  #toc {
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    right: 0;
+    padding: 0;
+    margin: 0;
+    background-color: inherit;
+    border-bottom: 1px solid #ccc;
+  }
+  #toc h2 {
+    margin: -1px 0 0 0;
+    padding: 4px 0 4px 6px;
+    padding-right: 1em;
+    min-width: 190px;
+    font-size: 1.1em;
+    text-align: right;
+    background-color: #444;
+    color: white;
+    cursor: pointer;
+  }
+  #toc h2::before { /* css hamburger */
+    float: right;
+    position: relative;
+    width: 1em;
+    height: 1px;
+    left: -164px;
+    margin: 6px 0 0 0;
+    background: white none repeat scroll 0 0;
+    box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
+    content: "";
+  }
+  #toc nav {
+    display: none;
+    padding: 0.5em 1em 1em;
+    overflow: auto;
+    height: calc(100vh - 48px);
+    border-left: 1px solid #ddd;
+  }
+}
+
+/* alternative layout for wide screens */
+@media screen and (min-width: 1024px) {
+  body {
+    max-width: 724px;
+    margin: 42px auto;
+    padding-left: 1.5em;
+    padding-right: 29em;
+  }
+  #toc {
+    position: fixed;
+    top: 42px;
+    right: 42px;
+    width: 25%;
+    margin: 0;
+    padding: 0 1em;
+    z-index: 1;
+  }
+  #toc h2 {
+    border-top: none;
+    border-bottom: 1px solid #ddd;
+    font-size: 1em;
+    font-weight: normal;
+    margin: 0;
+    padding: 0.25em 1em 1em 0;
+  }
+  #toc nav {
+    display: block;
+    height: calc(90vh - 84px);
+    bottom: 0;
+    padding: 0.5em 0 0;
+    overflow: auto;
+  }
+  img { /* future proofing */
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* pagination */
+@media print {
+  body {
+
+    width: 100%;
+  }
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+  #n-copyright-notice {
+    border-bottom: none;
+  }
+  #toc, #n-introduction {
+    page-break-before: always;
+  }
+  #toc {
+    border-top: none;
+    padding-top: 0;
+  }
+  figure, pre {
+    page-break-inside: avoid;
+  }
+  figure {
+    overflow: scroll;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+  h2+*, h3+*, h4+*, h5+*, h6+* {
+    page-break-before: avoid;
+  }
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 10pt;
+  }
+  table {
+    border: 1px solid #ddd;
+  }
+  td {
+    border-top: 1px solid #ddd;
+  }
+}
+
+/* This is commented out here, as the string-set: doesn't
+   pass W3C validation currently */
+/*
+.ears thead .left {
+  string-set: ears-top-left content();
+}
+
+.ears thead .center {
+  string-set: ears-top-center content();
+}
+
+.ears thead .right {
+  string-set: ears-top-right content();
+}
+
+.ears tfoot .left {
+  string-set: ears-bottom-left content();
+}
+
+.ears tfoot .center {
+  string-set: ears-bottom-center content();
+}
+
+.ears tfoot .right {
+  string-set: ears-bottom-right content();
+}
+*/
+
+@page :first {
+  padding-top: 0;
+  @top-left {
+    content: normal;
+    border: none;
+  }
+  @top-center {
+    content: normal;
+    border: none;
+  }
+  @top-right {
+    content: normal;
+    border: none;
+  }
+}
+
+@page {
+  size: A4;
+  margin-bottom: 45mm;
+  padding-top: 20px;
+  /* The follwing is commented out here, but set appropriately by in code, as
+     the content depends on the document */
+  /*
+  @top-left {
+    content: 'Internet-Draft';
+    vertical-align: bottom;
+    border-bottom: solid 1px #ccc;
+  }
+  @top-left {
+    content: string(ears-top-left);
+    vertical-align: bottom;
+    border-bottom: solid 1px #ccc;
+  }
+  @top-center {
+    content: string(ears-top-center);
+    vertical-align: bottom;
+    border-bottom: solid 1px #ccc;
+  }
+  @top-right {
+    content: string(ears-top-right);
+    vertical-align: bottom;
+    border-bottom: solid 1px #ccc;
+  }
+  @bottom-left {
+    content: string(ears-bottom-left);
+    vertical-align: top;
+    border-top: solid 1px #ccc;
+  }
+  @bottom-center {
+    content: string(ears-bottom-center);
+    vertical-align: top;
+    border-top: solid 1px #ccc;
+  }
+  @bottom-right {
+      content: '[Page ' counter(page) ']';
+      vertical-align: top;
+      border-top: solid 1px #ccc;
+  }
+  */
+
+}
+
+/* Changes introduced to fix issues found during implementation */
+/* Make sure links are clickable even if overlapped by following H* */
+a {
+  z-index: 2;
+}
+/* Separate body from document info even without intervening H1 */
+section {
+  clear: both;
+}
+
+
+/* Top align author divs, to avoid names without organization dropping level with org names */
+.author {
+  vertical-align: top;
+}
+
+/* Leave room in document info to show Internet-Draft on one line */
+#identifiers dt {
+  width: 8em;
+}
+
+/* Don't waste quite as much whitespace between label and value in doc info */
+#identifiers dd {
+  margin-left: 1em;
+}
+
+/* Give floating toc a background color (needed when it's a div inside section */
+#toc {
+  background-color: white;
+}
+
+/* Make the collapsed ToC header render white on gray also when it's a link */
+@media screen and (max-width: 1023px) {
+  #toc h2 a,
+  #toc h2 a:link,
+  #toc h2 a:focus,
+  #toc h2 a:hover,
+  #toc a.toplink,
+  #toc a.toplink:hover {
+    color: white;
+    background-color: #444;
+    text-decoration: none;
+  }
+}
+
+/* Give the bottom of the ToC some whitespace */
+@media screen and (min-width: 1024px) {
+  #toc {
+    padding: 0 0 1em 1em;
+  }
+}
+
+/* Style section numbers with more space between number and title */
+.section-number {
+  padding-right: 0.5em;
+}
+
+/* prevent monospace from becoming overly large */
+tt, code, pre, code {
+  font-size: 95%;
+}
+
+/* Fix the height/width aspect for ascii art*/
+pre.sourcecode,
+.art-text pre {
+  line-height: 1.12;
+}
+
+
+/* Add styling for a link in the ToC that points to the top of the document */
+a.toplink {
+  float: right;
+  margin-right: 0.5em;
+}
+
+/* Fix the dl styling to match the RFC 7992 attributes */
+dl > dt,
+dl.dlParallel > dt {
+  float: left;
+  margin-right: 1em;
+}
+dl.dlNewline > dt {
+  float: none;
+}
+
+/* Provide styling for table cell text alignment */
+table td.text-left,
+table th.text-left {
+  text-align: left;
+}
+table td.text-center,
+table th.text-center {
+  text-align: center;
+}
+table td.text-right,
+table th.text-right {
+  text-align: right;
+}
+
+/* Make the alternative author contact informatio look less like just another
+   author, and group it closer with the primary author contact information */
+.alternative-contact {
+  margin: 0.5em 0 0.25em 0;
+}
+address .non-ascii {
+  margin: 0 0 0 2em;
+}
+
+/* With it being possible to set tables with alignment
+  left, center, and right, { width: 100%; } does not make sense */
+table {
+  width: auto;
+}
+
+/* Avoid reference text that sits in a block with very wide left margin,
+   because of a long floating dt label.*/
+.references dd {
+  overflow: visible;
+}
+
+/* Control caption placement */
+caption {
+  caption-side: bottom;
+}
+
+/* Limit the width of the author address vcard, so names in right-to-left
+   script don't end up on the other side of the page. */
+
+address.vcard {
+  max-width: 30em;
+  margin-right: auto;
+}
+
+/* For address alignment dependent on LTR or RTL scripts */
+address div.left {
+  text-align: left;
+}
+address div.right {
+  text-align: right;
+}
+
+/* Provide table alignment support.  We can't use the alignX classes above
+   since they do unwanted things with caption and other styling. */
+table.right {
+ margin-left: auto;
+ margin-right: 0;
+}
+table.center {
+ margin-left: auto;
+ margin-right: auto;
+}
+table.left {
+ margin-left: 0;
+ margin-right: auto;
+}
+
+/* Give the table caption label the same styling as the figcaption */
+caption a[href] {
+  color: #222;
+}
+
+@media print {
+  .toplink {
+    display: none;
+  }
+
+  /* avoid overwriting the top border line with the ToC header */
+  #toc {
+    padding-top: 1px;
+  }
+
+  /* Avoid page breaks inside dl and author address entries */
+  .vcard {
+    page-break-inside: avoid;
+  }
+
+}
+/* Tweak the bcp14 keyword presentation */
+.bcp14 {
+  font-variant: small-caps;
+  font-weight: bold;
+  font-size: 0.9em;
+}
+/* Tweak the invisible space above H* in order not to overlay links in text above */
+ h2 {
+  margin-top: -18px;  /* provide offset for in-page anchors */
+  padding-top: 31px;
+ }
+ h3 {
+  margin-top: -18px;  /* provide offset for in-page anchors */
+  padding-top: 24px;
+ }
+ h4 {
+  margin-top: -18px;  /* provide offset for in-page anchors */
+  padding-top: 24px;
+ }
+/* Float artwork pilcrow to the right */
+@media screen {
+  .artwork a.pilcrow {
+    display: block;
+    line-height: 0.7;
+    margin-top: 0.15em;
+  }
+}
+/* Make pilcrows on dd visible */
+@media screen {
+  dd:hover > a.pilcrow {
+    visibility: visible;
+  }
+}
+/* Make the placement of figcaption match that of a table's caption
+   by removing the figure's added bottom margin */
+.alignLeft.art-text,
+.alignCenter.art-text,
+.alignRight.art-text {
+   margin-bottom: 0;
+}
+.alignLeft,
+.alignCenter,
+.alignRight {
+  margin: 1em 0 0 0;
+}
+/* In print, the pilcrow won't show on hover, so prevent it from taking up space,
+   possibly even requiring a new line */
+@media print {
+  a.pilcrow {
+    display: none;
+  }
+}
+/* Styling for the external metadata */
+div#external-metadata {
+  background-color: #eee;
+  padding: 0.5em;
+  margin-bottom: 0.5em;
+  display: none;
+}
+div#internal-metadata {
+  padding: 0.5em;                       /* to match the external-metadata padding */
+}
+/* Styling for title RFC Number */
+h1#rfcnum {
+  clear: both;
+  margin: 0 0 -1em;
+  padding: 1em 0 0 0;
+}
+/* Make .olPercent look the same as <ol><li> */
+dl.olPercent > dd {
+  margin-bottom: 0.25em;
+  min-height: initial;
+}
+/* Give aside some styling to set it apart */
+aside {
+  border-left: 1px solid #ddd;
+  margin: 1em 0 1em 2em;
+  padding: 0.2em 2em;
+}
+aside > dl,
+aside > ol,
+aside > ul,
+aside > table,
+aside > p {
+  margin-bottom: 0.5em;
+}
+/* Additional page break settings */
+@media print {
+  figcaption, table caption {
+    page-break-before: avoid;
+  }
+}
+/* Font size adjustments for print */
+@media print {
+  body  { font-size: 10pt;      line-height: normal; max-width: 96%; }
+  h1    { font-size: 1.72em;    padding-top: 1.5em; } /* 1*1.2*1.2*1.2 */
+  h2    { font-size: 1.44em;    padding-top: 1.5em; } /* 1*1.2*1.2 */
+  h3    { font-size: 1.2em;     padding-top: 1.5em; } /* 1*1.2 */
+  h4    { font-size: 1em;       padding-top: 1.5em; }
+  h5, h6 { font-size: 1em;      margin: initial; padding: 0.5em 0 0.3em; }
+}
+/* Sourcecode margin in print, when there's no pilcrow */
+@media print {
+  .artwork,
+  .sourcecode {
+    margin-bottom: 1em;
+  }
+}
+/* Avoid narrow tables forcing too narrow table captions, which may render badly */
+table {
+  min-width: 20em;
+}
+/* ol type a */
+ol.type-a { list-style-type: lower-alpha; }
+ol.type-A { list-style-type: upper-alpha; }
+ol.type-i { list-style-type: lower-roman; }
+ol.type-I { list-style-type: lower-roman; }
+/* Apply the print table and row borders in general, on request from the RPC,
+and increase the contrast between border and odd row background sligthtly */
+table {
+  border: 1px solid #ddd;
+}
+td {
+  border-top: 1px solid #ddd;
+}
+tr:nth-child(2n+1) > td {
+  background-color: #f8f8f8;
+}
+/* Use style rules to govern display of the TOC. */
+@media screen and (max-width: 1023px) {
+  #toc nav { display: none; }
+  #toc.active nav { display: block; }
+}
+/* Add support for keepWithNext */
+.keepWithNext {
+  break-after: avoid-page;
+  break-after: avoid-page;
+}
+/* Add support for keepWithPrevious */
+.keepWithPrevious {
+  break-before: avoid-page;
+}
+/* Change the approach to avoiding breaks inside artwork etc. */
+figure, pre, table, .artwork, .sourcecode  {
+  break-before: avoid-page;
+  break-after: auto;
+}
+/* Avoid breaks between <dt> and <dd> */
+dl {
+  break-before: auto;
+  break-inside: auto;
+}
+dt {
+  break-before: auto;
+  break-after: avoid-page;
+}
+dd {
+  break-before: avoid-page;
+  break-after: auto;
+  orphans: 3;
+  widows: 3
+}
+span.break, dd.break {
+  margin-bottom: 0;
+  min-height: 0;
+  break-before: auto;
+  break-inside: auto;
+  break-after: auto;
+}
+/* Undo break-before ToC */
+@media print {
+  #toc {
+    break-before: auto;
+  }
+}
+/* Text in compact lists should not get extra bottim margin space,
+   since that would makes the list not compact */
+ul.compact p, .ulCompact p,
+ol.compact p, .olCompact p {
+ margin: 0;
+}
+/* But the list as a whole needs the extra space at the end */
+section ul.compact,
+section .ulCompact,
+section ol.compact,
+section .olCompact {
+  margin-bottom: 1em;                    /* same as p not within ul.compact etc. */
+}
+/* The tt and code background above interferes with for instance table cell
+   backgrounds.  Changed to something a bit more selective. */
+tt, code {
+  background-color: transparent;
+}
+p tt, p code, li tt, li code {
+  background-color: #f8f8f8;
+}
+/* Tweak the pre margin -- 0px doesn't come out well */
+pre {
+   margin-top: 0.5px;
+}
+/* Tweak the comact list text */
+ul.compact, .ulCompact,
+ol.compact, .olCompact,
+dl.compact, .dlCompact {
+  line-height: normal;
+}
+/* Don't add top margin for nested lists */
+li > ul, li > ol, li > dl,
+dd > ul, dd > ol, dd > dl,
+dl > dd > dl {
+  margin-top: initial;
+}
+/* Elements that should not be rendered on the same line as a <dt> */
+/* This should match the element list in writer.text.TextWriter.render_dl() */
+dd > div.artwork:first-child,
+dd > aside:first-child,
+dd > figure:first-child,
+dd > ol:first-child,
+dd > div:first-child > pre.sourcecode,
+dd > table:first-child,
+dd > ul:first-child {
+  clear: left;
+}
+/* fix for weird browser behaviour when <dd/> is empty */
+dt+dd:empty::before{
+  content: "\00a0";
+}
+/* Make paragraph spacing inside <li> smaller than in body text, to fit better within the list */
+li > p {
+  margin-bottom: 0.5em
+}
+/* Don't let p margin spill out from inside list items */
+li > p:last-of-type {
+  margin-bottom: 0;
+}
+</style>
+<link href="rfc-local.css" rel="stylesheet" type="text/css">
+<link href="https://dx.doi.org/10.17487/rfc9074" rel="alternate">
+  <link href="urn:issn:2070-1721" rel="alternate">
+  <link href="https://datatracker.ietf.org/doc/draft-ietf-calext-valarm-extensions-07" rel="prev">
+  </head>
+<body>
+<script src="https://www.rfc-editor.org/js/metadata.min.js"></script>
+<table class="ears">
+<thead><tr>
+<td class="left">RFC 9074</td>
+<td class="center">VALARM Extensions</td>
+<td class="right">August 2021</td>
+</tr></thead>
+<tfoot><tr>
+<td class="left">Daboo &amp; Murchison</td>
+<td class="center">Standards Track</td>
+<td class="right">[Page]</td>
+</tr></tfoot>
+</table>
+<div id="external-metadata" class="document-information"></div>
+<div id="internal-metadata" class="document-information">
+<dl id="identifiers">
+<dt class="label-stream">Stream:</dt>
+<dd class="stream">Internet Engineering Task Force (IETF)</dd>
+<dt class="label-rfc">RFC:</dt>
+<dd class="rfc"><a href="https://www.rfc-editor.org/rfc/rfc9074" class="eref">9074</a></dd>
+<dt class="label-updates">Updates:</dt>
+<dd class="updates">
+<a href="https://www.rfc-editor.org/rfc/rfc5545" class="eref">5545</a> </dd>
+<dt class="label-category">Category:</dt>
+<dd class="category">Standards Track</dd>
+<dt class="label-published">Published:</dt>
+<dd class="published">
+<time datetime="2021-08" class="published">August 2021</time>
+    </dd>
+<dt class="label-issn">ISSN:</dt>
+<dd class="issn">2070-1721</dd>
+<dt class="label-authors">Authors:</dt>
+<dd class="authors">
+<div class="author">
+      <div class="author-name">C. Daboo</div>
+<div class="org">Apple</div>
+</div>
+<div class="author">
+      <div class="author-name">K. Murchison, <span class="editor">Ed.</span>
+</div>
+<div class="org">Fastmail</div>
+</div>
+</dd>
+</dl>
+</div>
+<h1 id="rfcnum">RFC 9074</h1>
+<h1 id="title">"VALARM" Extensions for iCalendar</h1>
+<section id="section-abstract">
+      <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
+<p id="section-abstract-1">This document defines a set of extensions to the iCalendar
+      "VALARM" component to enhance the use of alarms and improve
+      interoperability between clients and servers.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-2">This document updates RFC 5545.<a href="#section-abstract-2" class="pilcrow">¶</a></p>
+</section>
+<div id="status-of-memo">
+<section id="section-boilerplate.1">
+        <h2 id="name-status-of-this-memo">
+<a href="#name-status-of-this-memo" class="section-name selfRef">Status of This Memo</a>
+        </h2>
+<p id="section-boilerplate.1-1">
+            This is an Internet Standards Track document.<a href="#section-boilerplate.1-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-2">
+            This document is a product of the Internet Engineering Task Force
+            (IETF).  It represents the consensus of the IETF community.  It has
+            received public review and has been approved for publication by
+            the Internet Engineering Steering Group (IESG).  Further
+            information on Internet Standards is available in Section 2 of 
+            RFC 7841.<a href="#section-boilerplate.1-2" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-3">
+            Information about the current status of this document, any
+            errata, and how to provide feedback on it may be obtained at
+            <span><a href="https://www.rfc-editor.org/info/rfc9074">https://www.rfc-editor.org/info/rfc9074</a></span>.<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="copyright">
+<section id="section-boilerplate.2">
+        <h2 id="name-copyright-notice">
+<a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
+        </h2>
+<p id="section-boilerplate.2-1">
+            Copyright (c) 2021 IETF Trust and the persons identified as the
+            document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.2-2">
+            This document is subject to BCP 78 and the IETF Trust's Legal
+            Provisions Relating to IETF Documents
+            (<span><a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a></span>) in effect on the date of
+            publication of this document. Please review these documents
+            carefully, as they describe your rights and restrictions with
+            respect to this document. Code Components extracted from this
+            document must include Simplified BSD License text as described in
+            Section 4.e of the Trust Legal Provisions and are provided without
+            warranty as described in the Simplified BSD License.<a href="#section-boilerplate.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="toc">
+<section id="section-toc.1">
+        <a href="#" onclick="scroll(0,0)" class="toplink">▲</a><h2 id="name-table-of-contents">
+<a href="#name-table-of-contents" class="section-name selfRef">Table of Contents</a>
+        </h2>
+<nav class="toc"><ul class="compact toc ulEmpty ulBare">
+<li class="compact toc ulEmpty ulBare" id="section-toc.1-1.1">
+            <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="xref">1</a>.  <a href="#name-introduction" class="xref">Introduction</a></p>
+</li>
+          <li class="compact toc ulEmpty ulBare" id="section-toc.1-1.2">
+            <p id="section-toc.1-1.2.1" class="keepWithNext"><a href="#section-2" class="xref">2</a>.  <a href="#name-conventions-used-in-this-do" class="xref">Conventions Used in This Document</a></p>
+</li>
+          <li class="compact toc ulEmpty ulBare" id="section-toc.1-1.3">
+            <p id="section-toc.1-1.3.1" class="keepWithNext"><a href="#section-3" class="xref">3</a>.  <a href="#name-extensible-syntax-for-valar" class="xref">Extensible Syntax for VALARM</a></p>
+</li>
+          <li class="compact toc ulEmpty ulBare" id="section-toc.1-1.4">
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="xref">4</a>.  <a href="#name-alarm-unique-identifier" class="xref">Alarm Unique Identifier</a></p>
+</li>
+          <li class="compact toc ulEmpty ulBare" id="section-toc.1-1.5">
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="xref">5</a>.  <a href="#name-alarm-related-to" class="xref">Alarm Related To</a></p>
+</li>
+          <li class="compact toc ulEmpty ulBare" id="section-toc.1-1.6">
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="xref">6</a>.  <a href="#name-alarm-acknowledgement" class="xref">Alarm Acknowledgement</a></p>
+<ul class="ulEmpty toc compact ulBare">
+<li class="ulEmpty toc compact ulBare" id="section-toc.1-1.6.2.1">
+                <p id="section-toc.1-1.6.2.1.1"><a href="#section-6.1" class="xref">6.1</a>.  <a href="#name-acknowledged-property" class="xref">Acknowledged Property</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulEmpty ulBare" id="section-toc.1-1.7">
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="xref">7</a>.  <a href="#name-snoozing-alarms" class="xref">Snoozing Alarms</a></p>
+<ul class="ulEmpty toc compact ulBare">
+<li class="ulEmpty toc compact ulBare" id="section-toc.1-1.7.2.1">
+                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="xref">7.1</a>.  <a href="#name-relationship-type-property-" class="xref">Relationship Type Property Parameter</a></p>
+</li>
+              <li class="ulEmpty toc compact ulBare" id="section-toc.1-1.7.2.2">
+                <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="xref">7.2</a>.  <a href="#name-example" class="xref">Example</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulEmpty ulBare" id="section-toc.1-1.8">
+            <p id="section-toc.1-1.8.1"><a href="#section-8" class="xref">8</a>.  <a href="#name-alarm-proximity-trigger" class="xref">Alarm Proximity Trigger</a></p>
+<ul class="ulEmpty toc compact ulBare">
+<li class="ulEmpty toc compact ulBare" id="section-toc.1-1.8.2.1">
+                <p id="section-toc.1-1.8.2.1.1"><a href="#section-8.1" class="xref">8.1</a>.  <a href="#name-proximity-property" class="xref">Proximity Property</a></p>
+</li>
+              <li class="ulEmpty toc compact ulBare" id="section-toc.1-1.8.2.2">
+                <p id="section-toc.1-1.8.2.2.1"><a href="#section-8.2" class="xref">8.2</a>.  <a href="#name-example-2" class="xref">Example</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulEmpty ulBare" id="section-toc.1-1.9">
+            <p id="section-toc.1-1.9.1"><a href="#section-9" class="xref">9</a>.  <a href="#name-security-considerations" class="xref">Security Considerations</a></p>
+</li>
+          <li class="compact toc ulEmpty ulBare" id="section-toc.1-1.10">
+            <p id="section-toc.1-1.10.1"><a href="#section-10" class="xref">10</a>. <a href="#name-privacy-considerations" class="xref">Privacy Considerations</a></p>
+</li>
+          <li class="compact toc ulEmpty ulBare" id="section-toc.1-1.11">
+            <p id="section-toc.1-1.11.1"><a href="#section-11" class="xref">11</a>. <a href="#name-iana-considerations" class="xref">IANA Considerations</a></p>
+<ul class="ulEmpty toc compact ulBare">
+<li class="ulEmpty toc compact ulBare" id="section-toc.1-1.11.2.1">
+                <p id="section-toc.1-1.11.2.1.1"><a href="#section-11.1" class="xref">11.1</a>.  <a href="#name-property-registrations" class="xref">Property Registrations</a></p>
+</li>
+              <li class="ulEmpty toc compact ulBare" id="section-toc.1-1.11.2.2">
+                <p id="section-toc.1-1.11.2.2.1"><a href="#section-11.2" class="xref">11.2</a>.  <a href="#name-relationship-types-registry" class="xref">Relationship Types Registry</a></p>
+</li>
+              <li class="ulEmpty toc compact ulBare" id="section-toc.1-1.11.2.3">
+                <p id="section-toc.1-1.11.2.3.1"><a href="#section-11.3" class="xref">11.3</a>.  <a href="#name-proximity-values-registry" class="xref">Proximity Values Registry</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulEmpty ulBare" id="section-toc.1-1.12">
+            <p id="section-toc.1-1.12.1"><a href="#section-12" class="xref">12</a>. <a href="#name-references" class="xref">References</a></p>
+<ul class="ulEmpty toc compact ulBare">
+<li class="ulEmpty toc compact ulBare" id="section-toc.1-1.12.2.1">
+                <p id="section-toc.1-1.12.2.1.1"><a href="#section-12.1" class="xref">12.1</a>.  <a href="#name-normative-references" class="xref">Normative References</a></p>
+</li>
+              <li class="ulEmpty toc compact ulBare" id="section-toc.1-1.12.2.2">
+                <p id="section-toc.1-1.12.2.2.1"><a href="#section-12.2" class="xref">12.2</a>.  <a href="#name-informative-references" class="xref">Informative References</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulEmpty ulBare" id="section-toc.1-1.13">
+            <p id="section-toc.1-1.13.1"><a href="#appendix-A" class="xref"></a><a href="#name-acknowledgements" class="xref">Acknowledgements</a></p>
+</li>
+          <li class="compact toc ulEmpty ulBare" id="section-toc.1-1.14">
+            <p id="section-toc.1-1.14.1"><a href="#appendix-B" class="xref"></a><a href="#name-authors-addresses" class="xref">Authors' Addresses</a></p>
+</li>
+        </ul>
+</nav>
+</section>
+</div>
+<section id="section-1">
+      <h2 id="name-introduction">
+<a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
+      </h2>
+<p id="section-1-1">The <span><a href="#RFC5545" class="xref">iCalendar specification</a> [<a href="#RFC5545" class="xref">RFC5545</a>]</span>
+      defines a set of components used to describe calendar data. One
+      of those is the "VALARM" component, which appears as a
+      subcomponent of the "VEVENT" and "VTODO" components. The "VALARM"
+      component is used to specify a reminder for an event or
+      task. Different alarm actions are possible, as are different
+      ways to specify how the alarm is triggered.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-2">As iCalendar has become more widely used and as client-server
+      protocols, such as <span><a href="#RFC4791" class="xref">Calendaring Extensions to WebDAV
+      (CalDAV)</a> [<a href="#RFC4791" class="xref">RFC4791</a>]</span>, have
+      become more prevalent, several issues with "VALARM" components
+      have arisen. Most of these relate to the need to extend the
+      existing "VALARM" component with new properties and behaviors to
+      allow clients and servers to accomplish specific tasks in an
+      interoperable manner. For example, clients typically need a way
+      to specify that an alarm has been dismissed by a calendar user
+      or has been "snoozed" by a set amount of time. To date, this has
+      been done through the use of custom "X-" properties specific to
+      each client implementation, leading to poor
+      interoperability.<a href="#section-1-2" class="pilcrow">¶</a></p>
+<p id="section-1-3">This specification defines a set of extensions to "VALARM"
+      components to cover common requirements for alarms not currently
+      addressed in iCalendar. Each extension is defined in a separate
+      section below. For the most part, each extension can be
+      supported independently of the others; though, in some cases, one
+      extension will require another. In addition, this specification
+      describes mechanisms by which clients can interoperably
+      implement common features, such as "snoozing".<a href="#section-1-3" class="pilcrow">¶</a></p>
+</section>
+<section id="section-2">
+      <h2 id="name-conventions-used-in-this-do">
+<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-conventions-used-in-this-do" class="section-name selfRef">Conventions Used in This Document</a>
+      </h2>
+<p id="section-2-1">
+    The key words "<span class="bcp14">MUST</span>", "<span class="bcp14">MUST NOT</span>", "<span class="bcp14">REQUIRED</span>", "<span class="bcp14">SHALL</span>", "<span class="bcp14">SHALL NOT</span>", "<span class="bcp14">SHOULD</span>", "<span class="bcp14">SHOULD NOT</span>", "<span class="bcp14">RECOMMENDED</span>", "<span class="bcp14">NOT RECOMMENDED</span>",
+    "<span class="bcp14">MAY</span>", and "<span class="bcp14">OPTIONAL</span>" in this document are to be interpreted as
+    described in BCP 14 <span>[<a href="#RFC2119" class="xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="xref">RFC8174</a>]</span> 
+    when, and only when, they appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶</a></p>
+<p id="section-2-2">The notation used in this memo to (re-)define iCalendar elements is the ABNF notation of <span>[<a href="#RFC5234" class="xref">RFC5234</a>]</span> as used by <span>[<a href="#RFC5545" class="xref">RFC5545</a>]</span>.
+   Any syntax elements shown below that are not explicitly defined in this specification come from iCalendar <span>[<a href="#RFC5545" class="xref">RFC5545</a>]</span>.<a href="#section-2-2" class="pilcrow">¶</a></p>
+<p id="section-2-3">When XML element types in the namespaces "DAV:" and
+      "urn:ietf:params:xml:ns:caldav" are referenced in this document
+      outside of the context of an XML fragment, the string "DAV:" and
+      "CALDAV:" will be prefixed to the element type names,
+      respectively.<a href="#section-2-3" class="pilcrow">¶</a></p>
+</section>
+<div id="syntax">
+<section id="section-3">
+      <h2 id="name-extensible-syntax-for-valar">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-extensible-syntax-for-valar" class="section-name selfRef">Extensible Syntax for VALARM</a>
+      </h2>
+<p id="section-3-1" class="keepWithNext"><span><a href="https://www.rfc-editor.org/rfc/rfc5545#section-3.6.6" class="relref">Section 3.6.6</a> of [<a href="#RFC5545" class="xref">RFC5545</a>]</span> defines the syntax
+      for "VALARM" components and properties within them. However, as
+      written, it is hard to extend this, e.g., by adding a new
+      property common to all types of alarms. Since many of the
+      extensions defined in this document need to extend the base
+      syntax, an alternative form for the base syntax is defined here,
+      with the goal of simplifying specification of the extensions
+      while augmenting the existing functionality defined in
+      <span>[<a href="#RFC5545" class="xref">RFC5545</a>]</span> to allow for nested subcomponents
+      (as required by
+      <span><a href="#proximity" class="xref">proximity alarm triggers</a> (<a href="#proximity" class="xref">Section 8</a>)</span>).<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-2">A "VALARM" calendar component is redefined by the following notation:<a href="#section-3-2" class="pilcrow">¶</a></p>
+<div id="section-3-3">
+<pre class="sourcecode lang-abnf">
+alarmcext  = "BEGIN" ":" "VALARM" CRLF
+             *alarmprop *alarm-subcomp
+             "END" ":" "VALARM" CRLF
+
+alarmprop  = (
+             ;
+             ; the following are REQUIRED
+             ; but MUST NOT occur more than once
+             ;
+             action / trigger /
+             ;
+             ; one set of action properties MUST be
+             ; present and MUST match the action specified
+             ; in the ACTION property
+             ;
+             actionprops /
+             ;
+             ; the following are OPTIONAL
+             ; and MAY occur more than once
+             ;
+             x-prop / iana-prop
+             ;
+             )
+
+actionprops = *audiopropext / *disppropext / *emailpropext
+
+audiopropext  = (
+                ;
+                ; 'duration' and 'repeat' are both OPTIONAL
+                ; and MUST NOT occur more than once each,
+                ; but if one occurs, so MUST the other
+                ;
+                duration / repeat /
+                ;
+                ; the following is OPTIONAL
+                ; but MUST NOT occur more than once
+                ;
+                attach
+                ;
+                )
+
+disppropext = (
+              ;
+              ; the following are REQUIRED
+              ; but MUST NOT occur more than once
+              ;
+              description /
+              ;
+              ; 'duration' and 'repeat' are both OPTIONAL
+              ; and MUST NOT occur more than once each,
+              ; but if one occurs, so MUST the other
+              ;
+              duration / repeat
+              ;
+              )
+
+emailpropext = (
+               ;
+               ; the following are all REQUIRED
+               ; but MUST NOT occur more than once
+               ;
+               description / summary /
+               ;
+               ; the following is REQUIRED
+               ; and MAY occur more than once
+               ;
+               attendee /
+               ;
+               ; 'duration' and 'repeat' are both OPTIONAL
+               ; and MUST NOT occur more than once each,
+               ; but if one occurs, so MUST the other
+               ;
+               duration / repeat
+               ;
+               ; the following is OPTIONAL
+               ; and MAY occur more than once
+               ;
+               attach
+               ;
+               )
+
+alarm-subcomp = (
+                ;
+                ; the following are OPTIONAL
+                ; and MAY occur more than once
+                ;
+                x-comp / iana-comp
+                ;
+                )
+</pre><a href="#section-3-3" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="uid">
+<section id="section-4">
+      <h2 id="name-alarm-unique-identifier">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-alarm-unique-identifier" class="section-name selfRef">Alarm Unique Identifier</a>
+      </h2>
+<p id="section-4-1">This extension adds a "UID"
+      property to "VALARM" components to allow a unique identifier to
+      be specified. The value of this property can then be used to refer
+      uniquely to the "VALARM" component.<a href="#section-4-1" class="pilcrow">¶</a></p>
+<p id="section-4-2">The "UID" property defined here follows the definition in
+      <span><a href="https://www.rfc-editor.org/rfc/rfc5545#section-3.8.4.7" class="relref">Section 3.8.4.7</a> of [<a href="#RFC5545" class="xref">RFC5545</a>]</span> with the security
+      and privacy updates in <span><a href="https://www.rfc-editor.org/rfc/rfc7986#section-5.3" class="relref">Section 5.3</a> of [<a href="#RFC7986" class="xref">RFC7986</a>]</span>.
+      In particular, it <span class="bcp14">MUST</span> be a globally unique identifier that does
+      not contain any security- or privacy-sensitive information.<a href="#section-4-2" class="pilcrow">¶</a></p>
+<p id="section-4-3">The "VALARM" component defined in <a href="#syntax" class="xref">Section 3</a> is
+      extended here as:<a href="#section-4-3" class="pilcrow">¶</a></p>
+<div id="section-4-4">
+<pre class="sourcecode lang-abnf">
+alarmprop  =/ (
+              ;
+              ; the following is OPTIONAL
+              ; but MUST NOT occur more than once
+              ;
+              uid
+              ;
+              )
+</pre><a href="#section-4-4" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="RELATED">
+<section id="section-5">
+      <h2 id="name-alarm-related-to">
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-alarm-related-to" class="section-name selfRef">Alarm Related To</a>
+      </h2>
+<p id="section-5-1">It is often convenient to relate one or more "VALARM"
+      components to other "VALARM" components (e.g., see <a href="#snooze" class="xref">Section 7</a>). This can be accomplished if the "VALARM"
+      components each have their own "UID" property (as per <a href="#uid" class="xref">Section 4</a>).<a href="#section-5-1" class="pilcrow">¶</a></p>
+<p id="section-5-2">This specification updates the usage of the "RELATED-TO"
+      property defined in <span><a href="https://www.rfc-editor.org/rfc/rfc5545#section-3.8.4.5" class="relref">Section 3.8.4.5</a> of [<a href="#RFC5545" class="xref">RFC5545</a>]</span>
+      to enable its use with "VALARM" components. Specific types of
+      relationships between "VALARM" components can be identified by
+      registering new values for the "RELTYPE" property parameter
+      defined in <span><a href="https://www.rfc-editor.org/rfc/rfc5545#section-3.2.15" class="relref">Section 3.2.15</a> of [<a href="#RFC5545" class="xref">RFC5545</a>]</span>.<a href="#section-5-2" class="pilcrow">¶</a></p>
+<p id="section-5-3">The "VALARM" component defined in <a href="#syntax" class="xref">Section 3</a> is
+      extended here as:<a href="#section-5-3" class="pilcrow">¶</a></p>
+<div id="section-5-4">
+<pre class="sourcecode lang-abnf">
+alarmprop  =/ (
+              ;
+              ; the following is OPTIONAL
+              ; and MAY occur more than once
+              ;
+              related
+              ;
+              )
+</pre><a href="#section-5-4" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<section id="section-6">
+      <h2 id="name-alarm-acknowledgement">
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-alarm-acknowledgement" class="section-name selfRef">Alarm Acknowledgement</a>
+      </h2>
+<p id="section-6-1">There is currently no way for a "VALARM" component to
+      indicate whether it has been triggered and acknowledged. With
+      the advent of a standard client/server protocol for calendaring
+      and scheduling data (<span>[<a href="#RFC4791" class="xref">RFC4791</a>]</span>), it is quite
+      possible for an event with an alarm to exist on multiple clients
+      in addition to the server. If each of those is responsible for
+      performing the action when an alarm triggers, then multiple
+      "alerts" are generated by different devices. In such a
+      situation, a calendar user would like to be able to "dismiss"
+      the alarm on one device and have it automatically dismissed on
+      the others, too.<a href="#section-6-1" class="pilcrow">¶</a></p>
+<p id="section-6-2">Also, with recurring events that have alarms, it is important
+      to know when the last alarm in the recurring set was
+      acknowledged so that the client can determine whether past
+      alarms have been missed.<a href="#section-6-2" class="pilcrow">¶</a></p>
+<p id="section-6-3">To address these needs, this specification adds an
+      "ACKNOWLEDGED" property to "VALARM" components to indicate when
+      the alarm was last acknowledged (or sent, if acknowledgement is
+      not possible).
+      This is defined by the
+      syntax below.<a href="#section-6-3" class="pilcrow">¶</a></p>
+<div id="section-6-4">
+<pre class="sourcecode lang-abnf">
+alarmprop       =/ (
+                   ;
+                   ; the following is OPTIONAL
+                   ; but MUST NOT occur more than once
+                   ;
+                   acknowledged
+                   ;
+                   )
+</pre><a href="#section-6-4" class="pilcrow">¶</a>
+</div>
+<div id="ACKNOWLEDGED">
+<section id="section-6.1">
+        <h3 id="name-acknowledged-property">
+<a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-acknowledged-property" class="section-name selfRef">Acknowledged Property</a>
+        </h3>
+<span class="break"></span><dl class="dlParallel" id="section-6.1-1">
+          <dt id="section-6.1-1.1">Property Name:</dt>
+          <dd style="margin-left: 1.5em" id="section-6.1-1.2">ACKNOWLEDGED<a href="#section-6.1-1.2" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-6.1-1.3">Purpose:</dt>
+          <dd style="margin-left: 1.5em" id="section-6.1-1.4">This property specifies the UTC
+            date and time at which the corresponding alarm was last
+            sent or acknowledged.<a href="#section-6.1-1.4" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-6.1-1.5">Value Type:</dt>
+          <dd style="margin-left: 1.5em" id="section-6.1-1.6">DATE-TIME<a href="#section-6.1-1.6" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-6.1-1.7">Property Parameters:</dt>
+          <dd style="margin-left: 1.5em" id="section-6.1-1.8">IANA and nonstandard
+            property parameters can be specified on this property.<a href="#section-6.1-1.8" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-6.1-1.9">Conformance:</dt>
+          <dd style="margin-left: 1.5em" id="section-6.1-1.10">This property can be specified
+            within "VALARM" calendar components.<a href="#section-6.1-1.10" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-6.1-1.11">Description:</dt>
+          <dd style="margin-left: 1.5em" id="section-6.1-1.12">
+            <p id="section-6.1-1.12.1">This property is used to
+            specify when an alarm was last sent or acknowledged. This
+            allows clients to determine when a pending alarm has been
+            acknowledged by a calendar user so that any alerts can be
+            dismissed across multiple devices. It also allows clients
+            to track repeating alarms or alarms on recurring events or
+            to-dos to ensure that the right number of missed alarms
+            can be tracked.<a href="#section-6.1-1.12.1" class="pilcrow">¶</a></p>
+<p id="section-6.1-1.12.2">Clients <span class="bcp14">SHOULD</span> set this property to the current
+            date-time value in UTC when a calendar user acknowledges a
+            pending alarm.
+            Certain kinds of alarms, such as email-based alerts, might
+            not provide feedback as to when the calendar user sees them.
+            For those kinds of alarms, the
+            client <span class="bcp14">SHOULD</span> set this property when the alarm is
+            triggered and the action is successfully carried out.<a href="#section-6.1-1.12.2" class="pilcrow">¶</a></p>
+<p id="section-6.1-1.12.3">When an alarm is triggered on a
+            client, clients can check to see if an "ACKNOWLEDGED"
+            property is present. If it is, and the value of that
+            property is greater than or equal to the computed trigger
+            time for the alarm, then the client <span class="bcp14">SHOULD NOT</span> trigger the
+            alarm. Similarly, if an alarm has been triggered and an
+            "alert" has been presented to a calendar user, clients can monitor
+            the iCalendar data to determine whether an "ACKNOWLEDGED" property
+            is added or changed in the alarm component. If the value
+            of any "ACKNOWLEDGED" property in the alarm changes and is greater
+            than or equal to the trigger time of the alarm, then
+            clients <span class="bcp14">SHOULD</span> dismiss or cancel any "alert" presented to
+            the calendar user.<a href="#section-6.1-1.12.3" class="pilcrow">¶</a></p>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-6.1-1.13">Format Definition:</dt>
+          <dd style="margin-left: 1.5em" id="section-6.1-1.14">
+            <p id="section-6.1-1.14.1">This property is defined
+            by the following notation:<a href="#section-6.1-1.14.1" class="pilcrow">¶</a></p>
+<div id="section-6.1-1.14.2">
+<pre class="sourcecode lang-abnf">
+acknowledged = "ACKNOWLEDGED" *acknowledgedparam ":" datetime CRLF
+
+acknowledgedparam  = (
+                     ;
+                     ; the following is OPTIONAL
+                     ; and MAY occur more than once
+                     ;
+                     (";" other-param)
+                     ;
+                     )
+</pre><a href="#section-6.1-1.14.2" class="pilcrow">¶</a>
+</div>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-6.1-1.15">Example:</dt>
+          <dd style="margin-left: 1.5em" id="section-6.1-1.16">
+            <p id="section-6.1-1.16.1">The following is an example of this property:<a href="#section-6.1-1.16.1" class="pilcrow">¶</a></p>
+<div id="section-6.1-1.16.2">
+<pre class="sourcecode">
+ACKNOWLEDGED:20090604T084500Z
+</pre><a href="#section-6.1-1.16.2" class="pilcrow">¶</a>
+</div>
+</dd>
+        <dd class="break"></dd>
+</dl>
+</section>
+</div>
+</section>
+<div id="snooze">
+<section id="section-7">
+      <h2 id="name-snoozing-alarms">
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-snoozing-alarms" class="section-name selfRef">Snoozing Alarms</a>
+      </h2>
+<p id="section-7-1">Users often want to "snooze" an alarm, and this specification
+      defines a standard approach to accomplish that.<a href="#section-7-1" class="pilcrow">¶</a></p>
+<p id="section-7-2">To "snooze" an alarm that has been triggered, clients <span class="bcp14">MUST</span> do
+      the following:<a href="#section-7-2" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-7-3">
+ <li id="section-7-3.1">
+          <p id="section-7-3.1.1">Set the "ACKNOWLEDGED" property
+        (see <a href="#ACKNOWLEDGED" class="xref">Section 6.1</a>) on the triggered alarm.<a href="#section-7-3.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-7-3.2">
+          <p id="section-7-3.2.1">Create a new "VALARM" component (the "snooze" alarm) within
+        the parent component of the triggered alarm
+        (i.e., as a "sibling" component of the triggered alarm).<a href="#section-7-3.2.1" class="pilcrow">¶</a></p>
+<ol start="1" type="a" class="normal type-a" id="section-7-3.2.2">
+     <li id="section-7-3.2.2.1">The new "snooze" alarm <span class="bcp14">MUST</span> be set to trigger
+          at the user's chosen "snooze" interval after the original alarm is
+          triggered. Clients <span class="bcp14">SHOULD</span> use an absolute "TRIGGER" property
+          with a "DATE-TIME" value specified in UTC.<a href="#section-7-3.2.2.1" class="pilcrow">¶</a>
+</li>
+            <li id="section-7-3.2.2.2">The new "snooze" alarm <span class="bcp14">MUST</span> have a "RELATED-TO" property
+          (see <a href="#RELATED" class="xref">Section 5</a>)
+          with a value set to the "UID" property value of the original
+          "VALARM" component that was triggered.
+          If the triggered "VALARM" component does not
+          already have a "UID" property, the client <span class="bcp14">MUST</span> add one. The
+          "RELATED-TO" property added to the new "snooze" alarm <span class="bcp14">MUST</span>
+          include a "RELTYPE" property parameter with a value set to
+          "SNOOZE" (see <a href="#SNOOZE-PARAM" class="xref">Section 7.1</a>).<a href="#section-7-3.2.2.2" class="pilcrow">¶</a>
+</li>
+          </ol>
+</li>
+        <li id="section-7-3.3">
+          <p id="section-7-3.3.1">When the "snooze" alarm is triggered, the client <span class="bcp14">MUST</span> do the
+        following:<a href="#section-7-3.3.1" class="pilcrow">¶</a></p>
+<ol start="1" type="a" class="normal type-a" id="section-7-3.3.2">
+     <li id="section-7-3.3.2.1">Update the "ACKNOWLEDGED" property on the original related
+          alarm.<a href="#section-7-3.3.2.1" class="pilcrow">¶</a>
+</li>
+            <li id="section-7-3.3.2.2">
+              <p id="section-7-3.3.2.2.1">If the "snooze" alarm is itself "snoozed", the client <span class="bcp14">MUST</span>
+          remove the "snooze" alarm component and return to step 2.<a href="#section-7-3.3.2.2.1" class="pilcrow">¶</a></p>
+<p id="section-7-3.3.2.2.2">
+          Otherwise, if the "snooze" alarm is dismissed, the client
+          <span class="bcp14">MUST</span> do one of the following:<a href="#section-7-3.3.2.2.2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-7-3.3.2.2.3.1">Set the "ACKNOWLEDGED" property on the "snooze" alarm.<a href="#section-7-3.3.2.2.3.1" class="pilcrow">¶</a>
+</li>
+                <li class="normal" id="section-7-3.3.2.2.3.2">Remove the "snooze" alarm component.<a href="#section-7-3.3.2.2.3.2" class="pilcrow">¶</a>
+</li>
+              </ul>
+</li>
+          </ol>
+</li>
+      </ol>
+<p id="section-7-4">Note that regardless of the final disposition of the "snooze"
+      alarm when triggered, the original "VALARM" component is left
+      unchanged other than updating its "ACKNOWLEDGED" property.<a href="#section-7-4" class="pilcrow">¶</a></p>
+<div id="SNOOZE-PARAM">
+<section id="section-7.1">
+        <h3 id="name-relationship-type-property-">
+<a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-relationship-type-property-" class="section-name selfRef">Relationship Type Property Parameter</a>
+        </h3>
+<p id="section-7.1-1">
+            This specification adds the "SNOOZE" relationship type for
+            use with the "RELTYPE" property defined in
+            <span><a href="https://www.rfc-editor.org/rfc/rfc5545#section-3.2.15" class="relref">Section 3.2.15</a> of [<a href="#RFC5545" class="xref">RFC5545</a>]</span>. This is used when relating a
+            "snoozed" "VALARM" component to the original alarm that
+            the "snooze" was generated for.<a href="#section-7.1-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<section id="section-7.2">
+        <h3 id="name-example">
+<a href="#section-7.2" class="section-number selfRef">7.2. </a><a href="#name-example" class="section-name selfRef">Example</a>
+        </h3>
+<p id="section-7.2-1">The following example shows the "snoozing", "re-snoozing", and
+        dismissal of an alarm.  Note that the encompassing
+        "VCALENDAR" component has been omitted for brevity and that the
+        line breaks surrounding the "VALARM" components are for clarity
+        only and would not be present in the actual iCalendar data.<a href="#section-7.2-1" class="pilcrow">¶</a></p>
+<p id="section-7.2-2">Assume that we have the following event with an alarm set
+        to trigger 15 minutes before the meeting:<a href="#section-7.2-2" class="pilcrow">¶</a></p>
+<div id="section-7.2-3">
+<pre class="sourcecode">
+BEGIN:VEVENT
+CREATED:20210302T151004Z
+UID:AC67C078-CED3-4BF5-9726-832C3749F627
+DTSTAMP:20210302T151004Z
+DTSTART;TZID=America/New_York:20210302T103000
+DTEND;TZID=America/New_York:20210302T113000
+SUMMARY:Meeting
+
+BEGIN:VALARM
+UID:8297C37D-BA2D-4476-91AE-C1EAA364F8E1
+TRIGGER:-PT15M
+DESCRIPTION:Event reminder
+ACTION:DISPLAY
+END:VALARM
+
+END:VEVENT
+</pre><a href="#section-7.2-3" class="pilcrow">¶</a>
+</div>
+<p id="section-7.2-4">When the alarm is triggered, the user decides to "snooze" it
+        for 5 minutes.  The client acknowledges the original alarm and
+        creates a new "snooze" alarm as a sibling of, and relates it
+        to, the original alarm (note that both occurrences of "VALARM" reside within the
+        same "parent" VEVENT):<a href="#section-7.2-4" class="pilcrow">¶</a></p>
+<div id="section-7.2-5">
+<pre class="sourcecode">
+BEGIN:VEVENT
+CREATED:20210302T151004Z
+UID:AC67C078-CED3-4BF5-9726-832C3749F627
+DTSTAMP:20210302T151516Z
+DTSTART;TZID=America/New_York:20210302T103000
+DTEND;TZID=America/New_York:20210302T113000
+SUMMARY:Meeting
+
+BEGIN:VALARM
+UID:8297C37D-BA2D-4476-91AE-C1EAA364F8E1
+TRIGGER:-PT15M
+DESCRIPTION:Event reminder
+ACTION:DISPLAY
+ACKNOWLEDGED:20210302T151514Z
+END:VALARM
+
+BEGIN:VALARM
+UID:DE7B5C34-83FF-47FE-BE9E-FF41AE6DD097
+TRIGGER;VALUE=DATE-TIME:20210302T152000Z
+RELATED-TO;RELTYPE=SNOOZE:8297C37D-BA2D-4476-91AE-C1EAA364F8E1
+DESCRIPTION:Event reminder
+ACTION:DISPLAY
+END:VALARM
+
+END:VEVENT
+</pre><a href="#section-7.2-5" class="pilcrow">¶</a>
+</div>
+<p id="section-7.2-6">When the "snooze" alarm is triggered, the user decides to
+        "snooze" it again for an additional 5 minutes.  The client
+        once again acknowledges the original alarm, removes the triggered
+        "snooze" alarm, and creates another new "snooze" alarm as a
+        sibling of, and relates it to, the original alarm (note the
+        different UID for the new "snooze" alarm):<a href="#section-7.2-6" class="pilcrow">¶</a></p>
+<div id="section-7.2-7">
+<pre class="sourcecode">
+BEGIN:VEVENT
+CREATED:20210302T151004Z
+UID:AC67C078-CED3-4BF5-9726-832C3749F627
+DTSTAMP:20210302T152026Z
+DTSTART;TZID=America/New_York:20210302T103000
+DTEND;TZID=America/New_York:20210302T113000
+SUMMARY:Meeting
+
+BEGIN:VALARM
+UID:8297C37D-BA2D-4476-91AE-C1EAA364F8E1
+TRIGGER:-PT15M
+DESCRIPTION:Event reminder
+ACTION:DISPLAY
+ACKNOWLEDGED:20210302T152024Z
+END:VALARM
+
+BEGIN:VALARM
+UID:87D690A7-B5E8-4EB4-8500-491F50AFE394
+TRIGGER;VALUE=DATE-TIME:20210302T152500Z
+RELATED-TO;RELTYPE=SNOOZE:8297C37D-BA2D-4476-91AE-C1EAA364F8E1
+DESCRIPTION:Event reminder
+ACTION:DISPLAY
+END:VALARM
+
+END:VEVENT
+</pre><a href="#section-7.2-7" class="pilcrow">¶</a>
+</div>
+<p id="section-7.2-8">When the second "snooze" alarm is triggered, the user
+        decides to dismiss it.  The client acknowledges both the
+        original alarm and the second "snooze" alarm:<a href="#section-7.2-8" class="pilcrow">¶</a></p>
+<div id="section-7.2-9">
+<pre class="sourcecode">
+BEGIN:VEVENT
+CREATED:20210302T151004Z
+UID:AC67C078-CED3-4BF5-9726-832C3749F627
+DTSTAMP:20210302T152508Z
+DTSTART;TZID=America/New_York:20210302T103000
+DTEND;TZID=America/New_York:20210302T113000
+SUMMARY:Meeting
+
+BEGIN:VALARM
+UID:8297C37D-BA2D-4476-91AE-C1EAA364F8E1
+TRIGGER:-PT15M
+DESCRIPTION:Event reminder
+ACTION:DISPLAY
+ACKNOWLEDGED:20210302T152507Z
+END:VALARM
+
+BEGIN:VALARM
+UID:87D690A7-B5E8-4EB4-8500-491F50AFE394
+TRIGGER;VALUE=DATE-TIME:20210302T152500Z
+RELATED-TO;RELTYPE=SNOOZE:8297C37D-BA2D-4476-91AE-C1EAA364F8E1
+DESCRIPTION:Event reminder
+ACTION:DISPLAY
+ACKNOWLEDGED:20210302T152507Z
+END:VALARM
+
+END:VEVENT
+</pre><a href="#section-7.2-9" class="pilcrow">¶</a>
+</div>
+</section>
+</section>
+</div>
+<div id="proximity">
+<section id="section-8">
+      <h2 id="name-alarm-proximity-trigger">
+<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-alarm-proximity-trigger" class="section-name selfRef">Alarm Proximity Trigger</a>
+      </h2>
+<p id="section-8-1">Currently, a "VALARM" is triggered when a specific date-time value is
+      reached. It is also desirable to be able to trigger alarms based
+      on location, e.g., when arriving at or departing from a
+      particular location.<a href="#section-8-1" class="pilcrow">¶</a></p>
+<p id="section-8-2">This specification adds the following elements to "VALARM"
+      components to indicate when an alarm can be triggered based on
+      location.<a href="#section-8-2" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlParallel" id="section-8-3">
+        <dt id="section-8-3.1">"PROXIMITY" property:</dt>
+        <dd style="margin-left: 1.5em" id="section-8-3.2">indicates that a location-based trigger is to
+        be used and which action is used for the trigger<a href="#section-8-3.2" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-8-3.3">
+<span><a href="#RFC9073" class="xref">"VLOCATION" component(s)</a> [<a href="#RFC9073" class="xref">RFC9073</a>]</span>:</dt>
+        <dd style="margin-left: 1.5em" id="section-8-3.4">used to indicate the actual
+        location(s) to trigger off of, specified with a URL property containing a
+        <span><a href="#RFC5870" class="xref">'geo' URI</a> [<a href="#RFC5870" class="xref">RFC5870</a>]</span>, which allows for two or three
+        coordinate values with an optional uncertainty<a href="#section-8-3.4" class="pilcrow">¶</a>
+</dd>
+      <dd class="break"></dd>
+</dl>
+<div id="section-8-4">
+<pre class="sourcecode lang-abnf">
+alarmprop       =/ (
+                   ;
+                   ; the following is OPTIONAL
+                   ; but MUST NOT occur more than once
+                   ;
+                   proximity
+                   ;
+                   )
+
+alarm-subcomp   =/ (
+                   ;
+                   ; the following is OPTIONAL
+                   ; and MAY occur more than once but only
+                   ; when a PROXIMITY property is also present
+                   ;
+                   locationc
+                   ;
+                   )
+</pre><a href="#section-8-4" class="pilcrow">¶</a>
+</div>
+<p id="section-8-5">
+        Typically, when a "PROXIMITY" property is used, there is no
+        need to specify a time-based trigger using the "TRIGGER"
+        property. However, since "TRIGGER" is defined as a required
+        property for a "VALARM" component, for backwards compatibility,
+        it has to be present but ignored. To indicate a "TRIGGER"
+        that is to be ignored, clients <span class="bcp14">SHOULD</span> use a value a long time
+        in the past. A value of "19760401T005545Z" has been commonly
+        used for this purpose.<a href="#section-8-5" class="pilcrow">¶</a></p>
+<div id="PROXIMITY">
+<section id="section-8.1">
+        <h3 id="name-proximity-property">
+<a href="#section-8.1" class="section-number selfRef">8.1. </a><a href="#name-proximity-property" class="section-name selfRef">Proximity Property</a>
+        </h3>
+<span class="break"></span><dl class="dlParallel" id="section-8.1-1">
+          <dt id="section-8.1-1.1">Property Name:</dt>
+          <dd style="margin-left: 1.5em" id="section-8.1-1.2">PROXIMITY<a href="#section-8.1-1.2" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-8.1-1.3">Purpose:</dt>
+          <dd style="margin-left: 1.5em" id="section-8.1-1.4">This property indicates that a
+            location-based trigger is applied to an alarm.<a href="#section-8.1-1.4" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-8.1-1.5">Value Type:</dt>
+          <dd style="margin-left: 1.5em" id="section-8.1-1.6">TEXT<a href="#section-8.1-1.6" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-8.1-1.7">Property Parameters:</dt>
+          <dd style="margin-left: 1.5em" id="section-8.1-1.8">IANA and nonstandard
+            property parameters can be specified on this property.<a href="#section-8.1-1.8" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-8.1-1.9">Conformance:</dt>
+          <dd style="margin-left: 1.5em" id="section-8.1-1.10">This property can be specified
+            within "VALARM" calendar components.<a href="#section-8.1-1.10" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-8.1-1.11">Description:</dt>
+          <dd style="margin-left: 1.5em" id="section-8.1-1.12">
+            <p id="section-8.1-1.12.1">This property is used to
+            indicate that an alarm has a location-based trigger.
+            Its value identifies the action that will trigger the alarm.<a href="#section-8.1-1.12.1" class="pilcrow">¶</a></p>
+<p id="section-8.1-1.12.2">When the property value is set to "ARRIVE", the alarm
+            is triggered when the calendar user agent arrives in the
+            vicinity of one or more locations.  When set to
+            "DEPART", the alarm is triggered when the calendar user
+            agent departs from the vicinity of one or more locations.
+            Each location <span class="bcp14">MUST</span> be specified with a "VLOCATION"
+            component.
+            Note that the meaning of "vicinity" in this
+            context is implementation defined.<a href="#section-8.1-1.12.2" class="pilcrow">¶</a></p>
+<p id="section-8.1-1.12.3">When the property value is set to "CONNECT", the alarm
+            is triggered when the calendar user agent connects to an
+            automobile to which it has been paired via
+            <span><a href="#BTcore" class="xref">Bluetooth</a> [<a href="#BTcore" class="xref">BTcore</a>]</span>.
+            When set to "DISCONNECT", the alarm is
+            triggered when the calendar user agent disconnects from an
+            automobile to which it has been paired via Bluetooth.
+            Note that neither current implementations of proximity
+            alarms nor this document have a mechanism to target a
+            particular automobile.
+            Such a mechanism may be specified in a future extension.<a href="#section-8.1-1.12.3" class="pilcrow">¶</a></p>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-8.1-1.13">Format Definition:</dt>
+          <dd style="margin-left: 1.5em" id="section-8.1-1.14">
+            <p id="section-8.1-1.14.1">This property is defined
+            by the following notation:<a href="#section-8.1-1.14.1" class="pilcrow">¶</a></p>
+<div id="section-8.1-1.14.2">
+<pre class="sourcecode lang-abnf">
+proximity = "PROXIMITY" *proximityparam ":" proximityvalue CRLF
+
+proximityparam  = (
+                  ;
+                  ; the following is OPTIONAL
+                  ; and MAY occur more than once
+                  ;
+                  (";" other-param)
+                  ;
+                  )
+
+proximityvalue  = "ARRIVE" / "DEPART" /
+                  "CONNECT" / "DISCONNECT" / iana-token / x-name
+</pre><a href="#section-8.1-1.14.2" class="pilcrow">¶</a>
+</div>
+</dd>
+        <dd class="break"></dd>
+</dl>
+</section>
+</div>
+<section id="section-8.2">
+        <h3 id="name-example-2">
+<a href="#section-8.2" class="section-number selfRef">8.2. </a><a href="#name-example-2" class="section-name selfRef">Example</a>
+        </h3>
+<p id="section-8.2-1">The following example shows a "VALARM" component with a
+        proximity trigger set to trigger when the device running the
+        calendar user agent leaves the vicinity defined by the
+        URL property in the "VLOCATION" component. Note use of the "u=" parameter
+        with the 'geo' URI to define the uncertainty of the location
+        determination.<a href="#section-8.2-1" class="pilcrow">¶</a></p>
+<div id="section-8.2-2">
+<pre class="sourcecode">
+BEGIN:VALARM
+UID:77D80D14-906B-4257-963F-85B1E734DBB6
+ACTION:DISPLAY
+TRIGGER;VALUE=DATE-TIME:19760401T005545Z
+DESCRIPTION:Remember to buy milk
+PROXIMITY:DEPART
+BEGIN:VLOCATION
+UID:123456-abcdef-98765432
+NAME:Office
+URL:geo:40.443,-79.945;u=10
+END:VLOCATION
+END:VALARM
+</pre><a href="#section-8.2-2" class="pilcrow">¶</a>
+</div>
+</section>
+</section>
+</div>
+<section id="section-9">
+      <h2 id="name-security-considerations">
+<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+      </h2>
+<p id="section-9-1">In addition to the security properties of iCalendar
+      (see <span><a href="https://www.rfc-editor.org/rfc/rfc5545#section-7" class="relref">Section 7</a> of [<a href="#RFC5545" class="xref">RFC5545</a>]</span>),
+      a "VALARM", if not monitored properly, can be used to disturb
+      users and/or leak personal information.  For instance, an
+      undesirable audio alert could cause embarrassment; an
+      unwanted display alert could be considered an annoyance; or an
+      email alert could be used to leak a user's location to a third
+      party or to send unsolicited email to multiple users.
+      Therefore, CalDAV clients and servers that accept iCalendar data
+      from a third party (e.g., via iCalendar Transport-Independent Interoperability Protocol (iTIP) <span>[<a href="#RFC5546" class="xref">RFC5546</a>]</span>,
+      a subscription feed, or a shared calendar) <span class="bcp14">SHOULD</span> remove each
+      "VALARM" from the data prior to storing in their calendar system.<a href="#section-9-1" class="pilcrow">¶</a></p>
+<p id="section-9-2">Security considerations related to unique identifiers for "VALARM"
+      are discussed in <a href="#uid" class="xref">Section 4</a>.<a href="#section-9-2" class="pilcrow">¶</a></p>
+</section>
+<section id="section-10">
+      <h2 id="name-privacy-considerations">
+<a href="#section-10" class="section-number selfRef">10. </a><a href="#name-privacy-considerations" class="section-name selfRef">Privacy Considerations</a>
+      </h2>
+<p id="section-10-1">A proximity "VALARM", if not used carefully, can leak a
+      user's past, present, or future location.  For instance,
+      storing an iCalendar resource containing proximity "VALARM"s to a
+      shared calendar on CalDAV server can expose to anyone that has
+      access to that calendar the user's intent to leave
+      from or arrive at a particular location at some future time.
+      Furthermore, if a CalDAV client updates the shared iCalendar
+      resource with an "ACKNOWLEDGED" property when the alarm is
+      triggered, this will leak the exact date and time that the user left
+      from or arrived at the location.
+      
+      Therefore, CalDAV clients that implement proximity alarms
+      <span class="bcp14">SHOULD</span> give users the option of storing and/or acknowledging the
+      alarms on the local device only and not storing the alarm and/or
+      acknowledgement on a remote server.<a href="#section-10-1" class="pilcrow">¶</a></p>
+<p id="section-10-2">Privacy considerations related to unique identifiers for "VALARM"
+      are discussed in <a href="#uid" class="xref">Section 4</a>.<a href="#section-10-2" class="pilcrow">¶</a></p>
+</section>
+<section id="section-11">
+      <h2 id="name-iana-considerations">
+<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+      </h2>
+<section id="section-11.1">
+        <h3 id="name-property-registrations">
+<a href="#section-11.1" class="section-number selfRef">11.1. </a><a href="#name-property-registrations" class="section-name selfRef">Property Registrations</a>
+        </h3>
+<p id="section-11.1-1">This document defines the following new iCalendar
+        properties that have been added to the "Properties" registry defined in
+        <span><a href="https://www.rfc-editor.org/rfc/rfc5545#section-8.2.3" class="relref">Section 8.2.3</a> of [<a href="#RFC5545" class="xref">RFC5545</a>]</span> and located here:
+        <span>&lt;<a href="https://www.iana.org/assignments/icalendar">https://www.iana.org/assignments/icalendar</a>&gt;</span>.<a href="#section-11.1-1" class="pilcrow">¶</a></p>
+<span id="name-additions-to-the-properties"></span><table class="center" id="table-1">
+          <caption>
+<a href="#table-1" class="selfRef">Table 1</a>:
+<a href="#name-additions-to-the-properties" class="selfRef">Additions to the Properties Registry</a>
+          </caption>
+<thead>
+            <tr>
+              <th class="text-left" rowspan="1" colspan="1">Property</th>
+              <th class="text-left" rowspan="1" colspan="1">Status</th>
+              <th class="text-left" rowspan="1" colspan="1">Reference</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">ACKNOWLEDGED</td>
+              <td class="text-left" rowspan="1" colspan="1">Current</td>
+              <td class="text-left" rowspan="1" colspan="1">RFC 9074, <a href="#ACKNOWLEDGED" class="xref">Section 6.1</a>
+</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">PROXIMITY</td>
+              <td class="text-left" rowspan="1" colspan="1">Current</td>
+              <td class="text-left" rowspan="1" colspan="1">RFC 9074, <a href="#PROXIMITY" class="xref">Section 8.1</a>
+</td>
+            </tr>
+          </tbody>
+        </table>
+</section>
+<section id="section-11.2">
+        <h3 id="name-relationship-types-registry">
+<a href="#section-11.2" class="section-number selfRef">11.2. </a><a href="#name-relationship-types-registry" class="section-name selfRef">Relationship Types Registry</a>
+        </h3>
+<p id="section-11.2-1">This document defines the following new iCalendar
+        relationship type that has been added to the "Relationship Types" registry defined in
+        <span><a href="https://www.rfc-editor.org/rfc/rfc5545#section-8.3.8" class="relref">Section 8.3.8</a> of [<a href="#RFC5545" class="xref">RFC5545</a>]</span> and located here:
+        <span>&lt;<a href="https://www.iana.org/assignments/icalendar">https://www.iana.org/assignments/icalendar</a>&gt;</span>.<a href="#section-11.2-1" class="pilcrow">¶</a></p>
+<span id="name-addition-to-the-relationshi"></span><table class="center" id="table-2">
+          <caption>
+<a href="#table-2" class="selfRef">Table 2</a>:
+<a href="#name-addition-to-the-relationshi" class="selfRef">Addition to the Relationship Types Registry</a>
+          </caption>
+<thead>
+            <tr>
+              <th class="text-left" rowspan="1" colspan="1">Relationship Type</th>
+              <th class="text-left" rowspan="1" colspan="1">Status</th>
+              <th class="text-left" rowspan="1" colspan="1">Reference</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">SNOOZE</td>
+              <td class="text-left" rowspan="1" colspan="1">Current</td>
+              <td class="text-left" rowspan="1" colspan="1">RFC 9074, <a href="#SNOOZE-PARAM" class="xref">Section 7.1</a>
+</td>
+            </tr>
+          </tbody>
+        </table>
+</section>
+<section id="section-11.3">
+        <h3 id="name-proximity-values-registry">
+<a href="#section-11.3" class="section-number selfRef">11.3. </a><a href="#name-proximity-values-registry" class="section-name selfRef">Proximity Values Registry</a>
+        </h3>
+<p id="section-11.3-1">A new iCalendar registry for values
+          of the "PROXIMITY" property has been created and is located here:
+          <span>&lt;<a href="https://www.iana.org/assignments/icalendar">https://www.iana.org/assignments/icalendar</a>&gt;</span>.<a href="#section-11.3-1" class="pilcrow">¶</a></p>
+<p id="section-11.3-2">Additional values <span class="bcp14">MAY</span> be used, provided the process described in
+          <span><a href="https://www.rfc-editor.org/rfc/rfc5545#section-8.2.1" class="relref">Section 8.2.1</a> of [<a href="#RFC5545" class="xref">RFC5545</a>]</span> is used to
+          register them, using the template in
+          <span><a href="https://www.rfc-editor.org/rfc/rfc5545#section-8.2.6" class="relref">Section 8.2.6</a> of [<a href="#RFC5545" class="xref">RFC5545</a>]</span>.<a href="#section-11.3-2" class="pilcrow">¶</a></p>
+<p id="section-11.3-3">The following table has been used to initialize the
+          Proximity Value Registry.<a href="#section-11.3-3" class="pilcrow">¶</a></p>
+<span id="name-initial-contents-of-the-pro"></span><table class="center" id="table-3">
+          <caption>
+<a href="#table-3" class="selfRef">Table 3</a>:
+<a href="#name-initial-contents-of-the-pro" class="selfRef">Initial Contents of the Proximity Values Registry</a>
+          </caption>
+<thead>
+            <tr>
+              <th class="text-left" rowspan="1" colspan="1">Value</th>
+              <th class="text-left" rowspan="1" colspan="1">Status</th>
+              <th class="text-left" rowspan="1" colspan="1">Reference</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">ARRIVE</td>
+              <td class="text-left" rowspan="1" colspan="1">Current</td>
+              <td class="text-left" rowspan="1" colspan="1">RFC 9074, <a href="#PROXIMITY" class="xref">Section 8.1</a>
+</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">DEPART</td>
+              <td class="text-left" rowspan="1" colspan="1">Current</td>
+              <td class="text-left" rowspan="1" colspan="1">RFC 9074, <a href="#PROXIMITY" class="xref">Section 8.1</a>
+</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">CONNECT</td>
+              <td class="text-left" rowspan="1" colspan="1">Current</td>
+              <td class="text-left" rowspan="1" colspan="1">RFC 9074, <a href="#PROXIMITY" class="xref">Section 8.1</a>
+</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">DISCONNECT</td>
+              <td class="text-left" rowspan="1" colspan="1">Current</td>
+              <td class="text-left" rowspan="1" colspan="1">RFC 9074, <a href="#PROXIMITY" class="xref">Section 8.1</a>
+</td>
+            </tr>
+          </tbody>
+        </table>
+</section>
+</section>
+<section id="section-12">
+      <h2 id="name-references">
+<a href="#section-12" class="section-number selfRef">12. </a><a href="#name-references" class="section-name selfRef">References</a>
+      </h2>
+<section id="section-12.1">
+        <h3 id="name-normative-references">
+<a href="#section-12.1" class="section-number selfRef">12.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+        </h3>
+<dl class="references">
+<dt id="RFC2119">[RFC2119]</dt>
+        <dd>
+<span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc2119">https://www.rfc-editor.org/info/rfc2119</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC5234">[RFC5234]</dt>
+        <dd>
+<span class="refAuthor">Crocker, D., Ed.</span> and <span class="refAuthor">P. Overell</span>, <span class="refTitle">"Augmented BNF for Syntax Specifications: ABNF"</span>, <span class="seriesInfo">STD 68</span>, <span class="seriesInfo">RFC 5234</span>, <span class="seriesInfo">DOI 10.17487/RFC5234</span>, <time datetime="2008-01" class="refDate">January 2008</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc5234">https://www.rfc-editor.org/info/rfc5234</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC5545">[RFC5545]</dt>
+        <dd>
+<span class="refAuthor">Desruisseaux, B., Ed.</span>, <span class="refTitle">"Internet Calendaring and Scheduling Core Object Specification (iCalendar)"</span>, <span class="seriesInfo">RFC 5545</span>, <span class="seriesInfo">DOI 10.17487/RFC5545</span>, <time datetime="2009-09" class="refDate">September 2009</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc5545">https://www.rfc-editor.org/info/rfc5545</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC5870">[RFC5870]</dt>
+        <dd>
+<span class="refAuthor">Mayrhofer, A.</span> and <span class="refAuthor">C. Spanring</span>, <span class="refTitle">"A Uniform Resource Identifier for Geographic Locations ('geo' URI)"</span>, <span class="seriesInfo">RFC 5870</span>, <span class="seriesInfo">DOI 10.17487/RFC5870</span>, <time datetime="2010-06" class="refDate">June 2010</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc5870">https://www.rfc-editor.org/info/rfc5870</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7986">[RFC7986]</dt>
+        <dd>
+<span class="refAuthor">Daboo, C.</span>, <span class="refTitle">"New Properties for iCalendar"</span>, <span class="seriesInfo">RFC 7986</span>, <span class="seriesInfo">DOI 10.17487/RFC7986</span>, <time datetime="2016-10" class="refDate">October 2016</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc7986">https://www.rfc-editor.org/info/rfc7986</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8174">[RFC8174]</dt>
+        <dd>
+<span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8174">https://www.rfc-editor.org/info/rfc8174</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9073">[RFC9073]</dt>
+      <dd>
+<span class="refAuthor">Douglass, M.</span>, <span class="refTitle">"Event Publishing Extensions to iCalendar"</span>, <span class="seriesInfo">RFC 9073</span>, <span class="seriesInfo">DOI 10.17487/RFC9073</span>, <time datetime="2021-08" class="refDate">August 2021</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc9073">https://www.rfc-editor.org/info/rfc9073</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+<section id="section-12.2">
+        <h3 id="name-informative-references">
+<a href="#section-12.2" class="section-number selfRef">12.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+        </h3>
+<dl class="references">
+<dt id="BTcore">[BTcore]</dt>
+        <dd>
+<span class="refAuthor">Bluetooth Special Interest Group</span>, <span class="refTitle">"Bluetooth Core Specification Version 5.0 Feature Overview"</span>, <time datetime="2016-12" class="refDate">December 2016</time>, <span>&lt;<a href="https://www.bluetooth.com/bluetooth-resources/bluetooth-5-%20%20%20%20%20%20%20%20go-faster-go-further/">https://www.bluetooth.com/bluetooth-resources/bluetooth-5-        go-faster-go-further/</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC4791">[RFC4791]</dt>
+        <dd>
+<span class="refAuthor">Daboo, C.</span>, <span class="refAuthor">Desruisseaux, B.</span>, and <span class="refAuthor">L. Dusseault</span>, <span class="refTitle">"Calendaring Extensions to WebDAV (CalDAV)"</span>, <span class="seriesInfo">RFC 4791</span>, <span class="seriesInfo">DOI 10.17487/RFC4791</span>, <time datetime="2007-03" class="refDate">March 2007</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc4791">https://www.rfc-editor.org/info/rfc4791</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC5546">[RFC5546]</dt>
+      <dd>
+<span class="refAuthor">Daboo, C., Ed.</span>, <span class="refTitle">"iCalendar Transport-Independent Interoperability Protocol (iTIP)"</span>, <span class="seriesInfo">RFC 5546</span>, <span class="seriesInfo">DOI 10.17487/RFC5546</span>, <time datetime="2009-12" class="refDate">December 2009</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc5546">https://www.rfc-editor.org/info/rfc5546</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</section>
+<section id="appendix-A">
+      <h2 id="name-acknowledgements">
+<a href="#name-acknowledgements" class="section-name selfRef">Acknowledgements</a>
+      </h2>
+<p id="appendix-A-1">This specification came about via discussions at The
+      Calendaring and Scheduling Consortium. Also, thanks to the
+      following for providing feedback: <span class="contact-name">Bernard Desruisseaux</span>, <span class="contact-name">Mike       Douglass</span>, <span class="contact-name">Jacob Farkas</span>, <span class="contact-name">Jeffrey Harris</span>, <span class="contact-name">Ciny Joy</span>, <span class="contact-name">Barry Leiba</span>,
+      and <span class="contact-name">Daniel Migault</span>.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
+</section>
+<div id="authors-addresses">
+<section id="appendix-B">
+      <h2 id="name-authors-addresses">
+<a href="#name-authors-addresses" class="section-name selfRef">Authors' Addresses</a>
+      </h2>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Cyrus Daboo</span></div>
+<div dir="auto" class="left"><span class="org">Apple Inc.</span></div>
+<div dir="auto" class="left"><span class="street-address">1 Infinite Loop</span></div>
+<div dir="auto" class="left">
+<span class="locality">Cupertino</span>, <span class="region">CA</span> <span class="postal-code">95014</span>
+</div>
+<div dir="auto" class="left"><span class="country-name">United States of America</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:cyrus@daboo.name" class="email">cyrus@daboo.name</a>
+</div>
+<div class="url">
+<span>URI:</span>
+<a href="http://www.apple.com/" class="url">http://www.apple.com/</a>
+</div>
+</address>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Kenneth Murchison (<span class="role">editor</span>)</span></div>
+<div dir="auto" class="left"><span class="org">Fastmail US LLC</span></div>
+<div dir="auto" class="left"><span class="extended-address">Suite 1201</span></div>
+<div dir="auto" class="left"><span class="street-address">1429 Walnut St</span></div>
+<div dir="auto" class="left">
+<span class="locality">Philadelphia</span>, <span class="region">PA</span> <span class="postal-code">19102</span>
+</div>
+<div dir="auto" class="left"><span class="country-name">United States of America</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:murch@fastmailteam.com" class="email">murch@fastmailteam.com</a>
+</div>
+<div class="url">
+<span>URI:</span>
+<a href="https://www.fastmail.com/" class="url">http://www.fastmail.com/</a>
+</div>
+</address>
+</section>
+</div>
+<script>const toc = document.getElementById("toc");
+toc.querySelector("h2").addEventListener("click", e => {
+  toc.classList.toggle("active");
+});
+toc.querySelector("nav").addEventListener("click", e => {
+  toc.classList.remove("active");
+});
+</script>
+</body>
+</html>
+

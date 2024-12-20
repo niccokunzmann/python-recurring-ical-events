@@ -41,7 +41,7 @@ def test_components_and_their_count(calendars, components, count, calendar, mess
 @pytest.mark.parametrize(
     "component",
     [
-        "VALARM",  # existing but not supported, yet
+        "VTIMEZONE",  # existing but not supported
         "vevent",  # misspelled
         "ALDHKSJHK",  # does not exist
     ],

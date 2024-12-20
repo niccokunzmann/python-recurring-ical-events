@@ -26,6 +26,7 @@ ignore = [
     "S101",    # Use of assert detected
     "TD",      # TODO comments
     "TRY003",  # Avoid specifying long messages outside the exception class
+    "UP007",   # Use | None instead of Optional
 ]
 extend-safe-fixes = [
     "PT006", # Wrong type passed to first argument of @pytest.mark.parametrize; expected {expected_string}

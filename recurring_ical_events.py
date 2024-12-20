@@ -21,14 +21,17 @@ import sys
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from functools import wraps
+from pathlib import Path
 from typing import TYPE_CHECKING, Callable, Generator, Optional, Sequence, Union
 
+import icalendar
 import x_wr_timezone
 from dateutil.rrule import rruleset, rrulestr
 from icalendar.cal import Component
 from icalendar.prop import vDDDTypes
 
 if TYPE_CHECKING:
+    from icalendar import Alarm
     from icalendar.cal import Component
 
     Time = Union[datetime.date, datetime.datetime]
@@ -48,6 +51,9 @@ DATE_MIN_DT = datetime.date(*DATE_MIN)
 # The maximum value accepted as date (pytz + zoneinfo)
 DATE_MAX = (2038, 1, 1)
 DATE_MAX_DT = datetime.date(*DATE_MAX)
+
+HERE = Path(__file__).parent
+CALENDARS = HERE / "test" / "calendars"
 
 
 class InvalidCalendar(ValueError):
@@ -111,7 +117,7 @@ def convert_to_date(date: Time) -> datetime.date:
     return datetime.date(date.year, date.month, date.day)
 
 
-def convert_to_datetime(date: Time, tzinfo: Optional[datetime.tzinfo]):  # noqa: UP007
+def convert_to_datetime(date: Time, tzinfo: Optional[datetime.tzinfo]):
     """Converts a date to a datetime.
 
     Dates are converted to datetimes with tzinfo.
@@ -119,6 +125,8 @@ def convert_to_datetime(date: Time, tzinfo: Optional[datetime.tzinfo]):  # noqa:
     Datetimes receive tzinfo as a timezone if they do not have a timezone.
     Datetimes retain their timezone if they have one already (tzinfo is not None).
     """
+    if is_date(date):
+        date = datetime.datetime(date.year, date.month, date.day)  # noqa: DTZ001
     if isinstance(date, datetime.datetime):
         if date.tzinfo is None:
             if tzinfo is not None:
@@ -128,8 +136,6 @@ def convert_to_datetime(date: Time, tzinfo: Optional[datetime.tzinfo]):  # noqa:
         elif tzinfo is None:
             return normalize_pytz(date).replace(tzinfo=None)
         return date
-    if isinstance(date, datetime.date):
-        return datetime.datetime(date.year, date.month, date.day, tzinfo=tzinfo)
     return date
 
 
@@ -342,6 +348,7 @@ class Series:
 
         has_core = False
         extend_query_span_by = (datetime.timedelta(0), datetime.timedelta(0))
+        components = []
 
     class RecurrenceRules:
         """A strategy if we have an actual core with recurrences."""
@@ -571,6 +578,11 @@ class Series:
                 self.convert_to_original_type(stop),
             )
 
+        @property
+        def components(self) -> list[ComponentAdapter]:
+            """The components in this recurrence calculation."""
+            return [self.core]
+
     def __init__(self, components: Sequence[ComponentAdapter]):
         """Create an component which may have repetitions in it."""
         if len(components) == 0:
@@ -620,6 +632,15 @@ class Series:
                 subtract_from_start, self._subtract_from_start
             )
             self._add_to_stop = max(add_to_stop, self._add_to_stop)
+
+    @property
+    def components(self) -> list[ComponentAdapter]:
+        """All the components in this sequence.
+
+        Components with the same UID might not occur if the SEQUENCE
+        number suggests that they are obsolete.
+        """
+        return self.recurrence.components + list(self.modifications)
 
     @property
     def this_and_future_components(self) -> Generator[ComponentAdapter]:
@@ -742,6 +763,11 @@ class ComponentAdapter(ABC):
         self._component = component
 
     @property
+    def alarms(self) -> list[Alarm]:
+        """The alarms in this component."""
+        return self._component.walk("VALARM")
+
+    @property
     def end_property(self) -> str | None:
         """The name of the end property."""
         return None
@@ -777,13 +803,20 @@ class ComponentAdapter(ABC):
             source, suppress_errors
         )
 
-    def as_component(self, start: Time, stop: Time, keep_recurrence_attributes: bool):  # noqa: FBT001
+    def as_component(
+        self,
+        start: Optional[Time] = None,
+        stop: Optional[Time] = None,
+        keep_recurrence_attributes: bool = True,  # noqa: FBT001
+    ):
         """Create a shallow copy of the source event and modify some attributes."""
         copied_component = self._component.copy()
-        copied_component["DTSTART"] = vDDDTypes(start)
+        copied_component["DTSTART"] = vDDDTypes(self.start if start is None else start)
         copied_component.pop("DURATION", None)  # remove duplication in event length
         if self.end_property is not None:
-            copied_component[self.end_property] = vDDDTypes(stop)
+            copied_component[self.end_property] = vDDDTypes(
+                self.end if stop is None else stop
+            )
         if not keep_recurrence_attributes:
             for attribute in self.ATTRIBUTES_TO_DELETE_ON_COPY:
                 if attribute in copied_component:
@@ -1031,9 +1064,8 @@ class JournalAdapter(ComponentAdapter):
         return "VJOURNAL"
 
     @property
-    def end_property(self) -> str:
+    def end_property(self) -> None:
         """There is no end property"""
-        return None
 
     @cached_property
     def start(self) -> Time:
@@ -1093,7 +1125,7 @@ class Occurrence:
     @cached_property
     def id(self) -> ComponentID:
         """The id of the component."""
-        recurrence_id = ((*self._adapter.recurrence_ids, self.start))[0]
+        recurrence_id = (*self._adapter.recurrence_ids, self.start)[0]
         return (
             self._adapter.component_name(),
             self._adapter.uid,
@@ -1108,9 +1140,31 @@ class Occurrence:
         """self == other"""
         return self.id == other.id
 
+    def component_name(self) -> str:
+        """The name of this component."""
+        return self._adapter.component_name()
+
+    @property
+    def uid(self) -> str:
+        """The UID of this occurrence."""
+        return self._adapter.uid
+
+    def has_alarm(self, alarm: Alarm) -> bool:
+        """Wether this alarm is in this occurrence."""
+        return alarm in self._adapter.alarms
+
+    @property
+    def recurrence_ids(self) -> RecurrenceIDs:
+        """The recurrence ids."""
+        return self._adapter.recurrence_ids
 
 class SelectComponents(ABC):
     """Abstract class to select components from a calendar."""
+
+    @staticmethod
+    def component_name():
+        """The name of the component if there is only one."""
+        raise NotImplementedError("This should be implemented in subclasses.")
 
     @abstractmethod
     def collect_series_from(
@@ -1123,6 +1177,229 @@ class SelectComponents(ABC):
         """
 
 
+class AbsoluteAlarmAdapter(ComponentAdapter):
+    """Adapter for absolute alarms."""
+
+    def __init__(self, alarm: Alarm, parent: ComponentAdapter):
+        """Create a new adapter."""
+        super().__init__(alarm)
+        self.parent = parent
+
+
+class AlarmOccurrence(Occurrence):
+    """Adapter for absolute alarms."""
+
+    def __init__(
+        self,
+        trigger: datetime.datetime,
+        alarm: Alarm,
+        parent: ComponentAdapter | Occurrence,
+    ) -> None:
+        super().__init__(alarm, trigger, trigger)
+        self.parent = parent
+        self.alarm = alarm
+
+    def as_component(self, keep_recurrence_attributes):
+        """Return the alarm's parent as a modified component."""
+        parent = self.parent.as_component(
+            keep_recurrence_attributes=keep_recurrence_attributes
+        )
+        alarm_once = self.alarm.copy()
+        alarm_once.TRIGGER = self.start
+        alarm_once.REPEAT = 0
+        parent.subcomponents = [alarm_once]
+        return parent
+
+    @cached_property
+    def id(self) -> ComponentID:
+        """The id of the component."""
+        return (
+            self.parent.component_name(),
+            self.parent.uid,
+            *self.parent.recurrence_ids[:1],
+            self.start,
+        )
+
+    def __repr__(self) -> str:
+        """repr(self)"""
+        return (
+            f"<{self.__class__.__name__} at {self.start} of"
+            f" {self.alarm} in {self.parent}"
+        )
+
+
+class AbsoluteAlarmSeries:
+    """A series of absolute alarms."""
+
+    tzinfo = datetime.timezone.utc
+
+    def __init__(self):
+        """Create a new series of absolute alarms."""
+        self.times = rruleset(cache=True)
+        self.times2occurence: dict[datetime.datetime, Occurrence] = defaultdict(list)
+
+    def add(self, alarm: Alarm, parent: ComponentAdapter):
+        """Add an absolute alarm with a parent component."""
+        trigger = alarm.TRIGGER
+        self._add(trigger, alarm, parent)
+        for _ in range(alarm.REPEAT):
+            trigger += alarm.DURATION
+            self._add(trigger, alarm, parent)
+
+    def _add(self, dt: datetime.datetime, alarm: Alarm, parent: ComponentAdapter):
+        """Add an alarm at a specific time."""
+        self.times.rdate(dt)
+        self.times2occurence[dt].append(self.occurrence(dt, alarm, parent))
+
+    def between(self, span_start: Time, span_stop: Time) -> Generator[Occurrence]:
+        """Components between the start (inclusive) and end (exclusive).
+
+        The result does not need to be ordered.
+        """
+        span_start_dt = convert_to_datetime(span_start, self.tzinfo)
+        span_stop_dt = convert_to_datetime(span_stop, self.tzinfo)
+        for dt in self.times.between(span_start_dt, span_stop_dt, inc=True):
+            for occurrence in self.times2occurence[dt]:
+                if occurrence.is_in_span(span_start_dt, span_stop_dt):
+                    yield occurrence
+
+    def occurrence(
+        self, dt: datetime.datetime, alarm: Alarm, parent: ComponentAdapter
+    ) -> Occurrence:
+        """Create a new occurrence."""
+        return AlarmOccurrence(dt, alarm, parent)
+
+    def is_empty(self) -> bool:
+        """Whether this series is empty."""
+        return not self.times2occurence
+
+
+class AlarmSeriesRelativeToStart:
+    """A series of alarms relative to the start of a component."""
+
+    def __init__(self, alarm: Alarm, series: Series) -> None:
+        """Create a series of alarms that are relative to the start of a series."""
+        self._alarm = alarm
+        self._series = series
+        self._offsets: list[datetime.timedelta] = [alarm.TRIGGER]
+        for _ in range(alarm.REPEAT):
+            self._offsets.append(self._offsets[-1] + alarm.DURATION)
+
+    def between(self, span_start: Time, span_stop: Time) -> Generator[Occurrence]:
+        """Components between the start (inclusive) and end (exclusive).
+
+        The result does not need to be ordered.
+        """
+        # TODO: Reduce time span to reduce occurrences
+        for offset in self._offsets:
+            # If we are before the event start (negative offset),
+            # we have to add the time span to request the event later.
+            for parent in self._series.between(span_start - offset, span_stop - offset):
+                if parent.has_alarm(self._alarm):
+                    occurrence = self.occurrence(offset, self._alarm, parent)
+                    if occurrence.is_in_span(span_start, span_stop):
+                        yield occurrence
+
+    def occurrence(
+        self, offset: datetime.timedelta, alarm: Alarm, parent: Occurrence
+    ) -> Occurrence:
+        """Create a new occurrence."""
+        return AlarmOccurrence(offset + parent.start, alarm, parent)
+
+    def __repr__(self) -> str:
+        """repr()"""
+        return (
+            f"<{self.__class__.__name__} "
+            f"of {self._alarm} in {self._series} "
+            f"with offsets {', '.join(map(str, self._offsets))}>"
+        )
+
+
+class AlarmSeriesRelativeToEnd(AlarmSeriesRelativeToStart):
+    """A series of alarms relative to the start of a component."""
+
+    def between(self, span_start, span_stop):
+        """Components between the start (inclusive) and end (exclusive).
+
+        The result does not need to be ordered.
+        """
+        # The end is exclusive. We must adjust the timespan to include it.
+        return super().between(span_start - datetime.timedelta(seconds=1), span_stop)
+
+    def occurrence(
+        self, offset: datetime.timedelta, alarm: Alarm, parent: Occurrence
+    ) -> Occurrence:
+        """Create a new occurrence."""
+        return AlarmOccurrence(offset + parent.end, alarm, parent)
+
+
+class Alarms(SelectComponents):
+    """Select alarms and find their times.
+
+    By default, alarms from TODOs and events are collected.
+    You can use this to change which alarms are collected:
+
+        Alarms((EventAdapter,))
+        Alarms((TodoAdapter,))
+    """
+
+    def __init__(
+        self,
+        parents: tuple[type[ComponentAdapter] | SelectComponents] = (
+            EventAdapter,
+            TodoAdapter,
+        ),
+    ):
+        self.parents = parents
+
+    @staticmethod
+    def component_name():
+        """The name of the component we calculate."""
+        return "VALARM"
+
+    def collect_parent_series_from(
+        self, source: Component, suppress_errors: tuple[Exception]
+    ) -> Sequence[Series]:
+        """Collect the parent components of alarms."""
+        return [
+            s
+            for parent in self.parents
+            for s in parent.collect_series_from(source, suppress_errors)
+        ]
+
+    def collect_series_from(
+        self, source: Component, suppress_errors: tuple[Exception]
+    ) -> Sequence[Series]:
+        """Collect all TODOs and Alarms from VEVENTs and VTODOs.
+
+        suppress_errors - a list of errors that should be suppressed.
+            A Series of events with such an error is removed from all results.
+        """
+        absolute_alarms = AbsoluteAlarmSeries()
+        result = []
+        # alarms might be copied several times. We only compute them once.
+        for series in self.collect_parent_series_from(source, suppress_errors):
+            used_alarms = []
+            for component in series.components:
+                for alarm in component.alarms:
+                    with contextlib.suppress(suppress_errors):
+                        trigger = alarm.TRIGGER
+                        if trigger is None or alarm in used_alarms:
+                            continue
+                        if isinstance(trigger, datetime.datetime):
+                            absolute_alarms.add(alarm, component)
+                            used_alarms.append(alarm)
+                        elif alarm.TRIGGER_RELATED == "START":
+                            result.append(AlarmSeriesRelativeToStart(alarm, series))
+                            used_alarms.append(alarm)
+                        elif alarm.TRIGGER_RELATED == "END":
+                            result.append(AlarmSeriesRelativeToEnd(alarm, series))
+                            used_alarms.append(alarm)
+        if not absolute_alarms.is_empty():
+            result.append(absolute_alarms)
+        return result
+
+
 class ComponentsWithName(SelectComponents):
     """This is a component collecttion strategy.
 
@@ -1132,7 +1409,12 @@ class ComponentsWithName(SelectComponents):
     - composition to combine collection behavior (see AllKnownComponents)
     """
 
-    component_adapters = [EventAdapter, TodoAdapter, JournalAdapter]
+    component_adapters: list[type[ComponentAdapter] | SelectComponents] = [
+        EventAdapter,
+        TodoAdapter,
+        JournalAdapter,
+        Alarms(),
+    ]
 
     @cached_property
     def _component_adapters(self) -> dict[str : type[ComponentAdapter]]:
@@ -1181,6 +1463,8 @@ class ComponentsWithName(SelectComponents):
         suppress_errors - a list of errors that should be suppressed.
             A Series of events with such an error is removed from all results.
         """
+        if isinstance(self._adapter, SelectComponents):
+            return self._adapter.collect_series_from(source, suppress_errors)
         components: dict[str, list[Component]] = defaultdict(list)  # UID -> components
         for component in source.walk(self._name):
             adapter = self._adapter(component)
@@ -1203,7 +1487,9 @@ class AllKnownComponents(SelectComponents):
     @property
     def names(self) -> list[str]:
         """Return the names of the components to collect."""
-        return [adapter.component_name() for adapter in self._component_adapters]
+        result = [adapter.component_name() for adapter in self._component_adapters]
+        result.sort()
+        return result
 
     def __init__(
         self,
@@ -1255,7 +1541,11 @@ class CalendarQuery:
     component_adapters - a list of component adapters
     """
 
-    suppressed_errors = [BadRuleStringFormat, PeriodEndBeforeStart]
+    suppressed_errors = [
+        BadRuleStringFormat,
+        PeriodEndBeforeStart,
+        icalendar.InvalidCalendar,
+    ]
     ComponentsWithName = ComponentsWithName
 
     def __init__(
@@ -1423,6 +1713,16 @@ class CalendarQuery:
             i += 1
         return i
 
+    @property
+    def first(self) -> Component:
+        """Return the first recurring component in this calendar.
+
+        If there is no recurring component, an IndexError is raised.
+        """
+        for component in self.all():
+            return component
+        raise IndexError("No components found.")
+
 
 def of(
     a_calendar: Component,
@@ -1448,8 +1748,30 @@ def of(
     )
 
 
+def example_calendar(name: str = "") -> icalendar.Calendar:
+    """Return an example calendar.
+
+    Args:
+        name (str): The name of the example file.
+
+    Returns:
+        icalendar.Calendar: The parsed calendar example.
+    """
+    if not name.endswith(".ics"):
+        name += ".ics"
+    path = CALENDARS / name
+    try:
+        return icalendar.Calendar.from_ical(path.read_bytes())
+    except FileNotFoundError:
+        raise ValueError(  # noqa: B904
+            f"File {name!r} not found. "
+            f"Use one of {', '.join(p.name for p in CALENDARS.glob('*.ics'))!r}."
+        )
+
+
 __all__ = [
     "of",
+    "Alarms",
     "InvalidCalendar",
     "PeriodEndBeforeStart",
     "BadRuleStringFormat",
