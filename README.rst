@@ -617,9 +617,13 @@ To release new versions,
 Changelog
 ---------
 
+- v3.4.0
+
+  - Add ``VALARM`` support: Calculate alarm times. See `Issue 186 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/186>`_
+
 - v3.3.4
 
-  - Allow x-wr-timezone 1.* and 2.* for this lib to remove dependency update problems.
+  - Allow ``x-wr-timezone`` 1.* and 2.* for this lib to remove dependency update problems.
 
 - v3.3.3
 
