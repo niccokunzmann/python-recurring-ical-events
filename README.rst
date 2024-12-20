@@ -177,10 +177,6 @@ The start and end are inclusive. As an example: if an event is longer than one d
     0
     >>> len(query.at(datetime.date(2023, 1, 1))) # the first day in 2023
     0
-    >>> len(query.at(datetime.date.today()))     # today
-    0
-    >>> len(query.at(datetime.datetime.now()))   # this exact second
-    0
 
 The resulting ``events`` are a list of `icalendar events <https://icalendar.readthedocs.io/en/latest/api.html#icalendar.cal.Event>`_, see below.
 
@@ -620,6 +616,14 @@ To release new versions,
 
 Changelog
 ---------
+
+- v3.3.4
+
+  - Allow x-wr-timezone 1.* and 2.* for this lib to remove dependency update problems.
+
+- v3.3.3
+
+  -  Fix: Events with DTSTART of type date have a duration of one day, see `Issue 179 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/179>`_
 
 - v3.3.2
 
