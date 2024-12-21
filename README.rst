@@ -310,54 +310,57 @@ For further customization, please refer to the section on how to extend the defa
 Alarms
 ******
 
-Generally, when you collect events or todos, the subcomponents will be copied.
-The subcomponents can be alarms.
-``icalendar`` allows you to compute the alarm times for these events.
+Alarms are subcomponents of events and todos. They only make sense with an event or todo.
+Thus the interface is slightly different.
+
+Add ``VALARM`` as the component you would like:
 
 .. code-block:: python
 
-    # read an .ics file with an alarm
-    >>> calendar_with_alarm = recurring_ical_events.example_calendar("alarm_15_min_before_event_snoozed")
-    >>> query_with_alarm = recurring_ical_events.of(calendar_with_alarm)
-    >>> event = query_with_alarm.first
+    >>> query_alarms = recurring_ical_events.of(a_calendar, components=["VALARM"])
 
-    # You can use the event.alarms property to get intel on alarms
-    >>> len(event.alarms.times)
-    1
-
-    # The alarm happens 15 min (900 seconds) before the event
-    >>> event.start - event.alarms.times[0].trigger
-    datetime.timedelta(seconds=900)
-
-The above example computes all the alarms of an event. However, you might want to know
-which alarms occur within a certain time span.
-
-In the following example, we get get the alarm and the event.
-The alarm occurs one week before the event.
+In the following example, an event has an alarm one week before it starts.
+The component returned is not a ``VALARM`` component but instead the ``VEVENT`` with only
+one ``VALARM`` in it.
 
 .. code-block:: python
 
     # read an .ics file with an event with an alarm
     >>> calendar_with_alarm = recurring_ical_events.example_calendar("alarm_1_week_before_event")
-    >>> alarm_day = "20241202"
+    >>> alarm_day = datetime.date(2024, 12, 2)
 
-    # we get the first alarm inside of the event
-    >>> event = recurring_ical_events.of(calendar_with_alarm, components=("VALARM",)).at(alarm_day)[0]
+    # we get the event that has an alarm on that day
+    >>> event = recurring_ical_events.of(calendar_with_alarm, components=["VALARM"]).at(alarm_day)[0]
     >>> len(event.alarms.times)
     1
     >>> alarm = event.alarms.times[0]
+
+    # the alarm happens one week before the event
     >>> event.start - alarm.trigger
     datetime.timedelta(days=7)
 
-    # If we would query the event instead of the alarm, we would not find it
-    >>> recurring_ical_events.of(calendar_with_alarm, components=("VEVENT",)).at(alarm_day)
+In the following code, we query the same day for a ``VEVENT`` component and we find nothing.
+The event happens a week later.
+
+.. code-block:: python
+
+    # No events on that day. There is only an alarm.
+    >>> recurring_ical_events.of(calendar_with_alarm, components=["VEVENT"]).at(alarm_day)
     []
 
-    # The event itself has more alarms. These are removed when querying alarms only.
-    >>> event = recurring_ical_events.of(calendar_with_alarm).first
-    >>> len(event.subcomponents)
-    2
+When querying events and todos, they keep their alarms and other subcompnents.
+These alarm times can be outside of the dates requested.
 
+In this example, we get an event and find that it has several alarms in it.
+
+.. code-block:: python
+
+    >>> event_day = alarm_day + datetime.timedelta(days=7)
+    >>> event = recurring_ical_events.of(calendar_with_alarm, components=["VEVENT"]).at(event_day)[0]
+
+    # The event a week later has more than one alarm.
+    >>> len(event.walk("VALARM"))
+    2
 
 Speed
 *****
