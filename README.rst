@@ -327,7 +327,7 @@ one ``VALARM`` in it.
 
     # read an .ics file with an event with an alarm
     >>> calendar_with_alarm = recurring_ical_events.example_calendar("alarm_1_week_before_event")
-    >>> alarm_day = datetime.date(2024, 12, 02)
+    >>> alarm_day = datetime.date(2024, 12, 2)
 
     # we get the event that has an alarm on that day
     >>> event = recurring_ical_events.of(calendar_with_alarm, components=["VALARM"]).at(alarm_day)[0]
