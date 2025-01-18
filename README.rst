@@ -620,6 +620,10 @@ To release new versions,
 Changelog
 ---------
 
+- v3.4.1
+
+  - Improve Alarm documentation
+
 - v3.4.0
 
   - Add ``VALARM`` support: Calculate alarm times. See `Issue 186 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/186>`_
