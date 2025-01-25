@@ -831,9 +831,13 @@ Related Projects
 - `pyICSParser <https://pypi.org/project/pyICSParser/>`_ - parse icalendar files and return event times (`GitHub <https://github.com/oberron/pyICSParser>`__)
 - `ics-query`_ - a **command line** impementation of ``recurring-ical-events``
 - `icalendar-events-cli`_ - another **command line** impementation of ``recurring-ical-events``
+- `caldav`_ - the python caldav client library
+- `plann`_ - a **command line** caldav client
 
 .. _`ics-query`: https://github.com/niccokunzmann/ics-query#readme
 .. _`icalendar-events-cli`: https://github.com/waldbaer/icalendar-events-cli#readme
+.. _`caldav`:  https://github.com/python-caldav/caldav
+.. _`plann`: https://github.com/tobixen/plann
 
 Media
 -----
