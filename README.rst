@@ -393,7 +393,7 @@ Passing ``skip_bad_series=True`` as ``of()`` argument will totally skip theses e
     >>> recurring_ical_events.of(calendar_with_bad_event, skip_bad_series=False).count()
     Traceback (most recent call last):
       ...
-    recurring_ical_events.BadRuleStringFormat: UNTIL parameter is missing: FREQ=WEEKLY;BYDAY=TH;WKST=SU;UNTL=20191023
+    recurring_ical_events.errors.BadRuleStringFormat: UNTIL parameter is missing: FREQ=WEEKLY;BYDAY=TH;WKST=SU;UNTL=20191023
 
     # With skip_bad_series=True we skip the series that we cannot handle.
     >>> recurring_ical_events.of(calendar_with_bad_event, skip_bad_series=True).count()
@@ -619,6 +619,10 @@ To release new versions,
 
 Changelog
 ---------
+
+- v3.4.2
+
+  - Restructure module into package with a file structure.
 
 - v3.4.1
 
