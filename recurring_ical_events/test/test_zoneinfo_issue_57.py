@@ -9,6 +9,8 @@ import recurring_ical_events
 import sys
 import pytz
 
+import recurring_ical_events.util
+
 
 def test_zoneinfo_example_yields_events(ZoneInfo):
     """Test that there is no error.
@@ -68,7 +70,7 @@ ATTRS = "year,month,day,hour,minute,second".split(",")
 ])
 def test_convert_to_date(dt, tz, times, ZoneInfo):
     """Check that a datetime conversion takes place properly."""
-    new = recurring_ical_events.convert_to_datetime(dt, ZoneInfo(tz))
+    new = recurring_ical_events.util.convert_to_datetime(dt, ZoneInfo(tz))
     converted = ()
     for attr, value in zip(ATTRS, times):
         converted += (getattr(new, attr),)

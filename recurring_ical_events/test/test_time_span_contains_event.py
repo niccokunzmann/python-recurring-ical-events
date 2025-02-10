@@ -1,4 +1,4 @@
-from recurring_ical_events import time_span_contains_event
+from recurring_ical_events.util import time_span_contains_event
 import pytest
 from datetime import datetime, date
 from pytz import timezone, utc
