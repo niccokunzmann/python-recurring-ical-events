@@ -1,10 +1,11 @@
 """Core functionality: querying the calendar for occurrences."""
+
 from __future__ import annotations
 
 import contextlib
 import datetime
 import sys
-from typing import TYPE_CHECKING, Generator, Sequence
+from typing import TYPE_CHECKING, Generator, Optional, Sequence
 
 import icalendar
 
@@ -15,6 +16,7 @@ from recurring_ical_events.errors import (
     InvalidCalendar,
     PeriodEndBeforeStart,
 )
+from recurring_ical_events.pages import Pages
 from recurring_ical_events.selection.base import SelectComponents
 from recurring_ical_events.util import compare_greater
 
@@ -183,13 +185,15 @@ class CalendarQuery:
         return occurrences
 
     def after(self, earliest_end: DateArgument) -> Generator[Component]:
-        """
-        Return an iterator over the next events that happen during or after
-        the earliest_end.
-        """
+        """Iterate over components happening during or after earliest_end."""
+        earliest_end = self.to_datetime(earliest_end)
+        for occurrence in self._after(earliest_end):
+            yield occurrence.as_component(self.keep_recurrence_attributes)
+
+    def _after(self, earliest_end: Time) -> Generator[Occurrence]:
+        """Iterate over occurrences happening during or after earliest_end."""
         time_span = datetime.timedelta(days=1)
         min_time_span = datetime.timedelta(minutes=15)
-        earliest_end = self.to_datetime(earliest_end)
         done = False
         result_ids: set[ComponentID] = set()
 
@@ -206,7 +210,7 @@ class CalendarQuery:
             occurrences.sort()
             for occurrence in occurrences:
                 if occurrence.id not in result_ids:
-                    yield occurrence.as_component(self.keep_recurrence_attributes)
+                    yield occurrence
                     result_ids.add(occurrence.id)
             # prepare next query
             time_span = max(
@@ -231,6 +235,27 @@ class CalendarQuery:
         for component in self.all():
             return component
         raise IndexError("No components found.")
+
+    def paginate(
+        self,
+        page_size: int,
+        earliest_end: Optional[DateArgument] = None,
+        latest_start: Optional[DateArgument] = None,
+    ) -> Pages:
+        """Return pages for pagination.
+
+        Args:
+            page_size: the number of components per page
+            earliest_end: the start of the first page
+                All components occur after this date.
+            latest_start: the end of the last page
+                All components occur before this date.
+        """
+        latest_start = None if latest_start is None else self.to_datetime(latest_start)
+        earliest_end = (
+            DATE_MIN_DT if earliest_end is None else self.to_datetime(earliest_end)
+        )
+        return Pages(self._after(earliest_end), page_size, latest_start)
 
 
 __all__ = ["CalendarQuery", "T_COMPONENTS"]

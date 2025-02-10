@@ -1,4 +1,5 @@
 """Selecting components by name."""
+
 from __future__ import annotations
 
 import contextlib
