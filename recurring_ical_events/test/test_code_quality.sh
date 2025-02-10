@@ -7,7 +7,7 @@ cd ..
 
 EXIT=0
 
-if grep -n -H 'print(' recurring_ical_events.py; then
+if grep -n -H 'print(' recurring_ical_events/*.py; then
     echo "FAIL: print should not be used in production code."
     EXIT=1
 fi

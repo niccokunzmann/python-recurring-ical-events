@@ -19,7 +19,7 @@ import sys
 import pytest
 
 HERE = pathlib.Path(__file__).parent
-PROJECT_PATH = HERE.parent
+PROJECT_PATH = HERE.parent.parent
 
 PYTHON_FILES = list(PROJECT_PATH.rglob("*.py"))
 

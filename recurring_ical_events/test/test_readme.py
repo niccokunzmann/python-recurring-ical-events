@@ -12,7 +12,7 @@ from pathlib import Path
 import restructuredtext_lint
 
 HERE = Path(__file__).parent
-readme_path = Path(HERE).parent / "README.rst"
+readme_path = Path(HERE).parent.parent / "README.rst"
 
 
 def test_readme_file():

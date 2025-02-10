@@ -16,9 +16,9 @@ except ImportError:
     import backports.zoneinfo as _zoneinfo
 
 HERE = Path(__file__).parent
-REPO = Path(HERE).parent
+REPO = Path(HERE).parent.parent
 
-sys.path.append(REPO)
+sys.path.append(str(REPO))
 
 
 CALENDARS_FOLDER = HERE / "calendars"
