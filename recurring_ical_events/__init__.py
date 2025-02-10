@@ -22,22 +22,6 @@ from icalendar.prop import vDDDTypes
 from typing import Optional
 import re
 
-if sys.version_info[0] == 2:
-    # Python2 has no ZoneInfo. We can assume that pytz is used.
-    _EPOCH = datetime.datetime.utcfromtimestamp(0)
-    _EPOCH_TZINFO = pytz.UTC.localize(_EPOCH)
-    def timestamp(dt):
-        """Return the time stamp of a datetime"""
-        # from https://stackoverflow.com/a/35337826
-        if dt.tzinfo:
-            return (dt - _EPOCH_TZINFO).total_seconds()
-        return (dt - _EPOCH).total_seconds()
-else:
-    def timestamp(dt):
-        """Return the time stamp of a datetime"""
-        return dt.timestamp()
-
-
 NEGATIVE_RRULE_COUNT_REGEX = re.compile(r"COUNT=-\d+;?")
 
 
@@ -190,7 +174,7 @@ class RepeatedComponent:
                 if isinstance(rdate.dt, tuple):
                     # we have a period as rdate
                     self.rdates.append(rdate.dt[0])
-                    self.replace_ends[timestamp(rdate.dt[0])] = rdate.dt[1]
+                    self.replace_ends[rdate.dt[0].timestamp()] = rdate.dt[1]
                 else:
                     # we have a date/datetime
                     self.rdates.append(rdate.dt)
@@ -305,7 +289,7 @@ class RepeatedComponent:
         compare it with exdates.
         """
         if isinstance(dt, datetime.datetime):
-            return timestamp(dt)
+            return dt.timestamp()
         return dt
 
     def within_days(self, span_start, span_stop):
@@ -328,7 +312,7 @@ class RepeatedComponent:
                     continue
             if self._unify_exdate(start) in self.exdates_utc or start.date() in self.exdates_utc:
                 continue
-            stop = self.replace_ends.get(timestamp(start), start + self.duration)
+            stop = self.replace_ends.get(start.timestamp(), start + self.duration)
             yield Repetition(
                 self.component,
                 self.convert_to_original_type(start),

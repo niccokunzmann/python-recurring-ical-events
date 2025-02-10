@@ -5,7 +5,6 @@ See Issue 71: https://github.com/niccokunzmann/python-recurring-ical-events/issu
 import datetime
 from pytz import UTC, timezone
 import pytest
-from recurring_ical_events import timestamp
 
 tz_london = timezone("Europe/London")
 
@@ -17,8 +16,8 @@ hour_2 = hour_1 + hour_1
 
 def test_dates_are_equal():
     """These dates need to be equal so that the next test 'test_events_with_x_wr_timezone_returned()' works."""
-    t1 = timestamp(c1_t_UTC)
-    t2 = timestamp(c1_t_London)
+    t1 = c1_t_UTC.timestamp()
+    t2 = c1_t_London.timestamp()
     assert t1 == t2, "time stamp should equal, delta {}".format(t1 - t2)
     assert c1_t_UTC == c1_t_London, "dates should equal"
 
