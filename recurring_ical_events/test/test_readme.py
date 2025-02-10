@@ -6,16 +6,15 @@ has errors.
 
 Credits: https://stackoverflow.com/a/47494076/1320237
 '''
-import os
-import sys
 import restructuredtext_lint
+from pathlib import Path
 
-HERE = os.path.dirname(__file__)
-readme_path = os.path.join(os.path.dirname(HERE), "README.rst")
+HERE = Path(__file__).parent
+readme_path = HERE.parent.parent / "README.rst"
 
 def test_readme_file():
     '''CHeck README file for errors.'''
-    messages = restructuredtext_lint.lint_file(readme_path)
+    messages = restructuredtext_lint.lint_file(str(readme_path))
     error_message = "expected to have no messages about the README file!"
     for message in messages:
         print(message.astext())

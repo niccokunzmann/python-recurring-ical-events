@@ -11,12 +11,12 @@ except ImportError:
     except ImportError:
         _zoneinfo = None
 from x_wr_timezone import CalendarWalker
+from pathlib import Path
 
 
-HERE = os.path.dirname(__file__)
-REPO = os.path.dirname(HERE)
-
-sys.path.append(REPO)
+HERE = Path(__file__).parent
+REPO = HERE.parent.parent
+sys.path.append(str(REPO))
 
 from recurring_ical_events import of
 
