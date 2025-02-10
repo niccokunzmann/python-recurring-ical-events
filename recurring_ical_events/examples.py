@@ -1,3 +1,4 @@
+"""Functionality for smaller examples."""
 import icalendar
 
 from recurring_ical_events.constants import CALENDARS

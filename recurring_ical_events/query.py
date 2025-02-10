@@ -1,3 +1,4 @@
+"""Core functionality: querying the calendar for occurrences."""
 from __future__ import annotations
 
 import contextlib
