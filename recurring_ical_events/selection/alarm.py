@@ -7,11 +7,6 @@ from typing import TYPE_CHECKING, Sequence
 from recurring_ical_events.adapters.event import EventAdapter
 from recurring_ical_events.adapters.todo import TodoAdapter
 from recurring_ical_events.selection.base import SelectComponents
-from recurring_ical_events.series.alarm import (
-    AbsoluteAlarmSeries,
-    AlarmSeriesRelativeToEnd,
-    AlarmSeriesRelativeToStart,
-)
 
 if TYPE_CHECKING:
     from icalendar.cal import Component
@@ -62,6 +57,12 @@ class Alarms(SelectComponents):
         suppress_errors - a list of errors that should be suppressed.
             A Series of events with such an error is removed from all results.
         """
+        from recurring_ical_events.series.alarm import (
+            AbsoluteAlarmSeries,
+            AlarmSeriesRelativeToEnd,
+            AlarmSeriesRelativeToStart,
+        )
+
         absolute_alarms = AbsoluteAlarmSeries()
         result = []
         # alarms might be copied several times. We only compute them once.

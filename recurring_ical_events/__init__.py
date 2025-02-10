@@ -18,6 +18,13 @@ from typing import TYPE_CHECKING
 
 import x_wr_timezone
 
+from recurring_ical_events.adapters import (
+    AbsoluteAlarmAdapter,
+    ComponentAdapter,
+    EventAdapter,
+    JournalAdapter,
+    TodoAdapter,
+)
 from recurring_ical_events.constants import DATE_MAX, DATE_MAX_DT, DATE_MIN, DATE_MIN_DT
 from recurring_ical_events.errors import (
     BadRuleStringFormat,
@@ -25,8 +32,21 @@ from recurring_ical_events.errors import (
     PeriodEndBeforeStart,
 )
 from recurring_ical_events.examples import example_calendar
-from recurring_ical_events.occurrence import AlarmOccurrence, Occurrence
 from recurring_ical_events.query import T_COMPONENTS, CalendarQuery
+from recurring_ical_events.selection import (
+    Alarms,
+    AllKnownComponents,
+    ComponentsWithName,
+    SelectComponents,
+)
+
+from .occurrence import AlarmOccurrence, Occurrence
+from .series import (
+    AbsoluteAlarmSeries,
+    AlarmSeriesRelativeToEnd,
+    AlarmSeriesRelativeToStart,
+    Series,
+)
 
 if TYPE_CHECKING:
     from icalendar.cal import Component
@@ -66,6 +86,20 @@ __all__ = [
     "PeriodEndBeforeStart",
     "InvalidCalendar",
     "example_calendar",
-    "Occurrence",
+    "CalendarQuery",
+    "ComponentAdapter",
+    "EventAdapter",
+    "JournalAdapter",
+    "TodoAdapter",
+    "AbsoluteAlarmAdapter",
+    "AllKnownComponents",
+    "SelectComponents",
+    "ComponentsWithName",
+    "Alarms",
+    "Series",
+    "AlarmSeriesRelativeToStart",
+    "AlarmSeriesRelativeToEnd",
+    "AbsoluteAlarmSeries",
     "AlarmOccurrence",
+    "Occurrence",
 ]

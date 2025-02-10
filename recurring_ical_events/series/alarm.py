@@ -9,7 +9,7 @@ from icalendar import Alarm
 
 from recurring_ical_events.adapters.component import ComponentAdapter
 from recurring_ical_events.occurrence import AlarmOccurrence, Occurrence
-from recurring_ical_events.series import Series
+from recurring_ical_events.series.rrule import Series
 from recurring_ical_events.types import Time
 from recurring_ical_events.util import convert_to_datetime
 
