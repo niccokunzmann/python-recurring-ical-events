@@ -136,3 +136,9 @@ class AlarmOccurrence(Occurrence):
             f"<{self.__class__.__name__} at {self.start} of"
             f" {self.alarm} in {self.parent}"
         )
+
+
+__all__ = [
+    "Occurrence",
+    "AlarmOccurrence",
+]

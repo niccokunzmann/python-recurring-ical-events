@@ -1,3 +1,5 @@
+"""Series calculation for alarms."""
+
 import datetime
 from collections import defaultdict
 from typing import Generator

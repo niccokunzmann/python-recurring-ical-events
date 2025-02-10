@@ -1,3 +1,5 @@
+"""Adapter for VTODO."""
+
 from recurring_ical_events.adapters.component import ComponentAdapter
 from recurring_ical_events.constants import DATE_MAX_DT, DATE_MIN_DT
 from recurring_ical_events.types import Time
