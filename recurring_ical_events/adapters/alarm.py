@@ -1,7 +1,6 @@
-from recurring_ical_events.adapters.component import ComponentAdapter
-
-
 from icalendar import Alarm
+
+from recurring_ical_events.adapters.component import ComponentAdapter
 
 
 class AbsoluteAlarmAdapter(ComponentAdapter):

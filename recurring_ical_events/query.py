@@ -35,7 +35,6 @@ else:
     T_COMPONENTS = Sequence[str]
 
 
-
 class CalendarQuery:
     """A calendar that can unfold its events at a certain time.
 
@@ -231,5 +230,6 @@ class CalendarQuery:
         for component in self.all():
             return component
         raise IndexError("No components found.")
+
 
 __all__ = ["CalendarQuery", "T_COMPONENTS"]

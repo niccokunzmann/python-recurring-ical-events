@@ -23,4 +23,5 @@ def example_calendar(name: str = "") -> icalendar.Calendar:
             f"Use one of {', '.join(p.name for p in CALENDARS.glob('*.ics'))!r}."
         )
 
+
 __all__ = ["example_calendar"]

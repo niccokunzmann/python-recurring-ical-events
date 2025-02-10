@@ -306,7 +306,7 @@ def test_several_alarms_occur_for_a_slightly_different_event(alarms):
     Thus, they all should appear.
     """
     events = list(alarms.alarms_at_the_same_time.all())
-    summaries = {event["SUMMARY" ]for event in events}
+    summaries = {event["SUMMARY"] for event in events}
     assert summaries == {
         "event with alarm at the same time 1",
         "event with alarm at the same time 2",
@@ -320,8 +320,12 @@ def test_different_alarms_at_the_same_time_merge_into_one(alarms, dt):
 
     these alarms are in the event.
     """
-    events : list[icalendar.Event] = alarms.alarms_different_in_same_event.at(dt)
-    alarm_names = {alarm_time.alarm["DESCRIPTION"] for event in events for alarm_time in event.alarms.times}
+    events: list[icalendar.Event] = alarms.alarms_different_in_same_event.at(dt)
+    alarm_names = {
+        alarm_time.alarm["DESCRIPTION"]
+        for event in events
+        for alarm_time in event.alarms.times
+    }
     assert alarm_names >= {"Alarm 1", "Alarm 2", "Alarm 3"}
     if dt == "20241220":
         assert "Alarm 4" in alarm_names

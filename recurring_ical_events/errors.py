@@ -1,6 +1,5 @@
 """All the errors."""
 
-
 from recurring_ical_events.types import Time
 
 
@@ -50,5 +49,6 @@ class BadRuleStringFormat(InvalidCalendar):
     def rule(self) -> str:
         """The malformed rule string"""
         return self._rule
+
 
 __all__ = ["InvalidCalendar", "PeriodEndBeforeStart", "BadRuleStringFormat"]

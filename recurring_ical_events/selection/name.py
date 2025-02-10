@@ -94,4 +94,5 @@ class ComponentsWithName(SelectComponents):
                 result.append(self._series(components))
         return result
 
+
 __all__ = ["ComponentsWithName"]

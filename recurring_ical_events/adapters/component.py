@@ -227,4 +227,5 @@ class ComponentAdapter(ABC):
             return start - recurrence_id
         return datetime.timedelta(0)
 
+
 __all__ = ["ComponentAdapter"]

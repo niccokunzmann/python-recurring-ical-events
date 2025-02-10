@@ -33,4 +33,5 @@ class JournalAdapter(ComponentAdapter):
         ## consider it to have zero duration if a timestamp is given.
         return self.start
 
+
 __all__ = ["JournalAdapter"]

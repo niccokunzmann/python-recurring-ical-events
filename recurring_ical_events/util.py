@@ -42,7 +42,9 @@ def is_date(time: Time) -> bool:
     return isinstance(time, datetime.date) and not isinstance(time, datetime.datetime)
 
 
-def convert_to_datetime(date: Time, tzinfo: Optional[datetime.tzinfo]) -> datetime.datetime:
+def convert_to_datetime(
+    date: Time, tzinfo: Optional[datetime.tzinfo]
+) -> datetime.datetime:
     """Converts a date to a datetime.
 
     Dates are converted to datetimes with tzinfo.
@@ -212,4 +214,3 @@ def get_any(dictionary: dict, keys: Sequence[object], default: object = None):
     for key in keys:
         result = dictionary.get(key, result)
     return result
-

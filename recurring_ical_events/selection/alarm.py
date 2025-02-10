@@ -86,4 +86,5 @@ class Alarms(SelectComponents):
             result.append(absolute_alarms)
         return result
 
+
 __all__ = ["Alarms"]

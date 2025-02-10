@@ -1,4 +1,5 @@
 """Calculation of series based on rrule."""
+
 from __future__ import annotations
 
 import datetime
@@ -137,7 +138,7 @@ class Series:
             """The extension of the time span we need for this component's core."""
             return self.core.extend_query_span_by
 
-        def create_rule_with_start(self, rule_string:str) -> rrule:
+        def create_rule_with_start(self, rule_string: str) -> rrule:
             """Helper to create an rrule from a rule_string
 
             The rrule is starting at the start of the component.
@@ -464,5 +465,6 @@ class Series:
             f"<{self.__class__.__name__} uid={self.uid} "
             f"modifications:{len(self.recurrence_id_to_modification)}>"
         )
+
 
 ___all__ = ["Series"]

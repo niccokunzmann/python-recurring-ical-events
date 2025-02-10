@@ -67,4 +67,5 @@ class TodoAdapter(ComponentAdapter):
         ## in the infinite future?
         return DATE_MAX_DT
 
+
 __all__ = ["TodoAdapter"]

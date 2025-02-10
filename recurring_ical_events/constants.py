@@ -1,7 +1,8 @@
 """Constants for recurring_ical_events."""
+
 import datetime
-from pathlib import Path
 import re
+from pathlib import Path
 
 # The minimum value accepted as date (pytz + zoneinfo)
 DATE_MIN = (1970, 1, 1)
@@ -18,4 +19,11 @@ CALENDARS = HERE / "test" / "calendars"
 
 NEGATIVE_RRULE_COUNT_REGEX = re.compile(r"COUNT=-\d+;?")
 
-__all__ = ["DATE_MIN", "DATE_MIN_DT", "DATE_MAX", "DATE_MAX_DT", "CALENDARS", "NEGATIVE_RRULE_COUNT_REGEX"]
+__all__ = [
+    "DATE_MIN",
+    "DATE_MIN_DT",
+    "DATE_MAX",
+    "DATE_MAX_DT",
+    "CALENDARS",
+    "NEGATIVE_RRULE_COUNT_REGEX",
+]

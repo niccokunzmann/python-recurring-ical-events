@@ -20,7 +20,9 @@ class AbsoluteAlarmSeries:
     def __init__(self):
         """Create a new series of absolute alarms."""
         self.times = rruleset(cache=True)
-        self.times2occurence: dict[datetime.datetime, list[Occurrence]] = defaultdict(list)
+        self.times2occurence: dict[datetime.datetime, list[Occurrence]] = defaultdict(
+            list
+        )
 
     def add(self, alarm: Alarm, parent: ComponentAdapter):
         """Add an absolute alarm with a parent component."""
@@ -35,7 +37,9 @@ class AbsoluteAlarmSeries:
         self.times.rdate(dt)
         self.times2occurence[dt].append(self.occurrence(dt, alarm, parent))
 
-    def between(self, span_start: Time, span_stop: Time) -> Generator[Occurrence, None, None]:
+    def between(
+        self, span_start: Time, span_stop: Time
+    ) -> Generator[Occurrence, None, None]:
         """Components between the start (inclusive) and end (exclusive).
 
         The result does not need to be ordered.
@@ -69,7 +73,9 @@ class AlarmSeriesRelativeToStart:
         for _ in range(alarm.REPEAT):
             self._offsets.append(self._offsets[-1] + alarm.DURATION)
 
-    def between(self, span_start: Time, span_stop: Time) -> Generator[Occurrence, None, None]:
+    def between(
+        self, span_start: Time, span_stop: Time
+    ) -> Generator[Occurrence, None, None]:
         """Components between the start (inclusive) and end (exclusive).
 
         The result does not need to be ordered.
@@ -115,3 +121,10 @@ class AlarmSeriesRelativeToEnd(AlarmSeriesRelativeToStart):
     ) -> Occurrence:
         """Create a new occurrence."""
         return AlarmOccurrence(offset + parent.end, alarm, parent)
+
+
+__all__ = [
+    "AbsoluteAlarmSeries",
+    "AlarmSeriesRelativeToStart",
+    "AlarmSeriesRelativeToEnd",
+]

@@ -47,4 +47,5 @@ class EventAdapter(ComponentAdapter):
             return start + datetime.timedelta(days=1)
         return start
 
+
 __all__ = ["EventAdapter"]

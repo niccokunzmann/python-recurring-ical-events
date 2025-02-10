@@ -27,5 +27,5 @@ class SelectComponents(ABC):
             A Series of events with such an error is removed from all results.
         """
 
-__all__ = ["SelectComponents"]
 
+__all__ = ["SelectComponents"]
