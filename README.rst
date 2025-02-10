@@ -620,6 +620,10 @@ To release new versions,
 Changelog
 ---------
 
+- v3.4.2
+
+  - Restructure module into package with a file structure.
+
 - v3.4.1
 
   - Improve Alarm documentation
