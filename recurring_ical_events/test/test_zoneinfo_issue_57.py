@@ -11,6 +11,7 @@ import pytz
 from icalendar import Calendar, Event, vDDDTypes
 
 import recurring_ical_events
+import recurring_ical_events.util
 
 
 def test_zoneinfo_example_yields_events(ZoneInfo):  # noqa: N803
@@ -84,7 +85,7 @@ ATTRS = "year,month,day,hour,minute,second".split(",")
 )
 def test_convert_to_date(dt, tz, times, ZoneInfo):  # noqa: N803
     """Check that a datetime conversion takes place properly."""
-    new = recurring_ical_events.convert_to_datetime(dt, ZoneInfo(tz))
+    new = recurring_ical_events.util.convert_to_datetime(dt, ZoneInfo(tz))
     converted = ()
     for attr, _ in zip(ATTRS, times):
         converted += (getattr(new, attr),)

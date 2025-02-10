@@ -11,10 +11,11 @@ from typing import TYPE_CHECKING, NamedTuple
 
 import pytest
 
-from recurring_ical_events import Occurrence
+from recurring_ical_events.occurrence import Occurrence
+from recurring_ical_events.types import Time
 
 if TYPE_CHECKING:
-    from recurring_ical_events import RecurrenceIDs, Time
+    from recurring_ical_events.types import RecurrenceIDs
 
 
 class Adapter(NamedTuple):

@@ -1,6 +1,6 @@
 import pytest
 
-from recurring_ical_events import BadRuleStringFormat
+from recurring_ical_events.errors import BadRuleStringFormat
 
 
 def test_bad_rrule_until_format(calendars):

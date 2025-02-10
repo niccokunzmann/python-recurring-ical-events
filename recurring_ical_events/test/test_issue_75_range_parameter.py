@@ -21,7 +21,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from recurring_ical_events import EventAdapter
+from recurring_ical_events.adapters.event import EventAdapter
 
 if TYPE_CHECKING:
     from calendar import Calendar

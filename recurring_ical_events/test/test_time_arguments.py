@@ -8,7 +8,7 @@ from datetime import datetime
 import pytest
 from pytz import utc
 
-from recurring_ical_events import CalendarQuery
+from recurring_ical_events.query import CalendarQuery
 
 
 @pytest.mark.parametrize(

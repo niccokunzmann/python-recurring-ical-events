@@ -1,6 +1,6 @@
 import pytest
 
-from recurring_ical_events import PeriodEndBeforeStart
+from recurring_ical_events.errors import PeriodEndBeforeStart
 
 
 def test_end_before_start_event(calendars):

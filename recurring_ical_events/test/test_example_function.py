@@ -2,7 +2,7 @@
 
 import pytest
 
-from recurring_ical_events import example_calendar
+from recurring_ical_events.examples import example_calendar
 
 
 def test_valid_example_is_returned():

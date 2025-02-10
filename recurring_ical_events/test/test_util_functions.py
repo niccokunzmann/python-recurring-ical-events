@@ -4,7 +4,7 @@ from typing import NamedTuple
 
 import pytest
 
-from recurring_ical_events import with_highest_sequence
+from recurring_ical_events.util import with_highest_sequence
 
 
 class Component(NamedTuple):

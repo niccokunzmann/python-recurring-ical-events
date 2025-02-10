@@ -3,7 +3,8 @@ from datetime import date, datetime
 import pytest
 from pytz import timezone, utc
 
-from recurring_ical_events import PeriodEndBeforeStart, time_span_contains_event
+from recurring_ical_events.util import time_span_contains_event
+from recurring_ical_events.errors import PeriodEndBeforeStart
 
 berlin = timezone("Europe/Berlin").localize
 

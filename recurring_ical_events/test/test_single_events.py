@@ -1,4 +1,4 @@
-from recurring_ical_events import DATE_MAX
+from recurring_ical_events.constants import DATE_MAX
 
 
 def test_a_calendar_with_no_events_has_no_events(calendars):

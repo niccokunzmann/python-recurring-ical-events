@@ -2,7 +2,8 @@ from datetime import date
 
 import pytest
 
-from recurring_ical_events import InvalidCalendar, of
+from recurring_ical_events import of
+from recurring_ical_events.errors import InvalidCalendar
 
 
 @pytest.mark.parametrize(

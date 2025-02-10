@@ -8,7 +8,7 @@ import datetime
 import pytest
 from pytz import UTC, timezone
 
-from recurring_ical_events import timestamp
+from recurring_ical_events.util import timestamp
 
 tz_london = timezone("Europe/London")
 

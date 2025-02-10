@@ -8,16 +8,16 @@ import pytest
 from icalendar.cal import Component
 
 from recurring_ical_events import (
-    AllKnownComponents,
-    ComponentsWithName,
-    EventAdapter,
-    JournalAdapter,
-    Occurrence,
-    SelectComponents,
-    Series,
-    TodoAdapter,
     of,
 )
+from recurring_ical_events.selection.all import AllKnownComponents
+from recurring_ical_events.selection.name import ComponentsWithName
+from recurring_ical_events.selection.base import SelectComponents
+from recurring_ical_events.occurrence import Occurrence
+from recurring_ical_events.adapters.journal import JournalAdapter
+from recurring_ical_events.adapters.todo import TodoAdapter
+from recurring_ical_events.adapters.event import EventAdapter
+from recurring_ical_events.series import Series
 
 if TYPE_CHECKING:
     from icalendar.cal import Component

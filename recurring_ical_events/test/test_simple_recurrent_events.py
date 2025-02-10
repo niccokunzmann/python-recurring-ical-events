@@ -1,6 +1,6 @@
 import pytest
 
-from recurring_ical_events import DATE_MAX
+from recurring_ical_events.constants import DATE_MAX
 
 
 def test_event_is_not_included_if_it_is_later(calendars):
