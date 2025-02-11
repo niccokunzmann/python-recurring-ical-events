@@ -1,12 +1,13 @@
 """Occurrences of events and other components."""
+
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from datetime import date, datetime, timedelta
+from typing import TYPE_CHECKING, NamedTuple, Optional
 
 from icalendar import Alarm
 
 from recurring_ical_events.adapters.component import ComponentAdapter
-from recurring_ical_events.types import ComponentID
 from recurring_ical_events.util import (
     cached_property,
     make_comparable,
@@ -14,13 +15,71 @@ from recurring_ical_events.util import (
 )
 
 if TYPE_CHECKING:
-    import datetime
-
     from icalendar import Alarm
     from icalendar.cal import Component
 
     from recurring_ical_events.adapters.component import ComponentAdapter
-    from recurring_ical_events.types import ComponentID, RecurrenceIDs, Time
+    from recurring_ical_events.types import UID, RecurrenceIDs, Time
+
+
+class OccurrenceID(NamedTuple):
+    """The ID of a component's occurrence to identify it clearly.
+
+    Attributes:
+        name: The name of the component, e.g. "VEVENT"
+        uid: The UID of the component.
+        recurrence_id: The Recurrence-ID of the component in UTC but without tzinfo.
+        start: The start of the component
+    """
+
+    name: str
+    uid: UID
+    recurrence_id: Optional[Time]
+    start: Time
+
+    def to_string(self) -> str:
+        """Return a string representation of this id."""
+        return "#".join(
+            [
+                self.name,
+                self.recurrence_id.isoformat() if self.recurrence_id else "",
+                self.start.isoformat(),
+                self.uid,
+            ]
+        )
+
+    @staticmethod
+    def _dt_from_string(iso_string: str) -> Time:
+        """Create a datetime from the string representation."""
+        if len(iso_string) == 10:
+            return date.fromisoformat(iso_string)
+        return datetime.fromisoformat(iso_string)
+
+    @classmethod
+    def from_string(cls, string_id: str) -> OccurrenceID:
+        """Parse a string and return the component id."""
+        name, recurrence_id, start, uid = string_id.split("#", 3)
+        return cls(
+            name,
+            uid,
+            cls._dt_from_string(recurrence_id) if recurrence_id else None,
+            cls._dt_from_string(start),
+        )
+
+    @classmethod
+    def from_occurrence(
+        cls, name: str, uid: str, recurrence_ids: RecurrenceIDs, start: Time
+    ):
+        """Create a new OccurrenceID from the given values.
+
+        Args:
+            name: The component name.
+            uid: The UID string.
+            recurrence_ids: The recurrence ID tuple.
+                This is expected as UTC with tzinfo being None.
+            start: start time of the component either with or without timezone
+        """
+        return cls(name, uid, recurrence_ids[0] if recurrence_ids else None, start)
 
 
 class Occurrence:
@@ -30,7 +89,7 @@ class Occurrence:
         self,
         adapter: ComponentAdapter,
         start: Time | None = None,
-        end: Time | None | datetime.timedelta = None,
+        end: Time | None | timedelta = None,
     ):
         """Create an event repetition.
 
@@ -61,13 +120,13 @@ class Occurrence:
         return self_start < other_start
 
     @cached_property
-    def id(self) -> ComponentID:
+    def id(self) -> OccurrenceID:
         """The id of the component."""
-        recurrence_id = (*self._adapter.recurrence_ids, self.start)[0]
-        return (
+        return OccurrenceID.from_occurrence(
             self._adapter.component_name(),
             self._adapter.uid,
-            recurrence_id,
+            self._adapter.recurrence_ids,
+            self.start,
         )
 
     def __hash__(self) -> int:
@@ -102,7 +161,7 @@ class AlarmOccurrence(Occurrence):
 
     def __init__(
         self,
-        trigger: datetime.datetime,
+        trigger: datetime,
         alarm: Alarm,
         parent: ComponentAdapter | Occurrence,
     ) -> None:
@@ -122,12 +181,12 @@ class AlarmOccurrence(Occurrence):
         return parent
 
     @cached_property
-    def id(self) -> ComponentID:
+    def id(self) -> OccurrenceID:
         """The id of the component."""
-        return (
+        return OccurrenceID.from_occurrence(
             self.parent.component_name(),
             self.parent.uid,
-            *self.parent.recurrence_ids[:1],
+            self.parent.recurrence_ids,
             self.start,
         )
 
@@ -142,4 +201,5 @@ class AlarmOccurrence(Occurrence):
 __all__ = [
     "Occurrence",
     "AlarmOccurrence",
+    "OccurrenceID",
 ]
