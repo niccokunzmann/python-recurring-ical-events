@@ -282,6 +282,55 @@ The result is an iterator that returns the events in order.
     for event in recurring_ical_events.of(an_icalendar_object).after(datetime.datetime.now()):
         print(event["DTSTART"]) # The start is ordered
 
+Pagination
+**********
+
+Pagination allows you to chop the resulting components into chunks of a certain size.
+
+.. code-block: python
+
+    # we get a calendar with 10 events and 2 events per page
+    >>> ten_events = recurring_ical_events.example_calendar("event_10_times")
+    >>> pages = recurring_ical_events.of(ten_events).paginate(2)
+
+    # we can iterate over the pages with 2 events each
+    >>> for i, last_page in enumerate(pages):
+    ...     print(f"page: {i}")
+    ...     for event in last_page:
+    ...         print(f"->  {event.start}")
+    ...     if i == 1: break
+    page: 0
+    ->  2020-01-13 07:45:00+01:00
+    ->  2020-01-14 07:45:00+01:00
+    page: 1
+    ->  2020-01-15 07:45:00+01:00
+    ->  2020-01-16 07:45:00+01:00
+
+If you run a web service and you would like to continue pagination after a certain page,
+this can be done, too. Just hand someone the ``next_page_id`` and continue from there on.
+
+.. code-block: python
+
+    # resume the same query from the next page
+    >>> pages = recurring_ical_events.of(ten_events).paginate(2, next_page_id = last_page.next_page_id)
+    >>> for i, last_page in enumerate(pages):
+    ...     print(f"page: {i + 2}")
+    ...     for event in last_page:
+    ...         print(f"->  {event.start}")
+    ...     if i == 1: break
+    page: 2
+    ->  2020-01-17 07:45:00+01:00
+    ->  2020-01-18 07:45:00+01:00
+    page: 3
+    ->  2020-01-19 07:45:00+01:00
+    ->  2020-01-20 07:45:00+01:00
+
+The ``last_page.next_page_id`` is a string so that it can be used easily.
+It is tested against malicious modification and can safely be passed from a third party source.
+
+Additionally to the page size, you can also pass a ``start`` and an ``end`` to the pages so that
+all components are visible within that time.
+
 Different Components, not just Events
 *************************************
 
@@ -620,7 +669,7 @@ To release new versions,
 Changelog
 ---------
 
-- v3.4.2
+- v3.5.0
 
   - Restructure module into package with a file structure.
   - Add pagination, see `Issue 211 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/211>`_

@@ -47,6 +47,10 @@ class Page:
         """Wether this is the last page and there is no other page following."""
         return self._next_page_id == ""
 
+    def __iter__(self) -> Iterator[Component]:
+        """Return an iterator over the components."""
+        return iter(self.components)
+
 
 class Pages:
     """A pagination configuration to iterate over pages."""
