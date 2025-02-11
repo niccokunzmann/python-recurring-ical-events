@@ -623,6 +623,7 @@ Changelog
 - v3.4.2
 
   - Restructure module into package with a file structure.
+  - Add pagination, see `Issue 211 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/211>`_
 
 - v3.4.1
 
