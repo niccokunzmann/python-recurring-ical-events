@@ -1,11 +1,12 @@
 """Test the pagination behaviour of the query."""
 
-from datetime import date
+from datetime import date, timedelta
 from typing import Callable, Iterator
 
 import pytest
 from icalendar import Component
 
+from recurring_ical_events.occurrence import OccurrenceID
 from recurring_ical_events.pages import Page, Pages
 from recurring_ical_events.test.conftest import ICSCalendars
 from recurring_ical_events.util import compare_greater
@@ -153,8 +154,48 @@ def test_count_events(calendars: ICSCalendars):
     assert calendars.no_events.count() == 0
 
 
-def test_cannot_escape_start_with_pagination_id(todo):
-    pass
+def test_cannot_escape_start_with_pagination_id(calendars: ICSCalendars):
+    """The pagination id is passed from outside to this.
 
-def test_invalid_recurrence_id_uid_will_not_go_though_all_events_but_stop_after_that_date(todo):
-    pass
+    We must make sure that we cannot be hacked.
+    """
+    start = date(2020, 1, 17) # the first event is at the 13th
+    pages : Pages = calendars.event_10_times.paginate(1, start)
+    first_page = pages.generate_next_page()
+    assert first_page
+    assert not first_page.is_last()
+    # request the next page but with an earlier id
+    oid = OccurrenceID.from_string(first_page.next_page_id)
+    new_oid = OccurrenceID(oid.name, oid.uid, oid.recurrence_id, oid.start - timedelta(days=30))
+    pages : Pages = calendars.event_10_times.paginate(1, start, next_page_id = new_oid.to_string())
+    # we cannot be earlier than start though
+    next_page = pages.generate_next_page()
+    assert next_page.components[0].start == first_page.components[0].start
+    assert next_page.components == first_page.components
+
+
+def invalidate_recurrence_id(next_page_id: str) -> str:
+    """We change the recurrence id."""
+    oid = OccurrenceID.from_string(next_page_id)
+    return OccurrenceID(oid.name, oid.uid, date(1990, 10, 11), oid.start).to_string()
+
+def invalidate_uid(next_page_id: str) -> str:
+    """We change the uid."""
+    oid = OccurrenceID.from_string(next_page_id)
+    return OccurrenceID(oid.name, oid.uid + "-changed", oid.recurrence_id, oid.start).to_string()
+
+
+@pytest.mark.parametrize("invalidate_id", [invalidate_uid, invalidate_recurrence_id])
+def test_invalid_recurrence_id_uid_will_not_go_though_all_events_but_stop_after_that_date(calendars: ICSCalendars, invalidate_id:Callable[[str], str]):
+    """If we cannot find an event, the page starts on the day it should."""
+    start = date(2020, 1, 17) # the first event is at the 13th
+    pages : Pages = calendars.event_10_times.paginate(1, start)
+    first_page = pages.generate_next_page()
+    real_next_page = pages.generate_next_page()
+    # invalidate the event we are looking for
+    pages : Pages = calendars.event_10_times.paginate(1, start, next_page_id = invalidate_id(first_page.next_page_id))
+    # we will still find the correct event because of the start
+    # and we only have one event per day
+    modified_next_page = pages.generate_next_page()
+    assert real_next_page.components[0].start == modified_next_page.components[0].start
+    assert real_next_page.components == modified_next_page.components

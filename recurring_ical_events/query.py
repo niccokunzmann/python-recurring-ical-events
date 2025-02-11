@@ -260,11 +260,20 @@ class CalendarQuery:
         )
         if next_page_id:
             first_occurrence_id = OccurrenceID.from_string(next_page_id)
-            iterator = self._after(first_occurrence_id.start)
-            for occurrence in iterator:
-                if occurrence.id == first_occurrence_id:
-                    break
-            iterator = itertools.chain([occurrence], iterator)
+            if not compare_greater(earliest_end, first_occurrence_id.start):
+                iterator = self._after(first_occurrence_id.start)
+                lost_occurrences = [] # in case we do not find the event
+                for occurrence in iterator:
+                    lost_occurrences.append(occurrence)
+                    oid = occurrence.id
+                    if oid == first_occurrence_id:
+                        iterator = itertools.chain([occurrence], iterator)
+                        break
+                    if compare_greater(oid.start, first_occurrence_id.start):
+                        iterator = itertools.chain(lost_occurrences, iterator)
+                        break
+            else:
+                iterator = self._after(earliest_end)
         else:
             iterator = self._after(earliest_end)
         return Pages(
