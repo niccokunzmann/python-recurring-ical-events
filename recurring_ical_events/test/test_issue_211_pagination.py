@@ -27,7 +27,7 @@ def iterate_pages(get_pages: GET_PAGES):
     for page in pages:
         components = page.components
         assert len(components) == pages.size or (
-            not page.has_next_page and 0 < len(components) <= pages.size
+            not page.has_next_page() and 0 < len(components) <= pages.size
         )
         yield from components
 
@@ -117,7 +117,7 @@ def test_filled_page_bool():
 @pytest.mark.parametrize("last_page", [Page([]), Page([1])])
 def test_next_page_absent(last_page: Page):
     """Check not having a next page."""
-    assert not last_page.has_next_page
+    assert not last_page.has_next_page()
     assert last_page.next_page_id == ""
     assert last_page.is_last()
 
@@ -131,7 +131,7 @@ def test_next_page_present(page: Page):
     We must at least have a component.
     """
     assert page.next_page_id != ""
-    assert page.has_next_page
+    assert page.has_next_page()
     assert not page.is_last()
 
 
@@ -159,15 +159,19 @@ def test_cannot_escape_start_with_pagination_id(calendars: ICSCalendars):
 
     We must make sure that we cannot be hacked.
     """
-    start = date(2020, 1, 17) # the first event is at the 13th
-    pages : Pages = calendars.event_10_times.paginate(1, start)
+    start = date(2020, 1, 17)  # the first event is at the 13th
+    pages: Pages = calendars.event_10_times.paginate(1, start)
     first_page = pages.generate_next_page()
     assert first_page
     assert not first_page.is_last()
     # request the next page but with an earlier id
     oid = OccurrenceID.from_string(first_page.next_page_id)
-    new_oid = OccurrenceID(oid.name, oid.uid, oid.recurrence_id, oid.start - timedelta(days=30))
-    pages : Pages = calendars.event_10_times.paginate(1, start, next_page_id = new_oid.to_string())
+    new_oid = OccurrenceID(
+        oid.name, oid.uid, oid.recurrence_id, oid.start - timedelta(days=30)
+    )
+    pages: Pages = calendars.event_10_times.paginate(
+        1, start, next_page_id=new_oid.to_string()
+    )
     # we cannot be earlier than start though
     next_page = pages.generate_next_page()
     assert next_page.components[0].start == first_page.components[0].start
@@ -179,21 +183,28 @@ def invalidate_recurrence_id(next_page_id: str) -> str:
     oid = OccurrenceID.from_string(next_page_id)
     return OccurrenceID(oid.name, oid.uid, date(1990, 10, 11), oid.start).to_string()
 
+
 def invalidate_uid(next_page_id: str) -> str:
     """We change the uid."""
     oid = OccurrenceID.from_string(next_page_id)
-    return OccurrenceID(oid.name, oid.uid + "-changed", oid.recurrence_id, oid.start).to_string()
+    return OccurrenceID(
+        oid.name, oid.uid + "-changed", oid.recurrence_id, oid.start
+    ).to_string()
 
 
 @pytest.mark.parametrize("invalidate_id", [invalidate_uid, invalidate_recurrence_id])
-def test_invalid_recurrence_id_uid_will_not_go_though_all_events_but_stop_after_that_date(calendars: ICSCalendars, invalidate_id:Callable[[str], str]):
+def test_invalid_recurrence_id_uid_will_not_go_though_all_events_but_stop_after_that_date(
+    calendars: ICSCalendars, invalidate_id: Callable[[str], str]
+):
     """If we cannot find an event, the page starts on the day it should."""
-    start = date(2020, 1, 17) # the first event is at the 13th
-    pages : Pages = calendars.event_10_times.paginate(1, start)
+    start = date(2020, 1, 17)  # the first event is at the 13th
+    pages: Pages = calendars.event_10_times.paginate(1, start)
     first_page = pages.generate_next_page()
     real_next_page = pages.generate_next_page()
     # invalidate the event we are looking for
-    pages : Pages = calendars.event_10_times.paginate(1, start, next_page_id = invalidate_id(first_page.next_page_id))
+    pages: Pages = calendars.event_10_times.paginate(
+        1, start, next_page_id=invalidate_id(first_page.next_page_id)
+    )
     # we will still find the correct event because of the start
     # and we only have one event per day
     modified_next_page = pages.generate_next_page()

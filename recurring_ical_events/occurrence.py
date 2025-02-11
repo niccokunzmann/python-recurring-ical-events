@@ -201,4 +201,5 @@ class AlarmOccurrence(Occurrence):
 __all__ = [
     "Occurrence",
     "AlarmOccurrence",
+    "OccurrenceID",
 ]

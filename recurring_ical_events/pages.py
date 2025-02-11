@@ -29,7 +29,6 @@ class Page:
         """All the components of one page."""
         return self._components
 
-    @property
     def has_next_page(self) -> bool:
         """Wether there is a page following this one."""
         return self.next_page_id != ""

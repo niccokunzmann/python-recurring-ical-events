@@ -262,7 +262,7 @@ class CalendarQuery:
             first_occurrence_id = OccurrenceID.from_string(next_page_id)
             if not compare_greater(earliest_end, first_occurrence_id.start):
                 iterator = self._after(first_occurrence_id.start)
-                lost_occurrences = [] # in case we do not find the event
+                lost_occurrences = []  # in case we do not find the event
                 for occurrence in iterator:
                     lost_occurrences.append(occurrence)
                     oid = occurrence.id
