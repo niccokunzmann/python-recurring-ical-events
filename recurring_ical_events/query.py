@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import contextlib
 import datetime
+import itertools
 import sys
 from typing import TYPE_CHECKING, Generator, Optional, Sequence
 
@@ -16,6 +17,7 @@ from recurring_ical_events.errors import (
     InvalidCalendar,
     PeriodEndBeforeStart,
 )
+from recurring_ical_events.occurrence import OccurrenceID
 from recurring_ical_events.pages import Pages
 from recurring_ical_events.selection.base import SelectComponents
 from recurring_ical_events.util import compare_greater
@@ -26,7 +28,6 @@ if TYPE_CHECKING:
     from recurring_ical_events.occurrence import Occurrence
     from recurring_ical_events.series import Series
     from recurring_ical_events.types import (
-        ComponentID,
         DateArgument,
         Time,
     )
@@ -195,7 +196,7 @@ class CalendarQuery:
         time_span = datetime.timedelta(days=1)
         min_time_span = datetime.timedelta(minutes=15)
         done = False
-        result_ids: set[ComponentID] = set()
+        result_ids: set[OccurrenceID] = set()
 
         while not done:
             try:
@@ -241,6 +242,7 @@ class CalendarQuery:
         page_size: int,
         earliest_end: Optional[DateArgument] = None,
         latest_start: Optional[DateArgument] = None,
+        next_page_id: str = "",
     ) -> Pages:
         """Return pages for pagination.
 
@@ -250,12 +252,27 @@ class CalendarQuery:
                 All components occur after this date.
             latest_start: the end of the last page
                 All components occur before this date.
+            next_page_id: The id of the next page.
         """
         latest_start = None if latest_start is None else self.to_datetime(latest_start)
         earliest_end = (
             DATE_MIN_DT if earliest_end is None else self.to_datetime(earliest_end)
         )
-        return Pages(self._after(earliest_end), page_size, latest_start)
+        if next_page_id:
+            first_occurrence_id = OccurrenceID.from_string(next_page_id)
+            iterator = self._after(first_occurrence_id.start)
+            for occurrence in iterator:
+                if occurrence.id == first_occurrence_id:
+                    break
+            iterator = itertools.chain([occurrence], iterator)
+        else:
+            iterator = self._after(earliest_end)
+        return Pages(
+            occurrence_iterator=iterator,
+            size=page_size,
+            stop=latest_start,
+            keep_recurrence_attributes=self.keep_recurrence_attributes,
+        )
 
 
 __all__ = ["CalendarQuery", "T_COMPONENTS"]

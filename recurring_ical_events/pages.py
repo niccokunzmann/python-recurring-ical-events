@@ -43,6 +43,10 @@ class Page:
         """The number of components."""
         return len(self.components)
 
+    def is_last(self):
+        """Wether this is the last page and there is no other page following."""
+        return self._next_page_id == ""
+
 
 class Pages:
     """A pagination configuration to iterate over pages."""
@@ -58,10 +62,15 @@ class Pages:
         self._iterator = occurrence_iterator
         self._stop = stop
         self._size = size
+        if self._size <= 0:
+            raise ValueError(
+                f"A page must have at least one component, not {self._size}."
+            )
         self._keep_recurrence_attributes = keep_recurrence_attributes
         self._next_occurrence: Optional[Occurrence] = None
         for occurrence in self._iterator:
-            self._next_occurrence = occurrence
+            if self._stop is None or compare_greater(self._stop, occurrence.start):
+                self._next_occurrence = occurrence
             break
 
     @property
@@ -86,7 +95,7 @@ class Pages:
         last_occurrence = self._next_occurrence
         occurrences = [last_occurrence]
         for occurrence in self._iterator:
-            if compare_greater(occurrence.start, self._stop):
+            if self._stop is not None and compare_greater(occurrence.start, self._stop):
                 break
             last_occurrence = occurrence
             if len(occurrences) < self._size:
@@ -105,7 +114,10 @@ class Pages:
             [
                 occurrence.as_component(self._keep_recurrence_attributes)
                 for occurrence in occurrences
-            ]
+            ],
+            next_page_id=self._next_occurrence.id.to_string()
+            if self._next_occurrence is not None
+            else "",
         )
 
     def __iter__(self) -> Pages:
