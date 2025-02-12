@@ -674,7 +674,12 @@ To release new versions,
 Changelog
 ---------
 
-- v3.5.0
+- v3.5.1
+
+  - Move to ``pyproject.toml`` format to include directory structure more easily. See `Issue 214 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/214>`_
+  - Remove release 3.5.0 as it does not contain any source files.
+
+- v3.5.0 - yanked
 
   - Restructure module into package with a file structure.
   - Add pagination, see `Issue 211 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/211>`_
