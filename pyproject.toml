@@ -1,3 +1,84 @@
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[project]
+name = "recurring-ical-events"
+license = {file = "LICENSE"}
+keywords = ["icalendar", "calendar", "ics", "rfc5545", "scheduling", "events", "todo", "journal", "alarm"]
+dynamic = ["urls", "version"]
+authors = [
+  { name="Nicco Kunzmann", email="niccokunzmann@rambler.ru" },
+]
+maintainers = [
+  { name="Nicco Kunzmann", email="niccokunzmann@rambler.ru" },
+]
+description = "Calculate recurrence times of events, todos, alarms and journals based on icalendar RFC5545."
+readme = "README.rst"
+requires-python = ">=3.8"
+
+# see https://pypi.python.org/pypi?%3Aaction=list_classifiers
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Topic :: Office/Business :: Scheduling",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Utilities",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+
+# install requirements depending on python version
+# see https://www.python.org/dev/peps/pep-0508/#environment-markers
+dependencies = [
+    'icalendar >= 6.1.0, < 7.0.0',
+    'python-dateutil >= 2.8.1, < 3.0.0',
+    'x-wr-timezone >= 1.0.0, < 3.0.0; python_version >= "3.9"',
+    'x-wr-timezone == 0.*; python_version <= "3.8"',
+    'backports.zoneinfo; python_version == "3.7" or python_version == "3.8"',
+    'tzdata',
+]
+
+[project.optional-dependencies]
+test = [
+    'pytest',
+    'pytest-cov',
+    'restructuredtext-lint',
+    'pygments',
+    'pytz >= 2023.3',
+]
+
+[tool.hatch.metadata.hooks.vcs.urls]
+#[project.urls]
+Homepage = "https://github.com/niccokunzmann/python-recurring-ical-events"
+Repository = "https://github.com/niccokunzmann/python-recurring-ical-events"
+source_archive = "https://github.com/niccokunzmann/python-recurring-ical-events/archive/{commit_hash}.zip"
+Issues = "https://github.com/niccokunzmann/python-recurring-ical-events/issues"
+Documentation = "https://github.com/niccokunzmann/python-recurring-ical-events"
+Changelog = "https://github.com/niccokunzmann/python-recurring-ical-events?tab=readme-ov-file#changelog"
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.version.raw-options]
+# see https://github.com/ofek/hatch-vcs/issues/43#issuecomment-1553065222
+local_scheme = "no-local-version"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "recurring_ical_events/_version.py"
+
+[tool.hatch.metadata]
+allow-direct-references = true
 
 [tool.ruff]
 target-version = "py38"
