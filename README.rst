@@ -287,7 +287,7 @@ Pagination
 
 Pagination allows you to chop the resulting components into chunks of a certain size.
 
-.. code-block: python
+.. code-block:: python
 
     # we get a calendar with 10 events and 2 events per page
     >>> ten_events = recurring_ical_events.example_calendar("event_10_times")
@@ -309,7 +309,7 @@ Pagination allows you to chop the resulting components into chunks of a certain 
 If you run a web service and you would like to continue pagination after a certain page,
 this can be done, too. Just hand someone the ``next_page_id`` and continue from there on.
 
-.. code-block: python
+.. code-block:: python
 
     # resume the same query from the next page
     >>> pages = recurring_ical_events.of(ten_events).paginate(2, next_page_id = last_page.next_page_id)
