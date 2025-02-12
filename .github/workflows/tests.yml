@@ -80,7 +80,7 @@ jobs:
     - name: remove old files
       run: rm -rf dist/*
     - name: build distribution files
-      run: python setup.py bdist_wheel sdist
+      run: python -m build
     - name: deploy to pypi
       run: |
         # You will have to set the variables TWINE_USERNAME and TWINE_PASSWORD
