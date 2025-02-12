@@ -1,3 +1,4 @@
 include *requirements.txt
 include LICENSE
-recursive-exclude test *
+recursive-include recurring_ical_events *
+recursive-exclude recurring_ical_events *.pyc __pycache__
