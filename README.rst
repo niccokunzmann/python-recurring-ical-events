@@ -651,25 +651,35 @@ To run the tests in a specific Python version:
 New Releases
 ------------
 
+You can build the new release by running this command:
+
+.. code-block:: shell
+
+    tox -e build
+
 To release new versions,
 
-1. edit the Changelog Section
-2. edit setup.py, the ``__version__`` variable
-3. create a commit and push it
-4. wait for `GitHub Actions <https://github.com/niccokunzmann/python-recurring-ical-events/actions>`_ to finish the build
-5. run
+1. Edit the Changelog Section.
+2. Create a commit and push it.
+3. Wait for `GitHub Actions <https://github.com/niccokunzmann/python-recurring-ical-events/actions>`_ to finish the build.
+4. Run
 
    .. code-block:: shell
 
-       python3 setup.py tag_and_deploy
+       git tag v3.5.1
+       git push origin v3.5.1
 
-6. notify the issues about their release
-
+5. Notify the issues about their release.
 
 Changelog
 ---------
 
-- v3.5.0
+- v3.5.1
+
+  - Move to ``pyproject.toml`` format to include directory structure more easily. See `Issue 214 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/214>`_
+  - Remove release 3.5.0 as it does not contain any source files.
+
+- v3.5.0 - yanked
 
   - Restructure module into package with a file structure.
   - Add pagination, see `Issue 211 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/211>`_
