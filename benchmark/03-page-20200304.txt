@@ -1,0 +1,311 @@
+         3922306 function calls (3917147 primitive calls) in 12.169 seconds
+
+   Random listing order was used
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/enum.py:197(__get__)
+        3    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/_compiler.py:465(_get_charset_prefix)
+        9    0.000    0.000    0.004    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/__init__.py:280(_compile)
+        3    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/_compiler.py:509(_compile_info)
+    54006    0.082    0.000    0.082    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/enum.py:1112(__new__)
+      5/3    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/_compiler.py:434(_get_literal_prefix)
+       17    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/_compiler.py:214(_compile_charset)
+        3    0.000    0.000    0.002    0.001 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/_parser.py:962(parse)
+     20/7    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/_parser.py:174(getwidth)
+      7/3    0.000    0.000    0.002    0.001 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/_parser.py:445(_parse_sub)
+        5    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/_parser.py:305(_class_escape)
+        6    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/_parser.py:365(_escape)
+     16/3    0.000    0.000    0.001    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/_compiler.py:37(_compile)
+        3    0.000    0.000    0.004    0.001 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/_compiler.py:738(compile)
+       17    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/_compiler.py:241(_optimize_charset)
+     13/3    0.001    0.000    0.002    0.001 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/_parser.py:505(_parse)
+        2    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/_parser.py:989(parse_template)
+   371000    2.197    0.000   11.069    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/dateutil/rrule.py:124(_iter_cached)
+     2000    0.028    0.000    0.062    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/dateutil/rrule.py:1383(_iter)
+   370000    2.740    0.000    6.578    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/dateutil/rrule.py:776(_iter)
+    13000    0.043    0.000    0.058    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/dateutil/rrule.py:1123(rebuild)
+        3    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/locale.py:381(normalize)
+      200    0.002    0.000    0.006    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/prop.py:443(__init__)
+      200    0.001    0.000    0.001    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/timezone/tzid.py:16(tzids_from_tzinfo)
+        1    0.000    0.000   12.088   12.088 /home/nicco/recurring-ical-events/recurring_ical_events/query.py:240(paginate)
+        1    0.000    0.000    0.008    0.008 /home/nicco/recurring-ical-events/recurring_ical_events/query.py:95(to_datetime)
+     2000    0.014    0.000   11.680    0.006 /home/nicco/recurring-ical-events/recurring_ical_events/series/rrule.py:242(rrule_between)
+      102    0.001    0.000   12.086    0.118 /home/nicco/recurring-ical-events/recurring_ical_events/query.py:194(_after)
+      100    0.002    0.000    0.073    0.001 /home/nicco/recurring-ical-events/recurring_ical_events/adapters/component.py:98(as_component)
+        1    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/_strptime.py:152(__calc_timezone)
+     7998    0.046    0.000    0.139    0.000 /home/nicco/recurring-ical-events/recurring_ical_events/util.py:57(convert_to_datetime)
+        1    0.000    0.000    0.080    0.080 /home/nicco/recurring-ical-events/recurring_ical_events/pages.py:94(__next__)
+     2000    0.034    0.000   12.009    0.006 /home/nicco/recurring-ical-events/recurring_ical_events/series/rrule.py:397(between)
+        1    0.000    0.000    0.001    0.001 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/_strptime.py:49(__init__)
+        1    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/_strptime.py:107(__calc_date_time)
+        1    0.000    0.000    0.003    0.003 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/_strptime.py:173(__init__)
+        1    0.000    0.000    0.003    0.003 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/_strptime.py:293(_strptime)
+        1    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/_strptime.py:95(__calc_am_pm)
+        1    0.000    0.000    0.000    0.000 /home/nicco/recurring-ical-events/recurring_ical_events/occurrence.py:40(to_string)
+      101    0.001    0.000    0.004    0.000 /home/nicco/recurring-ical-events/recurring_ical_events/occurrence.py:122(id)
+      101    0.000    0.000    0.000    0.000 /home/nicco/recurring-ical-events/recurring_ical_events/adapters/event.py:22(component_name)
+        6    0.000    0.000    0.001    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/_strptime.py:219(__seqToRE)
+     1000    0.002    0.000    0.002    0.000 /home/nicco/recurring-ical-events/recurring_ical_events/series/rrule.py:372(get_component_for_recurrence_id)
+    10000    0.027    0.000    0.041    0.000 /home/nicco/recurring-ical-events/recurring_ical_events/util.py:26(is_pytz)
+        1    0.000    0.000    0.000    0.000 /home/nicco/recurring-ical-events/recurring_ical_events/pages.py:22(__init__)
+        3    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/_strptime.py:26(_getlang)
+     1000    0.003    0.000    0.135    0.000 /home/nicco/recurring-ical-events/recurring_ical_events/occurrence.py:110(is_in_span)
+      101    0.000    0.000    0.001    0.000 /home/nicco/recurring-ical-events/recurring_ical_events/occurrence.py:69(from_occurrence)
+      101    0.000    0.000    0.000    0.000 <string>:1(<lambda>)
+        1    0.000    0.000    0.080    0.080 /home/nicco/recurring-ical-events/recurring_ical_events/pages.py:84(generate_next_page)
+        4    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/_strptime.py:210(<genexpr>)
+      200    0.000    0.000    0.000    0.000 /home/nicco/recurring-ical-events/recurring_ical_events/adapters/event.py:27(end_property)
+        1    0.000    0.000    0.000    0.000 /home/nicco/recurring-ical-events/recurring_ical_events/pages.py:126(__iter__)
+     1000    0.001    0.000    0.001    0.000 /home/nicco/recurring-ical-events/recurring_ical_events/series/rrule.py:35(occurrence)
+        1    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/_strptime.py:30(LocaleTime)
+       49    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/_strptime.py:234(<genexpr>)
+        1    0.000    0.000    0.003    0.003 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/_strptime.py:261(compile)
+        1    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/_strptime.py:170(TimeRE)
+        1    0.000    0.000    0.073    0.073 /home/nicco/recurring-ical-events/recurring_ical_events/pages.py:114(_create_page_from_occurrences)
+        1    0.000    0.000    0.003    0.003 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/_strptime.py:1(<module>)
+        1    0.000    0.000    0.003    0.003 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/_strptime.py:552(_strptime_datetime)
+     1000    0.004    0.000    0.132    0.000 /home/nicco/recurring-ical-events/recurring_ical_events/util.py:99(time_span_contains_event)
+     4000    0.011    0.000    0.050    0.000 /home/nicco/recurring-ical-events/recurring_ical_events/util.py:35(normalize_pytz)
+      999    0.003    0.000    0.050    0.000 /home/nicco/recurring-ical-events/recurring_ical_events/occurrence.py:114(__lt__)
+     1000    0.007    0.000    0.017    0.000 /home/nicco/recurring-ical-events/recurring_ical_events/series/rrule.py:286(as_occurrence)
+        1    0.000    0.000   12.080   12.080 /home/nicco/recurring-ical-events/recurring_ical_events/pages.py:57(__init__)
+        4    0.000    0.000    0.002    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/_strptime.py:238(pattern)
+     2000    0.010    0.000   11.715    0.006 /home/nicco/recurring-ical-events/recurring_ical_events/series/rrule.py:388(rrule_between)
+      101    0.001    0.000    0.002    0.000 /home/nicco/recurring-ical-events/recurring_ical_events/adapters/component.py:75(uid)
+     1000    0.004    0.000    0.019    0.000 /home/nicco/recurring-ical-events/recurring_ical_events/adapters/component.py:128(this_and_future)
+     1000    0.002    0.000    0.002    0.000 /home/nicco/recurring-ical-events/recurring_ical_events/occurrence.py:88(__init__)
+3305/2204    0.015    0.000    0.047    0.000 /home/nicco/recurring-ical-events/recurring_ical_events/util.py:188(cached_property)
+     1000    0.002    0.000    0.002    0.000 /home/nicco/recurring-ical-events/recurring_ical_events/util.py:21(convert_to_date)
+    11997    0.049    0.000    0.082    0.000 /home/nicco/recurring-ical-events/recurring_ical_events/util.py:42(is_date)
+     5000    0.022    0.000    0.050    0.000 /home/nicco/recurring-ical-events/recurring_ical_events/util.py:174(is_pytz_dt)
+      100    0.000    0.000    0.073    0.001 /home/nicco/recurring-ical-events/recurring_ical_events/occurrence.py:104(as_component)
+     3999    0.011    0.000    0.016    0.000 /home/nicco/recurring-ical-events/recurring_ical_events/util.py:47(is_datetime)
+     3999    0.012    0.000    0.028    0.000 /home/nicco/recurring-ical-events/recurring_ical_events/util.py:52(has_timezone)
+     2000    0.009    0.000    0.015    0.000 /home/nicco/recurring-ical-events/recurring_ical_events/util.py:228(get_any)
+        1    0.000    0.000    0.000    0.000 /home/nicco/recurring-ical-events/recurring_ical_events/occurrence.py:136(__eq__)
+     1600    0.010    0.000    0.021    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/caselessdict.py:38(__getitem__)
+     1800    0.009    0.000    0.019    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/caselessdict.py:42(__setitem__)
+      100    0.001    0.000    0.001    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/caselessdict.py:46(__delitem__)
+      400    0.002    0.000    0.005    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/caselessdict.py:50(__contains__)
+     1101    0.008    0.000    0.017    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/caselessdict.py:54(get)
+      100    0.001    0.000    0.001    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/caselessdict.py:62(pop)
+      200    0.001    0.000    0.003    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/timezone/tzid.py:54(tzid_from_dt)
+        1    0.009    0.009   12.028   12.028 /home/nicco/recurring-ical-events/recurring_ical_events/query.py:180(_occurrences_between)
+     1000    0.004    0.000    0.029    0.000 /home/nicco/recurring-ical-events/recurring_ical_events/adapters/component.py:222(move_recurrences_by)
+     1999    0.025    0.000    0.175    0.000 /home/nicco/recurring-ical-events/recurring_ical_events/util.py:81(make_comparable)
+     2000    0.006    0.000    0.008    0.000 /home/nicco/recurring-ical-events/recurring_ical_events/series/rrule.py:269(convert_to_original_type)
+      200    0.001    0.000    0.002    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/timezone/tzid.py:41(tzid_from_tzinfo)
+     1000    0.008    0.000    0.020    0.000 /home/nicco/recurring-ical-events/recurring_ical_events/util.py:199(to_recurrence_ids)
+        1    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/_strptime.py:88(__calc_month)
+        1    0.000    0.000    0.008    0.008 {built-in method strptime}
+   370000    0.589    0.000    0.589    0.000 {built-in method combine}
+     1000    0.007    0.000    0.007    0.000 {method 'timetuple' of 'datetime.datetime' objects}
+        1    0.000    0.000    0.000    0.000 {method 'isoformat' of 'datetime.datetime' objects}
+     6000    0.018    0.000    0.018    0.000 {method 'replace' of 'datetime.datetime' objects}
+     1000    0.004    0.000    0.004    0.000 {method 'astimezone' of 'datetime.datetime' objects}
+   370000    0.569    0.000    0.569    0.000 {built-in method fromordinal}
+       38    0.000    0.000    0.000    0.000 {method 'strftime' of 'datetime.date' objects}
+   372002    0.535    0.000    0.535    0.000 {method 'toordinal' of 'datetime.date' objects}
+    58001    0.084    0.000    0.084    0.000 {method 'weekday' of 'datetime.date' objects}
+     2000    0.009    0.000    0.014    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/dateutil/rrule.py:1316(__init__)
+     1000    0.005    0.000    0.008    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/dateutil/rrule.py:1325(__next__)
+       26    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/calendar.py:102(__getitem__)
+       14    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/calendar.py:121(__getitem__)
+    54000    0.163    0.000    0.755    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/calendar.py:161(monthrange)
+      100    0.001    0.000    0.054    0.001 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/caselessdict.py:82(copy)
+     7000    0.010    0.000    0.010    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/calendar.py:141(isleap)
+        3    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/locale.py:580(getlocale)
+   370000    1.283    0.000    1.815    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/dateutil/rrule.py:1278(ddayset)
+     1000    0.023    0.000    0.045    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/dateutil/rrule.py:1118(__init__)
+        2    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/calendar.py:97(<lambda>)
+     2000    0.532    0.000   11.606    0.006 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/dateutil/rrule.py:271(between)
+        1    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/_strptime.py:80(__calc_weekday)
+     1000    0.001    0.000    0.001    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/contextlib.py:428(__init__)
+     1000    0.001    0.000    0.001    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/contextlib.py:434(__exit__)
+     2000    0.004    0.000    0.004    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/dateutil/rrule.py:105(__iter__)
+    54000    0.270    0.000    0.588    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/calendar.py:154(weekday)
+      400    0.007    0.000    0.031    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/caselessdict.py:28(__init__)
+     5901    0.016    0.000    0.024    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/parser_tools.py:25(to_unicode)
+        3    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/locale.py:464(_parse_localename)
+        9    0.000    0.000    0.004    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/__init__.py:226(compile)
+        1    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/enum.py:1276(value)
+        1    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/_compiler.py:396(_simple)
+        1    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/_parser.py:1005(addgroup)
+       43    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/__init__.py:255(escape)
+    54006    0.159    0.000    0.240    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/enum.py:709(__call__)
+        2    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/_compiler.py:384(_mk_bitmap)
+        3    0.000    0.000    0.002    0.001 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/_compiler.py:571(_code)
+        4    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/_parser.py:94(closegroup)
+       16    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/_parser.py:109(__init__)
+       57    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/_parser.py:249(match)
+       21    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/_parser.py:286(tell)
+       14    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/_parser.py:79(groups)
+        6    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/_compiler.py:568(isstring)
+       22    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/_parser.py:160(__len__)
+        1    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/_parser.py:168(__setitem__)
+       26    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/_parser.py:172(append)
+       74    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/_parser.py:254(get)
+        9    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/_parser.py:442(_uniq)
+        3    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/_parser.py:997(addliteral)
+     1000    0.001    0.000    0.001    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/contextlib.py:431(__enter__)
+        4    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/_parser.py:82(opengroup)
+        3    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/_parser.py:946(fix_flags)
+      109    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/_parser.py:233(__next)
+      200    0.001    0.000    0.031    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/cal.py:158(__init__)
+        8    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/_compiler.py:31(_combine_flags)
+        2    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/__init__.py:331(_compile_template)
+        1    0.000    0.000   12.169   12.169 /home/nicco/recurring-ical-events/benchmark/CLN007.py:35(<lambda>)
+        3    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/_parser.py:73(__init__)
+        1    0.000    0.000    0.000    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/_distutils_hack/__init__.py:103(find_spec)
+       68    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/_parser.py:164(__getitem__)
+        5    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/_parser.py:224(__init__)
+        3    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/_parser.py:267(getuntil)
+        8    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/_compiler.py:426(_get_iscased)
+        6    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/enum.py:1538(__and__)
+        3    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/re/_parser.py:297(checkgroupname)
+        1    0.000    0.000    0.000    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/_distutils_hack/__init__.py:110(<lambda>)
+     1000    0.002    0.000    0.002    0.000 {built-in method _heapq.heappop}
+     2000    0.003    0.000    0.003    0.000 {built-in method _heapq.heapify}
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+       41    0.000    0.000    0.000    0.000 {method 'find' of 'bytearray' objects}
+        2    0.000    0.000    0.000    0.000 {method 'translate' of 'bytearray' objects}
+   373377    0.541    0.000    0.541    0.000 {method 'append' of 'list' objects}
+     1005    0.006    0.000   12.015    0.012 {method 'extend' of 'list' objects}
+        1    0.000    0.000    0.000    0.000 {method 'pop' of 'list' objects}
+        1    0.000    0.000    0.000    0.000 {method 'remove' of 'list' objects}
+     2001    0.005    0.000    0.055    0.000 {method 'sort' of 'list' objects}
+        3    0.000    0.000    0.000    0.000 {built-in method from_bytes}
+      400    0.001    0.000    0.001    0.000 {function CaselessDict.__contains__ at 0x7132400dde40}
+     1601    0.002    0.000    0.002    0.000 {method '__getitem__' of 'dict' objects}
+     8432    0.013    0.000    0.013    0.000 {method 'get' of 'dict' objects}
+        4    0.000    0.000    0.000    0.000 {method 'pop' of 'dict' objects}
+        1    0.000    0.000    0.000    0.000 {method 'keys' of 'dict' objects}
+        3    0.000    0.000    0.000    0.000 {method 'items' of 'dict' objects}
+        9    0.000    0.000    0.000    0.000 {built-in method fromkeys}
+      100    0.000    0.000    0.000    0.000 {function CaselessDict.pop at 0x7132400de020}
+      400    0.001    0.000    0.001    0.000 {method 'items' of 'collections.OrderedDict' objects}
+      100    0.003    0.000    0.023    0.000 {function CaselessDict.copy at 0x7132400de2a0}
+     1100    0.002    0.000    0.002    0.000 {method 'add' of 'set' objects}
+      102    0.000    0.000    0.000    0.000 {built-in method __new__ of type object at 0x7132414ab5a0}
+       64    0.000    0.000    0.000    0.000 {method 'replace' of 'str' objects}
+       23    0.000    0.000    0.001    0.000 {method 'join' of 'str' objects}
+       16    0.000    0.000    0.000    0.000 {method 'index' of 'str' objects}
+       50    0.000    0.000    0.000    0.000 {method 'lower' of 'str' objects}
+        2    0.000    0.000    0.000    0.000 {method 'rfind' of 'str' objects}
+       24    0.000    0.000    0.000    0.000 {method 'rstrip' of 'str' objects}
+        6    0.000    0.000    0.000    0.000 {method 'rpartition' of 'str' objects}
+       43    0.000    0.000    0.000    0.000 {method 'translate' of 'str' objects}
+     5901    0.009    0.000    0.009    0.000 {method 'upper' of 'str' objects}
+        1    0.000    0.000    0.000    0.000 {method 'startswith' of 'str' objects}
+        1    0.000    0.000    0.000    0.000 {method 'endswith' of 'str' objects}
+        3    0.000    0.000    0.000    0.000 {method 'isidentifier' of 'str' objects}
+        1    0.000    0.000    0.000    0.000 {method 'format' of 'str' objects}
+        2    0.000    0.000    0.000    0.000 {built-in method builtins.__build_class__}
+        8    0.000    0.000    0.000    0.000 {built-in method builtins.any}
+        2    0.000    0.000    0.000    0.000 {built-in method builtins.chr}
+        1    0.000    0.000    0.003    0.003 {built-in method builtins.exec}
+        7    0.000    0.000    0.000    0.000 {built-in method builtins.getattr}
+    10405    0.015    0.000    0.015    0.000 {built-in method builtins.hasattr}
+      101    0.000    0.000    0.000    0.000 {built-in method builtins.id}
+    50694    0.069    0.000    0.069    0.000 {built-in method builtins.isinstance}
+     2000    0.003    0.000    0.003    0.000 {built-in method builtins.iter}
+369330/369314    0.494    0.000    0.494    0.000 {built-in method builtins.len}
+        1    0.000    0.000    0.000    0.000 {built-in method builtins.locals}
+       10    0.000    0.000    0.000    0.000 {built-in method builtins.max}
+       43    0.000    0.000    0.000    0.000 {built-in method builtins.min}
+376000/372000    1.053    0.000    7.685    0.000 {built-in method builtins.next}
+       34    0.000    0.000    0.000    0.000 {built-in method builtins.ord}
+    15000    0.022    0.000    0.022    0.000 {built-in method builtins.setattr}
+        6    0.000    0.000    0.000    0.000 {built-in method builtins.sorted}
+        6    0.000    0.000    0.000    0.000 {built-in method _imp.acquire_lock}
+        6    0.000    0.000    0.000    0.000 {built-in method _imp.release_lock}
+        1    0.000    0.000    0.000    0.000 {built-in method _imp.find_frozen}
+        1    0.000    0.000    0.000    0.000 {built-in method _imp.is_builtin}
+        1    0.000    0.000    0.000    0.000 {built-in method _imp._fix_co_filename}
+        1    0.000    0.000    0.000    0.000 {built-in method marshal.loads}
+        4    0.000    0.000    0.000    0.000 {built-in method posix.stat}
+        3    0.000    0.000    0.000    0.000 {built-in method posix.fspath}
+        1    0.000    0.000    0.000    0.000 {built-in method _io.open_code}
+        1    0.000    0.000    0.000    0.000 {method '__exit__' of '_io._IOBase' objects}
+        1    0.000    0.000    0.000    0.000 {method 'read' of '_io.BufferedReader' objects}
+        1    0.000    0.000    0.000    0.000 {method 'end' of 're.Match' objects}
+        1    0.000    0.000    0.000    0.000 {method 'groupdict' of 're.Match' objects}
+        1    0.000    0.000    0.000    0.000 {method 'match' of 're.Pattern' objects}
+        8    0.000    0.000    0.000    0.000 {method 'sub' of 're.Pattern' objects}
+        3    0.000    0.000    0.000    0.000 {built-in method _sre.compile}
+        2    0.000    0.000    0.000    0.000 {built-in method _sre.template}
+        5    0.000    0.000    0.000    0.000 {built-in method _sre.unicode_iscased}
+        2    0.000    0.000    0.000    0.000 {built-in method _thread.allocate_lock}
+        2    0.000    0.000    0.000    0.000 {built-in method _thread.get_ident}
+        2    0.000    0.000    0.000    0.000 {method '__exit__' of '_thread.RLock' objects}
+    38000    0.105    0.000    0.105    0.000 {method 'acquire' of '_thread.lock' objects}
+    37000    0.051    0.000    0.051    0.000 {method 'release' of '_thread.lock' objects}
+        1    0.000    0.000    0.000    0.000 {method '__exit__' of '_thread.lock' objects}
+        8    0.000    0.000    0.000    0.000 {built-in method time.strftime}
+        1    0.000    0.000    0.000    0.000 {built-in method time.tzset}
+        1    0.000    0.000    0.000    0.000 {built-in method _weakref._remove_dead_weakref}
+        3    0.000    0.000    0.000    0.000 {built-in method _locale.setlocale}
+        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1589(find_spec)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1584(_get_spec)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1516(find_spec)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1487(_get_spec)
+        3    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1465(_path_importer_cache)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1201(path_stats)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1182(get_data)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1177(get_filename)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1152(__init__)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1061(get_code)
+        1    0.000    0.000    0.004    0.004 <frozen importlib._bootstrap_external>:988(exec_module)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:985(create_module)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:801(spec_from_file_location)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:750(_compile_bytecode)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:698(_validate_timestamp_pyc)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:665(_classify_pyc)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:642(_check_name_wrapper)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:610(_get_cached)
+        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:481(cache_from_source)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:185(_path_abspath)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:180(_path_isabs)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:159(_path_isfile)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:150(_path_is_mode_type)
+        4    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:140(_path_stat)
+        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:132(_path_split)
+        4    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:134(<genexpr>)
+       11    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:126(_path_join)
+        3    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:84(_unpack_uint32)
+        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:71(_relax_case)
+        3    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:1384(_handle_fromlist)
+        1    0.000    0.000    0.004    0.004 <frozen importlib._bootstrap>:1343(_find_and_load)
+        1    0.000    0.000    0.004    0.004 <frozen importlib._bootstrap>:1298(_find_and_load_unlocked)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:1234(_find_spec)
+        4    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:1220(__exit__)
+        4    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:1216(__enter__)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:1122(find_spec)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:976(find_spec)
+        1    0.000    0.000    0.004    0.004 <frozen importlib._bootstrap>:905(_load_unlocked)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:806(module_from_spec)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:733(_init_module_attrs)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:653(has_location)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:645(parent)
+        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:632(cached)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:599(__init__)
+       12    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:491(_verbose_message)
+        2    0.000    0.000    0.003    0.002 <frozen importlib._bootstrap>:480(_call_with_frames_removed)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:426(_get_module_lock)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:445(cb)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:420(__exit__)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:416(__enter__)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:412(__init__)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:372(release)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:304(acquire)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:232(__init__)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:173(__exit__)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:162(__enter__)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:158(__init__)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:124(setdefault)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:82(remove)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:79(__init__)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:74(__new__)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:48(_new_module)
+
+

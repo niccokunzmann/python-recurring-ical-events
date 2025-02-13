@@ -1,0 +1,58 @@
+         15144784 function calls (15140784 primitive calls) in 47.938 seconds
+
+   Random listing order was used
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+   814062    2.213    0.000    3.128    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/dateutil/rrule.py:124(_iter_cached)
+     2000    0.018    0.000    0.053    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/dateutil/rrule.py:1383(_iter)
+    10000    0.080    0.000    0.232    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/dateutil/rrule.py:776(_iter)
+     1000    0.014    0.000    0.021    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/dateutil/rrule.py:1123(rebuild)
+        1    0.000    0.000    0.000    0.000 /home/nicco/recurring-ical-events/recurring_ical_events/query.py:95(to_datetime)
+   406031    4.133    0.000   32.054    0.000 /home/nicco/recurring-ical-events/recurring_ical_events/series/rrule.py:242(rrule_between)
+        1    0.006    0.006   47.937   47.937 /home/nicco/recurring-ical-events/recurring_ical_events/query.py:194(_after)
+   812062    6.387    0.000   18.774    0.000 /home/nicco/recurring-ical-events/recurring_ical_events/util.py:57(convert_to_datetime)
+   406031    1.546    0.000   41.940    0.000 /home/nicco/recurring-ical-events/recurring_ical_events/series/rrule.py:397(between)
+  1218093    3.373    0.000    5.083    0.000 /home/nicco/recurring-ical-events/recurring_ical_events/util.py:26(is_pytz)
+        1    0.000    0.000   47.938   47.938 /home/nicco/recurring-ical-events/recurring_ical_events/query.py:233(first)
+        1    0.000    0.000    0.000    0.000 /home/nicco/recurring-ical-events/recurring_ical_events/query.py:110(all)
+      407    2.902    0.007   47.929    0.118 /home/nicco/recurring-ical-events/recurring_ical_events/query.py:180(_occurrences_between)
+   812062    2.283    0.000    5.706    0.000 /home/nicco/recurring-ical-events/recurring_ical_events/util.py:35(normalize_pytz)
+   406031    2.633    0.000   40.394    0.000 /home/nicco/recurring-ical-events/recurring_ical_events/series/rrule.py:388(rrule_between)
+   812062    3.382    0.000    5.648    0.000 /home/nicco/recurring-ical-events/recurring_ical_events/util.py:42(is_date)
+   812062    2.256    0.000    3.424    0.000 /home/nicco/recurring-ical-events/recurring_ical_events/util.py:174(is_pytz_dt)
+        1    0.000    0.000   47.937   47.937 /home/nicco/recurring-ical-events/recurring_ical_events/query.py:188(after)
+     2000    0.011    0.000    0.015    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/dateutil/rrule.py:1316(__init__)
+     1000    0.005    0.000    0.008    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/dateutil/rrule.py:1325(__next__)
+     2000    0.003    0.000    0.003    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/calendar.py:141(isleap)
+    10000    0.037    0.000    0.052    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/dateutil/rrule.py:1278(ddayset)
+     1000    0.022    0.000    0.043    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/dateutil/rrule.py:1118(__init__)
+   812062    3.626    0.000    7.454    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/dateutil/rrule.py:271(between)
+    10000    0.016    0.000    0.016    0.000 {built-in method combine}
+     1000    0.004    0.000    0.004    0.000 {method 'timetuple' of 'datetime.datetime' objects}
+   812062    2.225    0.000    2.225    0.000 {method 'replace' of 'datetime.datetime' objects}
+    10000    0.016    0.000    0.016    0.000 {built-in method fromordinal}
+    11000    0.016    0.000    0.016    0.000 {method 'toordinal' of 'datetime.date' objects}
+     2000    0.003    0.000    0.003    0.000 {method 'weekday' of 'datetime.date' objects}
+     1000    0.002    0.000    0.002    0.000 {built-in method _heapq.heappop}
+     2000    0.003    0.000    0.003    0.000 {built-in method _heapq.heapify}
+   406032    0.569    0.000    0.569    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/contextlib.py:428(__init__)
+   406031    0.566    0.000    0.566    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/contextlib.py:434(__exit__)
+   407031    0.700    0.000    0.700    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/dateutil/rrule.py:105(__iter__)
+   406032    0.558    0.000    0.558    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/contextlib.py:431(__enter__)
+        1    0.000    0.000   47.938   47.938 /home/nicco/recurring-ical-events/benchmark/CLN007.py:35(<lambda>)
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+    12000    0.018    0.000    0.018    0.000 {method 'append' of 'list' objects}
+   406031    1.394    0.000   43.333    0.000 {method 'extend' of 'list' objects}
+     2406    0.004    0.000    0.004    0.000 {method 'sort' of 'list' objects}
+  1218093    1.710    0.000    1.710    0.000 {built-in method builtins.hasattr}
+  3248251    4.557    0.000    4.557    0.000 {built-in method builtins.isinstance}
+     2000    0.003    0.000    0.003    0.000 {built-in method builtins.iter}
+   407031    0.572    0.000    0.572    0.000 {built-in method builtins.len}
+      406    0.001    0.000    0.001    0.000 {built-in method builtins.max}
+      406    0.001    0.000    0.001    0.000 {built-in method builtins.min}
+16000/12000    0.042    0.000    0.320    0.000 {built-in method builtins.next}
+    15000    0.021    0.000    0.021    0.000 {built-in method builtins.setattr}
+     2000    0.006    0.000    0.006    0.000 {method 'acquire' of '_thread.lock' objects}
+     1000    0.001    0.000    0.001    0.000 {method 'release' of '_thread.lock' objects}
+
+
