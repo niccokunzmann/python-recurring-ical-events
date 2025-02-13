@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from icalendar import Alarm
 
 
-class AbsoluteAlarmAdapter(ComponentAdapter):
+class AbsoluteAlarmAdapter(ComponentAdapter):  # TODO: remove
     """Adapter for absolute alarms."""
 
     def __init__(self, alarm: Alarm, parent: ComponentAdapter):

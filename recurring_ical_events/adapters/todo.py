@@ -3,7 +3,11 @@
 from recurring_ical_events.adapters.component import ComponentAdapter
 from recurring_ical_events.constants import DATE_MAX_DT, DATE_MIN_DT
 from recurring_ical_events.types import Time
-from recurring_ical_events.util import cached_property, normalize_pytz
+from recurring_ical_events.util import (
+    convert_to_datetime,
+    is_date,
+    normalize_pytz,
+)
 
 
 class TodoAdapter(ComponentAdapter):
@@ -19,8 +23,8 @@ class TodoAdapter(ComponentAdapter):
         """DUE"""
         return "DUE"
 
-    @cached_property
-    def start(self) -> Time:
+    @property
+    def raw_start(self) -> Time:
         """Return DTSTART if it set, do not panic if it's not set."""
         ## easy case - DTSTART set
         start = self._component.get("DTSTART")
@@ -36,8 +40,8 @@ class TodoAdapter(ComponentAdapter):
         ## (see the comments under _get_event_end)
         return DATE_MIN_DT
 
-    @cached_property
-    def end(self) -> Time:
+    @property
+    def raw_end(self) -> Time:
         """Return DUE or DTSTART+DURATION or something"""
         ## Easy case - DUE is set
         end = self._component.get("DUE")
@@ -52,7 +56,10 @@ class TodoAdapter(ComponentAdapter):
         ## Perhaps duration is a time estimate rather than an indirect
         ## way to set DUE.
         if duration is not None and dtstart is not None:
-            return normalize_pytz(self._component["DTSTART"].dt + duration.dt)
+            start = dtstart.dt
+            if duration.dt.seconds != 0 and is_date(start):
+                start = convert_to_datetime(start, None)
+            return normalize_pytz(start + duration.dt)
 
         ## According to the RFC, a VEVENT without an end/duration
         ## is to be considered to have zero duration.  Assuming the

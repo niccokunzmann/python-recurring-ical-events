@@ -6,7 +6,11 @@ import datetime
 from typing import TYPE_CHECKING
 
 from recurring_ical_events.adapters.component import ComponentAdapter
-from recurring_ical_events.util import cached_property, is_date, normalize_pytz
+from recurring_ical_events.util import (
+    convert_to_datetime,
+    is_date,
+    normalize_pytz,
+)
 
 if TYPE_CHECKING:
     from recurring_ical_events.types import Time
@@ -25,15 +29,15 @@ class EventAdapter(ComponentAdapter):
         """DTEND"""
         return "DTEND"
 
-    @cached_property
-    def start(self) -> Time:
+    @property
+    def raw_start(self) -> Time:
         """Return DTSTART"""
         # Arguably, it may be considered a feature that this breaks
         # if no DTSTART is set
         return self._component["DTSTART"].dt
 
-    @cached_property
-    def end(self) -> Time:
+    @property
+    def raw_end(self) -> Time:
         """Yield DTEND or calculate the end of the event based on
         DTSTART and DURATION.
         """
@@ -43,7 +47,10 @@ class EventAdapter(ComponentAdapter):
             return end.dt
         duration = self._component.get("DURATION")
         if duration is not None:
-            return normalize_pytz(self._component["DTSTART"].dt + duration.dt)
+            start = self._component["DTSTART"].dt
+            if duration.dt.seconds != 0 and is_date(start):
+                start = convert_to_datetime(start, None)
+            return normalize_pytz(start + duration.dt)
         start = self._component["DTSTART"].dt
         if is_date(start):
             return start + datetime.timedelta(days=1)
