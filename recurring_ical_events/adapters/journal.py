@@ -18,8 +18,8 @@ class JournalAdapter(ComponentAdapter):
     def end_property(self) -> None:
         """There is no end property"""
 
-    @cached_property
-    def start(self) -> Time:
+    @property
+    def raw_start(self) -> Time:
         """Return DTSTART if it set, do not panic if it's not set."""
         ## according to the specification, DTSTART in a VJOURNAL is optional
         dtstart = self._component.get("DTSTART")
@@ -28,7 +28,7 @@ class JournalAdapter(ComponentAdapter):
         return DATE_MIN_DT
 
     @cached_property
-    def end(self) -> Time:
+    def raw_end(self) -> Time:
         """The end time is the same as the start."""
         ## VJOURNAL cannot have a DTEND.  We should consider a VJOURNAL to
         ## describe one day if DTSTART is a date, and we can probably

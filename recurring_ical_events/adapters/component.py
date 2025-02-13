@@ -48,14 +48,29 @@ class ComponentAdapter(ABC):
         return None
 
     @property
-    @abstractmethod
     def start(self) -> Time:
         """The start time."""
+        return self.span[0]
+
+    @property
+    def end(self) -> Time:
+        """The end time."""
+        return self.span[1]
+
+    @cached_property
+    def span(self):
+        """Return (start, end)."""
+        return make_comparable((self.raw_start, self.raw_end))
 
     @property
     @abstractmethod
-    def end(self) -> Time:
-        """The end time."""
+    def raw_start(self):
+        """Return the start property of the component."""
+
+    @property
+    @abstractmethod
+    def raw_end(self):
+        """Return the start property of the component."""
 
     @property
     def uid(self) -> UID:

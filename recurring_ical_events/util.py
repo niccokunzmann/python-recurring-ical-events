@@ -44,6 +44,16 @@ def is_date(time: Time) -> bool:
     return isinstance(time, datetime.date) and not isinstance(time, datetime.datetime)
 
 
+def is_datetime(time: Time) -> bool:
+    """Whether this is a datetime and not a date."""
+    return isinstance(time, datetime.datetime)
+
+
+def has_timezone(time:Time) -> bool:
+    """Whether this date/datetime has a timezone."""
+    return is_datetime(time) and time.tzinfo is not None
+
+
 def convert_to_datetime(
     date: Time, tzinfo: Optional[datetime.tzinfo]
 ) -> datetime.datetime:
@@ -231,4 +241,6 @@ __all__ = [
     "to_recurrence_ids",
     "with_highest_sequence",
     "get_any",
+    "has_timezone",
+    "is_datetime",
 ]
