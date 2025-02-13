@@ -901,11 +901,14 @@ Related Projects
 - `icalendar-events-cli`_ - another **command line** impementation of ``recurring-ical-events``
 - `caldav`_ - the python caldav client library
 - `plann`_ - a **command line** caldav client
+- `ics_calendar`_ - Provides a component for ICS (icalendar) calendars for `Home Assistant`_
 
 .. _`ics-query`: https://github.com/niccokunzmann/ics-query#readme
 .. _`icalendar-events-cli`: https://github.com/waldbaer/icalendar-events-cli#readme
 .. _`caldav`:  https://github.com/python-caldav/caldav
 .. _`plann`: https://github.com/tobixen/plann
+.. _`ics_calendar`: https://github.com/franc6/ics_calendar/
+.. _`Home Assistant`: https://www.home-assistant.io/
 
 Media
 -----
