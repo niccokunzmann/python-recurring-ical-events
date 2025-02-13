@@ -84,10 +84,15 @@ def make_comparable(dates: Sequence[Time]) -> list[Time]:
     Returns an list.
     """
     tzinfo = None
+    all_dates = True
     for date in dates:
-        tzinfo = getattr(date, "tzinfo", None)
-        if tzinfo is not None:
-            break
+        if not is_date(date):
+            all_dates = False
+            if has_timezone(date):
+                tzinfo = date.tzinfo
+                break
+    if all_dates:
+        return dates
     return [convert_to_datetime(date, tzinfo) for date in dates]
 
 

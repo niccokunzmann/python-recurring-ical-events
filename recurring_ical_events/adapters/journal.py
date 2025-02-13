@@ -33,7 +33,7 @@ class JournalAdapter(ComponentAdapter):
         ## VJOURNAL cannot have a DTEND.  We should consider a VJOURNAL to
         ## describe one day if DTSTART is a date, and we can probably
         ## consider it to have zero duration if a timestamp is given.
-        return self.start
+        return self.raw_start
 
 
 __all__ = ["JournalAdapter"]

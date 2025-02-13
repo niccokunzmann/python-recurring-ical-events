@@ -33,11 +33,6 @@ def test_include_events_if_the_time_zone_differs(
     start = tzinfo.localize(datetime.datetime(*date))
     stop = start + datetime.timedelta(hours=hours)
     events = calendars[calendar_name].between(start, stop)
-    if events:
-        start = events[0]["DTSTART"].dt
-        if isinstance(start, datetime.datetime):
-            offset = start - start.replace(tzinfo=tzinfo)
-            print(f"time zone offset {offset} between {start.tzinfo} and {tzinfo}")
     assert (
         len(events) == number_of_events
     ), f"in calendar {calendar_name} and {date} in {timezone}"
