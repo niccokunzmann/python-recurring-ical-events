@@ -674,6 +674,10 @@ To release new versions,
 Changelog
 ---------
 
+- v3.5.2
+
+  - Fix computation of mixed start and end times, see `Issue 201 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/201>`_
+
 - v3.5.1
 
   - Move to ``pyproject.toml`` format to include directory structure more easily. See `Issue 214 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/214>`_
