@@ -6,7 +6,11 @@ import datetime
 from typing import TYPE_CHECKING
 
 from recurring_ical_events.adapters.component import ComponentAdapter
-from recurring_ical_events.util import cached_property, convert_to_datetime, is_date, normalize_pytz
+from recurring_ical_events.util import (
+    convert_to_datetime,
+    is_date,
+    normalize_pytz,
+)
 
 if TYPE_CHECKING:
     from recurring_ical_events.types import Time

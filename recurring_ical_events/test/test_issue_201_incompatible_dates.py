@@ -41,13 +41,6 @@ def test_has_timezone(utc):
     assert not has_timezone(date(2023, 7, 24))
 
 
-def test_has_timezone(utc):
-    """Check if we have a timezone."""
-    assert has_timezone(datetime(2023, 7, 24, 0, 0, tzinfo=utc))
-    assert not has_timezone(datetime(2023, 7, 24, 0, 0))
-    assert not has_timezone(date(2023, 7, 24))
-
-
 @pytest.mark.parametrize("component", ["VEVENT", "VTODO"])
 @pytest.mark.parametrize("start", ["DATE", "DATETIME", "UTC"])
 @pytest.mark.parametrize("end", ["DATE", "DATETIME", "UTC", "DAYS", "HOURS"])
@@ -58,36 +51,44 @@ def test_all_possiblilities_are_considered(calendars, component, start, end):
     assert f"{component}-{start}-{end}" in uids
 
 
-@pytest.mark.parametrize("end,duration", [
-    ("DATE", timedelta(days=1)),
-    ("DATETIME", timedelta(days=1, hours=4)),
-    ("UTC", timedelta(days=2, hours=2)),
-    ("DAYS", timedelta(days=3)),
-    ("HOURS", timedelta(hours=10)),
-    ])
+@pytest.mark.parametrize(
+    ("end", "duration"),
+    [
+        ("DATE", timedelta(days=1)),
+        ("DATETIME", timedelta(days=1, hours=4)),
+        ("UTC", timedelta(days=2, hours=2)),
+        ("DAYS", timedelta(days=3)),
+        ("HOURS", timedelta(hours=10)),
+    ],
+)
 def test_duration(calendars, end, duration):
     """Check the duration."""
     calendars.components = ["VEVENT", "VTODO"]
-    components = [c for c in calendars.issue_201_test_matrix.all() if c["UID"].endswith(end)]
+    components = [
+        c for c in calendars.issue_201_test_matrix.all() if c["UID"].endswith(end)
+    ]
     for component in components:
         uid = str(component["UID"])
         assert component.duration == duration, uid
         assert component.end - component.start == duration, uid
 
 
-def is_datetime_without_timezone(dt:Time) -> bool:
+def is_datetime_without_timezone(dt: Time) -> bool:
     """Wether this has no timrzone."""
     return is_datetime(dt) and not has_timezone(dt)
 
-def is_datetime_with_timezone(dt:Time) -> bool:
+
+def is_datetime_with_timezone(dt: Time) -> bool:
     """Wether this has no timrzone."""
     return is_datetime(dt) and has_timezone(dt)
 
-def is_days(td:timedelta):
+
+def is_days(td: timedelta):
     """Wether this is only days, not hours."""
     return td.days != 0 and td.seconds == 0
 
-def is_hours(td:timedelta):
+
+def is_hours(td: timedelta):
     """Wether this is only days, not hours."""
     return td.seconds != 0
 
@@ -98,13 +99,16 @@ def is_hours(td:timedelta):
         ("DATE", is_date),
         ("DATETIME", is_datetime_without_timezone),
         ("UTC", is_datetime_with_timezone),
-    ]
+    ],
 )
 def test_start_is_correct(calendars, uid, check):
     """Check the start of the components."""
-    components = calendars.raw.issue_201_test_matrix.walk(select=lambda c: c.get("UID", "--").split("-")[1] == uid)
+    components = calendars.raw.issue_201_test_matrix.walk(
+        select=lambda c: c.get("UID", "--").split("-")[1] == uid
+    )
     for component in components:
         assert check(component.DTSTART), f"{component['UID']}.DTSTART"
+
 
 @pytest.mark.parametrize(
     ("uid", "check"),
@@ -114,11 +118,13 @@ def test_start_is_correct(calendars, uid, check):
         ("UTC", is_datetime_with_timezone),
         ("DAYS", is_days),
         ("HOURS", is_hours),
-    ]
+    ],
 )
 def test_end_is_correct(calendars, uid, check):
     """Check the start of the components."""
-    components = calendars.raw.issue_201_test_matrix.walk(select=lambda c: c.get("UID", "--").split("-")[2] == uid)
+    components = calendars.raw.issue_201_test_matrix.walk(
+        select=lambda c: c.get("UID", "--").split("-")[2] == uid
+    )
     for component in components:
         if uid in ("DAYS", "HOURS"):
             assert check(component.DURATION)

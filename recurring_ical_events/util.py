@@ -49,7 +49,7 @@ def is_datetime(time: Time) -> bool:
     return isinstance(time, datetime.datetime)
 
 
-def has_timezone(time:Time) -> bool:
+def has_timezone(time: Time) -> bool:
     """Whether this date/datetime has a timezone."""
     return is_datetime(time) and time.tzinfo is not None
 
