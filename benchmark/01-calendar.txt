@@ -1,0 +1,191 @@
+         815610 function calls in 2.527 seconds
+
+   Random listing order was used
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    0.001    0.001 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/encodings/__init__.py:71(search_function)
+        1    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/pathlib.py:387(_parse_path)
+     8003    0.011    0.000    0.011    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/cal.py:193(_encode)
+     8003    0.062    0.000    0.273    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/cal.py:234(add)
+        1    0.129    0.129    2.527    2.527 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/cal.py:399(from_ical)
+     5000    0.036    0.000    0.171    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/prop.py:604(from_ical)
+     5000    0.045    0.000    0.246    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/prop.py:477(from_ical)
+     2003    0.026    0.000    0.048    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/parser.py:30(unescape_char)
+    10005    0.172    0.000    0.889    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/parser.py:307(parts)
+     5000    0.047    0.000    0.157    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/prop.py:443(__init__)
+    10005    0.049    0.000    0.145    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/parser.py:216(from_ical)
+     5000    0.021    0.000    0.035    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/timezone/tzid.py:16(tzids_from_tzinfo)
+        1    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/encodings/utf_8_sig.py:18(decode)
+        1    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/encodings/utf_8_sig.py:97(StreamReader)
+        1    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/encodings/utf_8_sig.py:85(StreamWriter)
+        1    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/encodings/utf_8_sig.py:26(IncrementalEncoder)
+        1    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/encodings/utf_8_sig.py:49(IncrementalDecoder)
+        1    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/encodings/utf_8_sig.py:121(getregentry)
+        1    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/encodings/utf_8_sig.py:1(<module>)
+    10005    0.014    0.000    0.014    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/parser.py:333(<genexpr>)
+     5000    0.022    0.000    0.129    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/timezone/tzp.py:62(localize_utc)
+     5000    0.021    0.000    0.034    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/tools.py:35(is_date)
+    10003    0.062    0.000    0.132    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/caselessdict.py:38(__getitem__)
+    11003    0.055    0.000    0.116    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/caselessdict.py:42(__setitem__)
+    11003    0.067    0.000    0.144    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/caselessdict.py:50(__contains__)
+    10004    0.061    0.000    0.131    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/caselessdict.py:54(get)
+     5000    0.015    0.000    0.064    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/timezone/tzid.py:54(tzid_from_dt)
+     1000    0.007    0.000    0.060    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/prop.py:1127(parse_type)
+     8003    0.035    0.000    0.244    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/prop.py:1693(for_property)
+     5000    0.014    0.000    0.050    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/timezone/tzid.py:41(tzid_from_tzinfo)
+     5000    0.014    0.000    0.029    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/timezone/zoneinfo.py:32(localize)
+        1    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/pathlib.py:437(__str__)
+    10005    0.071    0.000    0.130    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/parser.py:253(escape_string)
+    20010    0.140    0.000    0.254    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/parser.py:259(unescape_string)
+        1    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/pathlib.py:1016(read_bytes)
+     5000    0.014    0.000    0.048    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/tools.py:45(to_datetime)
+     1000    0.014    0.000    0.165    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/prop.py:1133(from_ical)
+     5000    0.022    0.000    0.059    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/timezone/zoneinfo.py:36(localize_utc)
+     1000    0.003    0.000    0.005    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/cal.py:341(add_component)
+    10005    0.043    0.000    0.077    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/parser.py:111(validate_token)
+    10005    0.046    0.000    0.102    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/parser.py:278(__new__)
+     4006    0.028    0.000    0.071    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/prop.py:159(__new__)
+     1000    0.005    0.000    0.039    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/prop.py:974(from_ical)
+     1000    0.008    0.000    0.032    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/prop.py:963(__new__)
+     3000    0.022    0.000    0.129    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/prop.py:1106(__init__)
+     8003    0.011    0.000    0.011    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/cal.py:177(__bool__)
+    10006    0.030    0.000    0.132    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/parser.py:377(<genexpr>)
+     2003    0.010    0.000    0.094    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/prop.py:172(from_ical)
+     5000    0.015    0.000    0.015    0.000 {method 'replace' of 'datetime.datetime' objects}
+    10005    0.032    0.000    0.045    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/parser.py:141(q_split)
+        1    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/pathlib.py:1006(open)
+        1    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/pathlib.py:407(_load_parts)
+    37017    0.162    0.000    0.290    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/caselessdict.py:28(__init__)
+    59025    0.159    0.000    0.240    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/parser_tools.py:25(to_unicode)
+        1    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/pathlib.py:447(__fspath__)
+        1    0.014    0.014    0.158    0.158 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/parser.py:369(from_ical)
+        1    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/pathlib.py:551(drive)
+        1    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/pathlib.py:560(root)
+        1    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/pathlib.py:569(_tail)
+     1001    0.004    0.000    0.009    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/icalendar/cal.py:158(__init__)
+        1    0.000    0.000    0.000    0.000 /home/nicco/recurring-ical-events/.venv/lib/python3.12/site-packages/_distutils_hack/__init__.py:103(find_spec)
+        1    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/encodings/__init__.py:43(normalize_encoding)
+        1    0.000    0.000    0.000    0.000 /home/nicco/.pyenv/versions/3.12.0/lib/python3.12/pathlib.py:429(_format_parsed_parts)
+        1    0.000    0.000    2.527    2.527 /home/nicco/recurring-ical-events/benchmark/CLN007.py:30(<lambda>)
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+        1    0.000    0.000    0.001    0.001 {method 'decode' of 'bytes' objects}
+     2015    0.003    0.000    0.003    0.000 {method 'append' of 'list' objects}
+     1003    0.002    0.000    0.002    0.000 {method 'pop' of 'list' objects}
+        1    0.000    0.000    0.000    0.000 {method 'remove' of 'list' objects}
+        3    0.000    0.000    0.000    0.000 {built-in method from_bytes}
+    11003    0.016    0.000    0.016    0.000 {function CaselessDict.__contains__ at 0x728743ff9e40}
+    10003    0.015    0.000    0.015    0.000 {function CaselessDict.__getitem__ at 0x728743ff9c60}
+    10010    0.015    0.000    0.015    0.000 {method 'get' of 'dict' objects}
+        1    0.000    0.000    0.000    0.000 {method 'pop' of 'dict' objects}
+     3000    0.004    0.000    0.004    0.000 {method 'items' of 'dict' objects}
+    47022    0.069    0.000    0.069    0.000 {method 'items' of 'collections.OrderedDict' objects}
+    15013    0.025    0.000    0.025    0.000 {built-in method __new__ of type object at 0x7287453c05a0}
+   132079    0.190    0.000    0.190    0.000 {method 'replace' of 'str' objects}
+     3001    0.005    0.000    0.005    0.000 {method 'split' of 'str' objects}
+       10    0.000    0.000    0.000    0.000 {method 'join' of 'str' objects}
+        2    0.000    0.000    0.000    0.000 {method 'rfind' of 'str' objects}
+       14    0.000    0.000    0.000    0.000 {method 'rstrip' of 'str' objects}
+        6    0.000    0.000    0.000    0.000 {method 'rpartition' of 'str' objects}
+    61019    0.089    0.000    0.089    0.000 {method 'upper' of 'str' objects}
+     5003    0.008    0.000    0.008    0.000 {method 'startswith' of 'str' objects}
+        2    0.000    0.000    0.000    0.000 {method 'endswith' of 'str' objects}
+        7    0.000    0.000    0.000    0.000 {method 'isascii' of 'str' objects}
+        9    0.000    0.000    0.000    0.000 {method 'isalnum' of 'str' objects}
+        4    0.000    0.000    0.000    0.000 {built-in method builtins.__build_class__}
+        1    0.000    0.000    0.001    0.001 {built-in method builtins.__import__}
+        1    0.000    0.000    0.000    0.000 {built-in method builtins.exec}
+     6007    0.009    0.000    0.009    0.000 {built-in method builtins.getattr}
+    10002    0.014    0.000    0.014    0.000 {built-in method builtins.hasattr}
+   107042    0.147    0.000    0.147    0.000 {built-in method builtins.isinstance}
+    10005    0.014    0.000    0.014    0.000 {built-in method builtins.iter}
+    25021    0.035    0.000    0.035    0.000 {built-in method builtins.len}
+        2    0.000    0.000    0.000    0.000 {built-in method builtins.max}
+        1    0.000    0.000    0.000    0.000 {built-in method builtins.setattr}
+        6    0.000    0.000    0.000    0.000 {built-in method _imp.acquire_lock}
+        6    0.000    0.000    0.000    0.000 {built-in method _imp.release_lock}
+        1    0.000    0.000    0.000    0.000 {built-in method _imp.find_frozen}
+        1    0.000    0.000    0.000    0.000 {built-in method _imp.is_builtin}
+        1    0.000    0.000    0.000    0.000 {built-in method _imp._fix_co_filename}
+        1    0.000    0.000    0.000    0.000 {built-in method marshal.loads}
+        5    0.000    0.000    0.000    0.000 {built-in method sys.intern}
+        3    0.000    0.000    0.000    0.000 {built-in method posix.stat}
+        5    0.000    0.000    0.000    0.000 {built-in method posix.fspath}
+        1    0.000    0.000    0.000    0.000 {built-in method _codecs.utf_8_decode}
+        1    0.000    0.000    0.000    0.000 {built-in method _io.open}
+        1    0.000    0.000    0.000    0.000 {built-in method _io.open_code}
+        2    0.000    0.000    0.000    0.000 {method '__exit__' of '_io._IOBase' objects}
+        2    0.000    0.000    0.000    0.000 {method 'read' of '_io.BufferedReader' objects}
+        1    0.007    0.007    0.007    0.007 {method 'sub' of 're.Pattern' objects}
+    10005    0.020    0.000    0.020    0.000 {method 'findall' of 're.Pattern' objects}
+        1    0.004    0.004    0.004    0.004 {method 'split' of 're.Pattern' objects}
+        1    0.000    0.000    0.000    0.000 {built-in method _thread.allocate_lock}
+        2    0.000    0.000    0.000    0.000 {built-in method _thread.get_ident}
+        2    0.000    0.000    0.000    0.000 {method '__exit__' of '_thread.RLock' objects}
+        1    0.000    0.000    0.000    0.000 {built-in method _weakref._remove_dead_weakref}
+        1    0.000    0.000    0.000    0.000 <frozen posixpath>:138(splitroot)
+        1    0.000    0.000    0.000    0.000 <frozen posixpath>:71(join)
+        1    0.000    0.000    0.000    0.000 <frozen posixpath>:41(_get_sep)
+        1    0.000    0.000    0.000    0.000 <frozen codecs>:94(__new__)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1589(find_spec)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1584(_get_spec)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1516(find_spec)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1487(_get_spec)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1465(_path_importer_cache)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1201(path_stats)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1182(get_data)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1177(get_filename)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1152(__init__)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1061(get_code)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:988(exec_module)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:985(create_module)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:801(spec_from_file_location)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:750(_compile_bytecode)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:698(_validate_timestamp_pyc)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:665(_classify_pyc)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:642(_check_name_wrapper)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:610(_get_cached)
+        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:481(cache_from_source)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:185(_path_abspath)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:180(_path_isabs)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:159(_path_isfile)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:150(_path_is_mode_type)
+        3    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:140(_path_stat)
+        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:132(_path_split)
+        4    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:134(<genexpr>)
+        6    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:126(_path_join)
+        3    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:84(_unpack_uint32)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:71(_relax_case)
+        1    0.000    0.000    0.001    0.001 <frozen importlib._bootstrap>:1343(_find_and_load)
+        1    0.000    0.000    0.001    0.001 <frozen importlib._bootstrap>:1298(_find_and_load_unlocked)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:1234(_find_spec)
+        4    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:1220(__exit__)
+        4    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:1216(__enter__)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:1122(find_spec)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:976(find_spec)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:905(_load_unlocked)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:806(module_from_spec)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:733(_init_module_attrs)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:653(has_location)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:645(parent)
+        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:632(cached)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:599(__init__)
+        7    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:491(_verbose_message)
+        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:480(_call_with_frames_removed)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:426(_get_module_lock)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:445(cb)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:420(__exit__)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:416(__enter__)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:412(__init__)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:372(release)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:304(acquire)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:232(__init__)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:173(__exit__)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:162(__enter__)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:158(__init__)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:124(setdefault)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:82(remove)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:79(__init__)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:74(__new__)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:48(_new_module)
+
+
