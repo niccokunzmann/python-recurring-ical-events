@@ -191,13 +191,10 @@ class CalendarQuery:
         for occurrence in self._after(earliest_end):
             yield occurrence.as_component(self.keep_recurrence_attributes)
 
-    def _after(self, earliest_end: Time,
-               min_time_span = datetime.timedelta(minutes=15),
-               max_time_span = datetime.timedelta(days=10)
-
-) -> Generator[Occurrence]:
+    def _after(self, earliest_end: Time) -> Generator[Occurrence]:
         """Iterate over occurrences happening during or after earliest_end."""
         time_span = datetime.timedelta(days=1)
+        min_time_span = datetime.timedelta(minutes=15)
         done = False
         result_ids: set[OccurrenceID] = set()
 
@@ -217,10 +214,10 @@ class CalendarQuery:
                     yield occurrence
                     result_ids.add(occurrence.id)
             # prepare next query
-            time_span = min(max(
+            time_span = max(
                 time_span / 2 if occurrences else time_span * 2,
                 min_time_span,
-            ), max_time_span)  # binary search to improve speed
+            )  # binary search to improve speed
             earliest_end = next_end
 
     def count(self) -> int:
