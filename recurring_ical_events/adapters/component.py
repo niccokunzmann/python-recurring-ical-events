@@ -115,6 +115,7 @@ class ComponentAdapter(ABC):
                     del copied_component[attribute]
         for subcomponent in self._component.subcomponents:
             copied_component.add_component(subcomponent)
+        copied_component["RECURRENCE-ID"] = copied_component["DTSTART"]
         return copied_component
 
     @cached_property
