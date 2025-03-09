@@ -411,6 +411,38 @@ In this example, we get an event and find that it has several alarms in it.
     >>> len(event.walk("VALARM"))
     2
 
+Edit One Event in a Calendar
+****************************
+
+You can edit events that occur in a series.
+It is important that you increase the ``SEQUENCE`` number of the event though.
+
+.. code-block:: python
+
+    >>> calendar = recurring_ical_events.example_calendar("recurring_events_moved")
+    >>> event = recurring_ical_events.of(calendar).at("20190309")[0]
+
+    # This event happens on 2019-03-09
+    >>> print(event["SUMMARY"])
+    New Event
+
+    # The attributes can be set, just not mutated
+    >>> event["SUMMARY"] = "Modified Again!"
+
+    # Make sure to increase the sequence number!
+    # If you do not do that, the modification will not appear.
+    # Try it out.
+    >>> event["SEQUENCE"] = event.get("SEQUENCE", 0) + 1
+
+    # Add the modified event ot the calendar
+    >>> calendar.add_component(event)
+
+    # Get the day again and see the modified event
+    >>> event = recurring_ical_events.of(calendar).at("20190309")[0]
+    >>> print(event["SUMMARY"])
+    Modified Again!
+
+
 Speed
 *****
 
