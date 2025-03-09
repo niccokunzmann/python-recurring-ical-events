@@ -23,7 +23,9 @@ except ImportError:
 
 
 def create_event_without_recurrence_id(
-    start: date, rdate: timedelta | None = None, is_rdate: bool = False  # noqa: FBT001
+    start: date,
+    rdate: timedelta | None = None,
+    is_rdate: bool = False,  # noqa: FBT001
 ) -> Event:
     """Return"""
     delta = timedelta(days=10)
@@ -162,3 +164,12 @@ def test_modify_event_with_sequence_number(calendars):
     event = events[0]
 
     assert event["SUMMARY"] == "Modified Again!"
+
+
+def test_alarm_has_no_recurrence_id(alarms):
+    """Alarms usually do not have those ids."""
+    a = alarms.alarm_absolute.at("20241003")
+    assert len(a) == 1
+    print(a[0].to_ical().decode())
+    alarm = a[0].subcomponents[0]
+    assert "RECURRENCE-ID" not in alarm
