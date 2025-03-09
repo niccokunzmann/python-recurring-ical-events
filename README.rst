@@ -706,6 +706,11 @@ To release new versions,
 Changelog
 ---------
 
+- v3.6.0
+
+  - Add the ``RECURRENCE-ID`` to all the occurrences, see `Issue 219 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/219>`_
+  - Document how to edit one event inside of an existing calendar.
+
 - v3.5.2
 
   - Fix computation of mixed start and end times, see `Issue 201 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/201>`_
