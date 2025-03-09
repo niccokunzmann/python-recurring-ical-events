@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 class ComponentAdapter(ABC):
     """A unified interface to work with icalendar components."""
 
-    ATTRIBUTES_TO_DELETE_ON_COPY = ["RRULE", "RDATE", "EXDATE", "RECURRENCE-ID"]
+    ATTRIBUTES_TO_DELETE_ON_COPY = ["RRULE", "RDATE", "EXDATE"]
 
     @staticmethod
     @abstractmethod
@@ -115,6 +115,8 @@ class ComponentAdapter(ABC):
                     del copied_component[attribute]
         for subcomponent in self._component.subcomponents:
             copied_component.add_component(subcomponent)
+        if "RECURRENCE-ID" not in copied_component:
+            copied_component["RECURRENCE-ID"] = copied_component["DTSTART"]
         return copied_component
 
     @cached_property
