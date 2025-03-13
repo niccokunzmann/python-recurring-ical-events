@@ -432,7 +432,8 @@ It is important that you increase the ``SEQUENCE`` number of the event though.
     # Make sure to increase the sequence number!
     # If you do not do that, the modification will not appear.
     # Try it out.
-    >>> event["SEQUENCE"] = event.get("SEQUENCE", 0) + 1
+    >>> last_edit = max(e.get("SEQUENCE", 0) for e in calendar.events)
+    >>> event["SEQUENCE"] = last_edit + 1
 
     # Add the modified event ot the calendar
     >>> calendar.add_component(event)
