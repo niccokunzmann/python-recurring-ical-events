@@ -16,7 +16,7 @@ python-dateutil==2.9.0.post0
     #   recurring-ical-events (setup.py)
 six==1.17.0
     # via python-dateutil
-tzdata==2025.1
+tzdata==2025.2
     # via
     #   icalendar
     #   recurring-ical-events (setup.py)
