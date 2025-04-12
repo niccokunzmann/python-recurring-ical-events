@@ -1,10 +1,11 @@
 [build-system]
-requires = ["hatchling", "hatch-vcs"]
+requires = ["hatchling>=1.27.0", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [project]
 name = "recurring-ical-events"
-license = {file = "LICENSE"}
+license = "GPL-3.0-or-later"
+license-files = ["LICENSE"]
 keywords = ["icalendar", "calendar", "ics", "rfc5545", "scheduling", "events", "todo", "journal", "alarm"]
 dynamic = ["urls", "version"]
 authors = [
@@ -24,7 +25,6 @@ classifiers = [
     "Operating System :: OS Independent",
     "Topic :: Office/Business :: Scheduling",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Utilities",
     "Natural Language :: English",
