@@ -13,3 +13,4 @@ env-2
 .coverage
 .venv
 venv
+requirements.txt
