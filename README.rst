@@ -707,6 +707,11 @@ To release new versions,
 Changelog
 ---------
 
+- v3.6.1
+
+  - Remove unused files: ``requirements.txt`` and ``setup.py``.
+  - Use version identifier for PyPI.
+
 - v3.6.0
 
   - Add the ``RECURRENCE-ID`` to all the occurrences, see `Issue 219 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/219>`_
