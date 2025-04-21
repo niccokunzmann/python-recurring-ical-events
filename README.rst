@@ -432,8 +432,7 @@ It is important that you increase the ``SEQUENCE`` number of the event though.
     # Make sure to increase the sequence number!
     # If you do not do that, the modification will not appear.
     # Try it out.
-    >>> last_edit = max(e.get("SEQUENCE", 0) for e in calendar.events)
-    >>> event["SEQUENCE"] = last_edit + 1
+    >>> event["SEQUENCE"] = event.get("SEQUENCE", 0) + 1
 
     # Add the modified event ot the calendar
     >>> calendar.add_component(event)
@@ -706,6 +705,10 @@ To release new versions,
 
 Changelog
 ---------
+
+- v3.7.0
+
+  - Set ``SEQUENCE`` to highest version of any used event in a series. See `Issue 223 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/223>`_
 
 - v3.6.1
 

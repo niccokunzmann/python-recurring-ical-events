@@ -51,6 +51,6 @@ def test_duration_is_edited(calendars, date, summary, expected_hours):
     event = events[0]
     event_hours = (event["DTEND"].dt - event["DTSTART"].dt).total_seconds() / 3600
     assert summary == event["SUMMARY"], "we should have the correct event"
-    assert (
-        event_hours == expected_hours
-    ), "the duration is only edited in the edited event"
+    assert event_hours == expected_hours, (
+        "the duration is only edited in the edited event"
+    )

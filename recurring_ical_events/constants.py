@@ -20,10 +20,10 @@ CALENDARS = HERE / "test" / "calendars"
 NEGATIVE_RRULE_COUNT_REGEX = re.compile(r"COUNT=-\d+;?")
 
 __all__ = [
-    "DATE_MIN",
-    "DATE_MIN_DT",
+    "CALENDARS",
     "DATE_MAX",
     "DATE_MAX_DT",
-    "CALENDARS",
+    "DATE_MIN",
+    "DATE_MIN_DT",
     "NEGATIVE_RRULE_COUNT_REGEX",
 ]

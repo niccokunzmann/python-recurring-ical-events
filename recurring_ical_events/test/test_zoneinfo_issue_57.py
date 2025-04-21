@@ -44,14 +44,14 @@ def test_zoneinfo_must_be_installed_if_it_is_possible():
     from importlib.util import find_spec as module_exists
 
     if python_version <= (3, 8):
-        assert module_exists(
-            "backports.zoneinfo"
-        ), "zoneinfo should be installed with pip install backports.zoneinfo"
+        assert module_exists("backports.zoneinfo"), (
+            "zoneinfo should be installed with pip install backports.zoneinfo"
+        )
     else:
         assert module_exists("zoneinfo"), "We assume that zoneinfo exists."
-    assert module_exists(
-        "tzdata"
-    ), "tzdata is necessary to test current time zone understanding."
+    assert module_exists("tzdata"), (
+        "tzdata is necessary to test current time zone understanding."
+    )
 
 
 @pytest.mark.parametrize(
@@ -73,7 +73,7 @@ def test_zoneinfo_consistent_conversion(calendars, dt1):
     assert dt1.second == dt2.second
 
 
-ATTRS = "year,month,day,hour,minute,second".split(",")
+ATTRS = ["year", "month", "day", "hour", "minute", "second"]
 
 
 @pytest.mark.parametrize(

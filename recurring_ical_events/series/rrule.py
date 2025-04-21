@@ -32,10 +32,14 @@ if TYPE_CHECKING:
 class Series:
     """Base class for components that result in a series of occurrences."""
 
-    @property
-    def occurrence(self) -> type[Occurrence]:
+    def occurrence(
+        self,
+        adapter: ComponentAdapter,
+        start: Time | None = None,
+        end: Time | None | datetime.timedelta = None,
+    ) -> Occurrence:
         """A way to override the occurrence class."""
-        return Occurrence
+        return Occurrence(adapter, start, end, sequence=self.sequence)
 
     class NoRecurrence:
         """A strategy to deal with not having a core with rrules."""
@@ -43,6 +47,7 @@ class Series:
         check_exdates_datetime: set[RecurrenceID] = set()
         check_exdates_date: set[datetime.date] = set()
         replace_ends: dict[RecurrenceID, Time] = {}
+        sequence = -1
 
         def as_occurrence(
             self,
@@ -73,6 +78,11 @@ class Series:
         """A strategy if we have an actual core with recurrences."""
 
         has_core = True
+
+        @property
+        def sequence(self) -> int:
+            """The sequence of the code component."""
+            return self.core.sequence
 
         def __init__(self, core: ComponentAdapter):
             self.core = core
@@ -337,7 +347,7 @@ class Series:
             self.NoRecurrence() if core is None else self.RecurrenceRules(core)
         )
         self.this_and_future.sort()
-
+        self.sequence = max(component.sequence for component in self.components)
         self.compute_span_extension()
 
     def compute_span_extension(self):

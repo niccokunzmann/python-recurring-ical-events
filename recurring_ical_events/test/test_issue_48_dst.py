@@ -36,6 +36,6 @@ chicago = pytz.timezone("America/Chicago")
 )
 def test_between(calendars, start_time, end_time, expected_count):
     events = calendars.issue_48_dst.between(start_time, end_time)
-    assert (
-        len(events) == expected_count
-    ), f"{expected_count} events expected between {start_time} and {end_time}"
+    assert len(events) == expected_count, (
+        f"{expected_count} events expected between {start_time} and {end_time}"
+    )

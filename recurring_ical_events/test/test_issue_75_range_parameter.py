@@ -93,9 +93,9 @@ def test_issue_75_RANGE_AT_parameter(calendars, date, summary):
 )
 def test_issue_75_RANGE_BETWEEN_parameter(calendars, start, end, summary, total):
     events = calendars.issue_75_range_parameter.between(start, end)
-    assert (
-        len(events) == total
-    ), f"Expecting {total} events at range {start}, {end}, get {len(events)}"
+    assert len(events) == total, (
+        f"Expecting {total} events at range {start}, {end}, get {len(events)}"
+    )
     event = events[-1]
     assert str(event["SUMMARY"]) == summary
 
