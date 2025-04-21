@@ -707,6 +707,10 @@ To release new versions,
 Changelog
 ---------
 
+- v3.7.0
+
+  - Set ``SEQUENCE`` to highest version of any used event in a series. See `Issue 223 <https://github.com/niccokunzmann/python-recurring-ical-events/issues/223>`_
+
 - v3.6.1
 
   - Remove unused files: ``requirements.txt`` and ``setup.py``.
