@@ -54,9 +54,9 @@ class ICSCalendars:
 
     def consistent_tz(self, dt):
         """Make the datetime consistent with the time zones used in these calendars."""
-        assert (
-            dt.tzinfo is None or "pytz" in dt.tzinfo.__class__.__module__
-        ), "We need pytz time zones for now."
+        assert dt.tzinfo is None or "pytz" in dt.tzinfo.__class__.__module__, (
+            "We need pytz time zones for now."
+        )
         return dt
 
     def _of(self, calendar):

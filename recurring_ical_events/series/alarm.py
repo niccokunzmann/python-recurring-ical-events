@@ -127,6 +127,6 @@ class AlarmSeriesRelativeToEnd(AlarmSeriesRelativeToStart):
 
 __all__ = [
     "AbsoluteAlarmSeries",
-    "AlarmSeriesRelativeToStart",
     "AlarmSeriesRelativeToEnd",
+    "AlarmSeriesRelativeToStart",
 ]

@@ -51,4 +51,4 @@ class BadRuleStringFormat(InvalidCalendar):
         return self._rule
 
 
-__all__ = ["InvalidCalendar", "PeriodEndBeforeStart", "BadRuleStringFormat"]
+__all__ = ["BadRuleStringFormat", "InvalidCalendar", "PeriodEndBeforeStart"]

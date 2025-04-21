@@ -8,8 +8,8 @@ from .alarm import (
 from .rrule import Series
 
 __all__ = [
-    "Series",
-    "AlarmSeriesRelativeToStart",
-    "AlarmSeriesRelativeToEnd",
     "AbsoluteAlarmSeries",
+    "AlarmSeriesRelativeToEnd",
+    "AlarmSeriesRelativeToStart",
+    "Series",
 ]

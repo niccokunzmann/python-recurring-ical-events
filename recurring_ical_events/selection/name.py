@@ -62,8 +62,8 @@ class ComponentsWithName(SelectComponents):
             if name not in self._component_adapters:
                 raise ValueError(
                     f'"{name}" is an unknown name for a '
-                    'recurring component. '
-                    f"I only know these: { ', '.join(self._component_adapters)}."
+                    "recurring component. "
+                    f"I only know these: {', '.join(self._component_adapters)}."
                 )
             adapter = self._component_adapters[name]
         if occurrence is not Occurrence:

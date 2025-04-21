@@ -6,8 +6,8 @@ from .base import SelectComponents
 from .name import ComponentsWithName
 
 __all__ = [
-    "SelectComponents",
+    "Alarms",
     "AllKnownComponents",
     "ComponentsWithName",
-    "Alarms",
+    "SelectComponents",
 ]

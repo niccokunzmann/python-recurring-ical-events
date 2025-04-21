@@ -14,10 +14,10 @@ RecurrenceIDs = Tuple[RecurrenceID]
 
 
 __all__ = [
-    "Time",
-    "DateArgument",
     "UID",
-    "Timestamp",
+    "DateArgument",
     "RecurrenceID",
     "RecurrenceIDs",
+    "Time",
+    "Timestamp",
 ]

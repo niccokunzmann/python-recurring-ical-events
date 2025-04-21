@@ -90,22 +90,28 @@ class Occurrence:
         adapter: ComponentAdapter,
         start: Time | None = None,
         end: Time | None | timedelta = None,
+        sequence: int = -1,
     ):
         """Create an event repetition.
 
         - source - the icalendar Event
         - start - the start date/datetime to replace
         - stop - the end date/datetime to replace
+        - sequence - if positive or 0, this sets the SEQUENCE property
         """
         self._adapter = adapter
         self.start = adapter.start if start is None else start
         self.end = adapter.end if end is None else end
+        self.sequence = sequence
 
     def as_component(self, keep_recurrence_attributes: bool) -> Component:  # noqa: FBT001
         """Create a shallow copy of the source component and modify some attributes."""
-        return self._adapter.as_component(
+        component = self._adapter.as_component(
             self.start, self.end, keep_recurrence_attributes
         )
+        if self.sequence >= 0:
+            component["SEQUENCE"] = self.sequence
+        return component
 
     def is_in_span(self, span_start: Time, span_stop: Time) -> bool:
         """Return whether the component is in the span."""
@@ -199,7 +205,7 @@ class AlarmOccurrence(Occurrence):
 
 
 __all__ = [
-    "Occurrence",
     "AlarmOccurrence",
+    "Occurrence",
     "OccurrenceID",
 ]

@@ -28,6 +28,6 @@ def test_event_is_absent_on_the_previous_day(calendars):
 def test_event_of_recurrence_should_behave_the_same(calendars, offset):
     """we should check that a repeated event does not have the same problem."""
     events = calendars.one_day_event_repeat_every_day.at((2019, 3, 4 + offset))
-    assert (
-        len(events) == 1
-    ), "Events of the the day before and after should not be mentioned."
+    assert len(events) == 1, (
+        "Events of the the day before and after should not be mentioned."
+    )

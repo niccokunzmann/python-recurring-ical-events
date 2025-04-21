@@ -234,18 +234,18 @@ def get_any(dictionary: dict, keys: Sequence[object], default: object = None):
 
 
 __all__ = [
-    "is_pytz",
-    "is_pytz_dt",
-    "normalize_pytz",
-    "convert_to_datetime",
-    "make_comparable",
-    "time_span_contains_event",
     "PeriodEndBeforeStart",
     "cmp",
-    "is_date",
-    "to_recurrence_ids",
-    "with_highest_sequence",
+    "convert_to_datetime",
     "get_any",
     "has_timezone",
+    "is_date",
     "is_datetime",
+    "is_pytz",
+    "is_pytz_dt",
+    "make_comparable",
+    "normalize_pytz",
+    "time_span_contains_event",
+    "to_recurrence_ids",
+    "with_highest_sequence",
 ]

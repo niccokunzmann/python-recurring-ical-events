@@ -284,4 +284,4 @@ class CalendarQuery:
         )
 
 
-__all__ = ["CalendarQuery", "T_COMPONENTS"]
+__all__ = ["T_COMPONENTS", "CalendarQuery"]
