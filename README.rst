@@ -414,30 +414,32 @@ In this example, we get an event and find that it has several alarms in it.
 Edit One Event in a Calendar
 ****************************
 
-You can edit events that occur in a series.
-It is important that you increase the ``SEQUENCE`` number of the event though.
+Editing one event of a series is necessary for calendar invites e.g. via email.
+
+Below, you see how to edit an event that occurs in a series.
+It is important that you increase the `sequence number <https://www.rfc-editor.org/rfc/rfc5545#section-3.8.7.4>`_
+of the event to indicate the new version.
 
 .. code-block:: python
 
     >>> calendar = recurring_ical_events.example_calendar("recurring_events_moved")
     >>> event = recurring_ical_events.of(calendar).at("20190309")[0]
 
-    # This event happens on 2019-03-09
+    # This event happens on 2019-03-09.
     >>> print(event["SUMMARY"])
     New Event
 
-    # The attributes can be set, just not mutated
+    # The event can be modified.
     >>> event["SUMMARY"] = "Modified Again!"
 
     # Make sure to increase the sequence number!
     # If you do not do that, the modification will not appear.
-    # Try it out.
     >>> event["SEQUENCE"] = event.get("SEQUENCE", 0) + 1
 
-    # Add the modified event ot the calendar
+    # Add the modified event to the calendar to replace the original.
     >>> calendar.add_component(event)
 
-    # Get the day again and see the modified event
+    # Get the day again and see the modified event.
     >>> event = recurring_ical_events.of(calendar).at("20190309")[0]
     >>> print(event["SUMMARY"])
     Modified Again!
