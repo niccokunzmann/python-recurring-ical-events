@@ -31,5 +31,4 @@ build:
       then
         exit 183;
       fi
-    - pip install -r docs/requirements.txt
     - cd docs && make rtd-pr-preview
