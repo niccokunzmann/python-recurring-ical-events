@@ -6,7 +6,12 @@ import contextlib
 import datetime
 import itertools
 import sys
-from typing import TYPE_CHECKING, Generator, Optional, Sequence, TypeAlias
+from typing import TYPE_CHECKING, Generator, Optional, Sequence
+
+try:
+    from typing import TypeAlias
+except ImportError:
+    from typing_extensions import TypeAlias
 
 import icalendar
 

@@ -97,5 +97,5 @@ livehtml: venv
 	--port 8050 \
 	-b html . "$(BUILDDIR)/html" $(SPHINXOPTS) $(O)
 
-rtd-pr-preview:  ## Build pull request preview on Read the Docs
+rtd-pr-preview: venv ## Build pull request preview on Read the Docs
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) ${READTHEDOCS_OUTPUT}/html/

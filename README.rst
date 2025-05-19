@@ -744,3 +744,6 @@ Research
 - RDATE `<https://stackoverflow.com/a/46709850/1320237>`_
 
   - `<https://tools.ietf.org/html/rfc5545#section-3.8.5.2>`_
+
+
+.. _`ics-query`: https://github.com/niccokunzmann/ics-query#readme

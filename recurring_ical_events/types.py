@@ -3,7 +3,11 @@
 from __future__ import annotations
 
 import datetime
-from typing import Tuple, TypeAlias, Union
+from typing import Tuple, Union
+try:
+    from typing import TypeAlias
+except ImportError:
+    from typing_extensions import TypeAlias
 
 # Any types documented here should also be mentioned in the docs/conf.py.
 
