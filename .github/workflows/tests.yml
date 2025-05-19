@@ -22,6 +22,7 @@ jobs:
         - ["3.12",  "py312", "Europe/London"]
         - ["3.12",  "build", "Europe/Moscow"]
         - ["3.13",  "py313", "America/Dawson"]
+        - ["3.13",  "docs",  "Europe/Berlin"]
 
     runs-on: ubuntu-latest
     name: ${{ matrix.config[1] }}
