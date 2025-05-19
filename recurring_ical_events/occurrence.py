@@ -30,6 +30,7 @@ class OccurrenceID(NamedTuple):
         uid: The UID of the component.
         recurrence_id: The Recurrence-ID of the component in UTC but without tzinfo.
         start: The start of the component
+
     """
 
     name: str

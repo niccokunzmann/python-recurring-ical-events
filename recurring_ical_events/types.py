@@ -3,14 +3,16 @@
 from __future__ import annotations
 
 import datetime
-from typing import Tuple, Union
+from typing import Tuple, TypeAlias, Union
 
-Time = Union[datetime.date, datetime.datetime]
-DateArgument = Union[Tuple[int], datetime.date, str, int]
-UID = str
-Timestamp = float
-RecurrenceID = datetime.datetime
-RecurrenceIDs = Tuple[RecurrenceID]
+# Any types documented here should also be mentioned in the docs/conf.py.
+
+Time : TypeAlias = Union[datetime.date, datetime.datetime]
+DateArgument : TypeAlias = Union[Tuple[int], datetime.date, str, int]
+UID : TypeAlias = str
+Timestamp : TypeAlias = float
+RecurrenceID : TypeAlias = datetime.datetime
+RecurrenceIDs : TypeAlias = Tuple[RecurrenceID]
 
 
 __all__ = [

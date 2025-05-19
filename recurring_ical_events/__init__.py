@@ -40,7 +40,7 @@ from recurring_ical_events.selection import (
     SelectComponents,
 )
 
-from .occurrence import AlarmOccurrence, Occurrence
+from .occurrence import AlarmOccurrence, Occurrence, OccurrenceID
 from .series import (
     AbsoluteAlarmSeries,
     AlarmSeriesRelativeToEnd,
@@ -62,7 +62,7 @@ def of(
     """Unfold recurring events of a_calendar
 
     Arguments:
-        a_calendar: an :class:`icalendar.Calendar` component or something like that.
+        a_calendar: an :class:`icalendar.cal.Calendar` component or something like that.
         keep_recurrence_attributes: Whether to keep attributes that are only used
             to calculate the recurrence.
         components: A list of component type names of which the recurrences
@@ -97,6 +97,7 @@ __all__ = [
     "InvalidCalendar",
     "JournalAdapter",
     "Occurrence",
+    "OccurrenceID",
     "PeriodEndBeforeStart",
     "SelectComponents",
     "Series",

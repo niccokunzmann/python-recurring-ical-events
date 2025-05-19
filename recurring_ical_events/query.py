@@ -6,7 +6,7 @@ import contextlib
 import datetime
 import itertools
 import sys
-from typing import TYPE_CHECKING, Generator, Optional, Sequence
+from typing import TYPE_CHECKING, Generator, Optional, Sequence, TypeAlias
 
 import icalendar
 
@@ -33,16 +33,16 @@ if TYPE_CHECKING:
     )
 
 if sys.version_info >= (3, 10):
-    T_COMPONENTS = Sequence[str | type[ComponentAdapter] | SelectComponents]
+    T_COMPONENTS : TypeAlias = Sequence[str | type[ComponentAdapter] | SelectComponents]
 else:
     # see https://github.com/python/cpython/issues/86399#issuecomment-1093889925
-    T_COMPONENTS = Sequence[str]
+    T_COMPONENTS : TypeAlias = Sequence[str]
 
 
 class CalendarQuery:
     """A calendar that can unfold its events at a certain time.
 
-    Functions like at(), between() and after() can be used to query the
+    Functions like :meth:`at`, between() and after() can be used to query the
     selected components. If any malformed icalendar information is found,
     an InvalidCalendar exception is raised. For other bad arguments, you
     should expect a ValueError.

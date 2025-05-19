@@ -7,3 +7,5 @@ sphinx-sitemap
 sphinx-autoapi>=3.0.0
 # For examples section
 myst-parser
+sphinx-autodoc-typehints
+sphinx-toolbox

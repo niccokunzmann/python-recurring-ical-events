@@ -36,7 +36,7 @@ community/index
 changelog.md
 ```
 
-## Examples
+## Code Examples
 
 Several example pages to demonstrate the functionality of this library when used with the `icalendar` library.
 

@@ -11,8 +11,14 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.autosectionlabel",
     "sphinx.ext.napoleon",
+    "sphinx_autodoc_typehints",
     # from pydata-sphix-theme
     "myst_parser",
+    # from https://sphinx-toolbox.readthedocs.io/
+    "sphinx_tabs.tabs",
+    "sphinx-prompt",
+    # "sphinx_toolbox",
+    # "sphinx_toolbox.more_autodoc"
 ]
 source_suffix = {".rst": "restructuredtext"}
 master_doc = "index"
@@ -84,6 +90,7 @@ pygments_style = "sphinx"
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "icalendar": ("https://icalendar.readthedocs.io/en/latest", None),
+    "dateutil": ("https://dateutil.readthedocs.io/en/stable/", None),
 }
 
 
@@ -97,3 +104,40 @@ exclude_patterns = [
 linkcheck_retries = 1
 linkcheck_timeout = 5
 linkcheck_report_timeouts_as_broken = True
+
+# autodoc
+autodoc_typehints_format = "short"
+autodoc_preserve_defaults = True
+autodoc_type_aliases = {
+    "datetime": "datetime.datetime",
+    "date": "datetime.date",
+    "timedelta": "datetime.timedelta",
+    "Time": "recurring_ical_events.types.Time",
+    "DateArgument": "recurring_ical_events.types.DateArgument",
+    "UID": "recurring_ical_events.types.UID",
+    "Timestamp": "recurring_ical_events.types.Timestamp",
+    "RecurrenceID": "recurring_ical_events.types.RecurrenceID",
+    "RecurrenceIDs": "recurring_ical_events.types.RecurrenceIDs",
+    "Component": "icalendar.cal.Component",
+    "Calendar": "icalendar.cal.Calendar",
+    "T_COMPONENTS": "recurring_ical_events.query.T_COMPONENTS",
+    "OccurrenceID": "recurring_ical_events.occurrence.OccurrenceID",
+    "icalendar.Calendar": "icalendar.cal.Calendar",
+}
+
+# sphinx-toolbox
+github_username = "niccokunzmann"
+github_repository = "python-recurring-ical-events"
+
+
+# from https://github.com/sphinx-doc/sphinx/issues/10785
+nitpick_ignore = [
+    # ignore for now
+    ("py:class", "recurring_ical_events.types.Time"),
+    ("py:class", "recurring_ical_events.types.UID"),
+    ("py:class", "recurring_ical_events.types.RecurrenceIDs"),
+    ("py:class", "Time"),
+    ("py:class", "UID"),
+    ("py:class", "RecurrenceID"),
+    ("py:class", "TypeAliasForwardRef"),
+]
