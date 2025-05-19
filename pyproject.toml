@@ -47,6 +47,7 @@ dependencies = [
     'x-wr-timezone == 0.*; python_version <= "3.8"',
     'backports.zoneinfo; python_version == "3.7" or python_version == "3.8"',
     'tzdata',
+    'typing_extensions; python_version <= "3.9"',
 ]
 
 [project.optional-dependencies]

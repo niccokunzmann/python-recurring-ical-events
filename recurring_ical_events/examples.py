@@ -12,7 +12,7 @@ def example_calendar(name: str = "") -> icalendar.Calendar:
         name (str): The name of the example file.
 
     Returns:
-        icalendar.Calendar: The parsed calendar example.
+        icalendar.cal.Calendar: The parsed calendar example.
     """
     if not name.endswith(".ics"):
         name += ".ics"
