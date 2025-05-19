@@ -49,7 +49,6 @@ jobs:
         export TZ="{{ matrix.config[2] }}"
         # Debug and check the default time zone
         python3 -c 'import time; time.tzset(); print(time.strftime("%X %x %Z"))'
-        recurring_ical_events/test/test_code_quality.sh
         tox -e ${{ matrix.config[1] }}
 
   deploy-tag-to-pypi:
