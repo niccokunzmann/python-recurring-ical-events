@@ -11,6 +11,8 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.autosectionlabel",
     "sphinx.ext.napoleon",
+    # from pydata-sphix-theme
+    "myst_parser",
 ]
 source_suffix = {".rst": "restructuredtext"}
 master_doc = "index"
@@ -90,3 +92,8 @@ man_pages = [("index", "recurring_ical_events", "recurring_ical_events Documenta
 exclude_patterns = [
     "venv"
 ]
+
+# we have had issues with linkcheck timing and retries on www.gnu.org
+linkcheck_retries = 1
+linkcheck_timeout = 5
+linkcheck_report_timeouts_as_broken = True

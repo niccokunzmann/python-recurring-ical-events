@@ -61,14 +61,15 @@ def of(
 ) -> CalendarQuery:
     """Unfold recurring events of a_calendar
 
-    - a_calendar is an icalendar VCALENDAR component or something like that.
-    - keep_recurrence_attributes - whether to keep attributes that are only used
-      to calculate the recurrence.
-    - components is a list of component type names of which the recurrences
-      should be returned. This can also be instances of SelectComponents.
-    - skip_bad_series - whether to skip a series of components that contains
-      errors.
-    - calendar_query - The calendar query class to use.
+    Arguments:
+        a_calendar: an :class:`icalendar.Calendar` component or something like that.
+        keep_recurrence_attributes: Whether to keep attributes that are only used
+            to calculate the recurrence.
+        components: A list of component type names of which the recurrences
+            should be returned. This can also be instances of :class:`SelectComponents`.
+        skip_bad_series: Whether to skip a series of components that contains
+            errors.
+        calendar_query: The :class:`CalendarQuery` class to use.
     """
     a_calendar = x_wr_timezone.to_standard(a_calendar)
     return calendar_query(
