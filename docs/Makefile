@@ -19,6 +19,7 @@ I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
 .PHONY: help clean html dirhtml singlehtml pickle json htmlhelp qthelp devhelp epub latex latexpdf text man changes linkcheck doctest gettext livehtml rtd-pr-preview
 
 venv:
+	pwd
 	git fetch --tags
 	python -m venv venv
 	venv/bin/pip install -r requirements.txt
