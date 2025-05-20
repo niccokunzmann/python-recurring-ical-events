@@ -83,4 +83,5 @@ reference/research
 :maxdepth: 1
 
 changelog
+reference/license
 ```
