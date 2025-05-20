@@ -115,5 +115,5 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: true
-          body: "To view the changes, please see the [Changelog](https://github.com/niccokunzmann/python-recurring-ical-events?tab=readme-ov-file#changelog). This release can be installed from [PyPI](https://pypi.org/project/recurring-ical-events/#history)."
+          body: "To view the changes, please see the [Changelog](https://recurring-ical-events.readthedocs.io/en/latest/changelog.html). This release can be installed from [PyPI](https://pypi.org/project/recurring-ical-events/#history)."
           generateReleaseNotes: false

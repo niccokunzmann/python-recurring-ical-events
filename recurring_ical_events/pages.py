@@ -17,7 +17,23 @@ if TYPE_CHECKING:
 
 
 class Page:
-    """One page in a series of pages."""
+    """One page in a series of pages.
+
+    Examples:
+        Check if the page has components.
+
+        .. code-block:: python
+
+            if page:
+                print(f"We have {len(page)} components.")
+        
+        Go though the components:
+        
+        .. code-block:: python
+
+            for component in page:
+                print(component)
+    """
 
     def __init__(self, components: list[Component], next_page_id: str = ""):
         """ "Create a new page."""
@@ -26,7 +42,7 @@ class Page:
 
     @property
     def components(self) -> list[Component]:
-        """All the components of one page."""
+        """All the components of this page."""
         return self._components
 
     def has_next_page(self) -> bool:
@@ -35,14 +51,14 @@ class Page:
 
     @property
     def next_page_id(self) -> str:
-        """Return the id of the next page or ''."""
+        """The id of the next page or ``''``."""
         return self._next_page_id
 
     def __len__(self) -> int:
         """The number of components."""
         return len(self.components)
 
-    def is_last(self):
+    def is_last(self) -> bool:
         """Wether this is the last page and there is no other page following."""
         return self._next_page_id == ""
 
@@ -52,7 +68,10 @@ class Page:
 
 
 class Pages:
-    """A pagination configuration to iterate over pages."""
+    """A pagination configuration to iterate over pages.
+
+    This is an :class:`Iterator` that returns :class:`Page` objects.
+    """
 
     def __init__(
         self,
@@ -84,8 +103,9 @@ class Pages:
     def generate_next_page(self) -> Page:
         """Generate the next page.
 
-        In contrast to next(self), this does not raise StopIteration.
+        In contrast to ``next(pages)``, this does not raise :class:`StopIteration`.
         But it works the same: the next page is generated and returned.
+        The last page is empty.
         """
         for page in self:
             return page

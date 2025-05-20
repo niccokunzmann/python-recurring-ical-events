@@ -54,7 +54,7 @@ clean: cleanhtml
 	-rm -rf venv
 
 html: venv
-	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
+	$(SPHINXBUILD) -b html --fresh-env --write-all $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in docs/$(BUILDDIR)/html."
 	rm -rf build
@@ -92,6 +92,7 @@ doctest: venv
 	      "results in $(BUILDDIR)/doctest/output.txt."
 
 livehtml: venv
+	# rebuild because the modules change
 	$(SPHINXAUTOBUILD) \
 	--watch .. \
 	--port 8050 \

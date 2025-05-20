@@ -59,16 +59,22 @@ def of(
     skip_bad_series: bool = False,  # noqa: FBT001
     calendar_query: type[CalendarQuery] = CalendarQuery,
 ) -> CalendarQuery:
-    """Unfold recurring events of a_calendar
+    """Create a query for recurring components in a_calendar.
+
+    If the argument is a calendar, this will also correct
+    times according to ``X-WR-TIMEZONE``.
 
     Arguments:
-        a_calendar: an :class:`icalendar.cal.Calendar` component or something like that.
+        a_calendar: an :class:`icalendar.cal.Calendar` component like
+            :class:`icalendar.cal.Calendar`.
         keep_recurrence_attributes: Whether to keep attributes that are only used
-            to calculate the recurrence.
+            to calculate the recurrence (``RDATE``, ``EXDATE``, ``RRULE``).
         components: A list of component type names of which the recurrences
             should be returned. This can also be instances of :class:`SelectComponents`.
-        skip_bad_series: Whether to skip a series of components that contains
-            errors.
+            Examples: ``("VEVENT", "VTODO", "VJOURNAL", "VALARM")``
+        skip_bad_series: Whether to skip series of components that contain
+            errors. You can use :attr:`CalendarQuery.suppressed_errors` to
+            specify which errors to skip.
         calendar_query: The :class:`CalendarQuery` class to use.
     """
     a_calendar = x_wr_timezone.to_standard(a_calendar)

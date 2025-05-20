@@ -6,7 +6,7 @@ import contextlib
 import datetime
 import itertools
 import sys
-from typing import TYPE_CHECKING, Generator, Optional, Sequence
+from typing import TYPE_CHECKING, ClassVar, Generator, Optional, Sequence
 
 try:
     from typing import TypeAlias
@@ -45,20 +45,20 @@ else:
 
 
 class CalendarQuery:
-    """A calendar that can unfold its events at a certain time.
+    """Query a calendar for occurrences.
 
-    Functions like :meth:`at`, between() and after() can be used to query the
-    selected components. If any malformed icalendar information is found,
-    an InvalidCalendar exception is raised. For other bad arguments, you
-    should expect a ValueError.
+    Functions like :meth:`at`, :meth:`between` andm :meth:`after`
+    can be used to query the selected components.
+    If any malformed icalendar information is found,
+    an :class:`InvalidCalendar` exception is raised.
+    For other bad arguments, you should expect a :class:`ValueError`.
 
-    suppressed_errors - a list of errors to suppress when
-        skip_bad_series is True
-
-    component_adapters - a list of component adapters
+    Attributes:
+        suppressed_errors: a list of errors to suppress when
+            skip_bad_series is True
     """
 
-    suppressed_errors = [
+    suppressed_errors : ClassVar[type[Exception]] = [
         BadRuleStringFormat,
         PeriodEndBeforeStart,
         icalendar.InvalidCalendar,
@@ -74,12 +74,18 @@ class CalendarQuery:
     ):
         """Create an unfoldable calendar from a given calendar.
 
-        calendar - an icalendar component - probably a calendar -
-            from which occurrences will be calculated
-        keep_recurrence_attributes - whether to keep values
-            in the results that are used for calculation
-        skip_bad_events - whether to skip a series of components that
-            contains errors. This skips self.suppressed_errors.
+        Arguments:
+            calendar: an :class:`icalendar.cal.Calendar` component like
+                :class:`icalendar.cal.Calendar`.
+            keep_recurrence_attributes: Whether to keep attributes that are only used
+                to calculate the recurrence (``RDATE``, ``EXDATE``, ``RRULE``).
+            components: A list of component type names of which the recurrences
+                should be returned. This can also be instances of
+                :class:`SelectComponents`.
+                Examples: ``("VEVENT", "VTODO", "VJOURNAL", "VALARM")``
+            skip_bad_series: Whether to skip series of components that contain
+                errors. You can use :attr:`CalendarQuery.suppressed_errors` to
+                specify which errors to skip.
         """
         self.keep_recurrence_attributes = keep_recurrence_attributes
         if calendar.get("CALSCALE", "GREGORIAN") != "GREGORIAN":
@@ -99,7 +105,24 @@ class CalendarQuery:
 
     @staticmethod
     def to_datetime(date: DateArgument):
-        """Convert date inputs of various sorts into a datetime object."""
+        """Convert date inputs of various sorts into a datetime object.
+
+        Arguments:
+            date: A date specification.
+
+        Date Specification:
+        
+        - a year like ``(2019,)`` or ``2019`` (:class:`int`)
+        - a month like ``(2019, 1)`` for January of 2019
+        - a day like ``(2019, 1, 19)`` for the first of January 2019
+        - a day with hours, ``(2019, 1, 19, 1)``
+        - a day with minutes, ``(2019, 1, 19, 13, 30 )``
+        - a day with seconds, ``(2019, 1, 19, 13, 30, 59)``
+        - a :class:`datetime.datetime` or :class:`datetime.date`
+        - a :class:`str` in the format ``yyyymmdd``
+        - a :class:`str` in the format ``yyyymmddThhmmssZ``
+
+        """
         if isinstance(date, int):
             date = (date,)
         if isinstance(date, tuple):
@@ -117,7 +140,7 @@ class CalendarQuery:
 
         The Components are sorted from the first to the last Occurrence.
         Calendars can contain millions of Occurrences. This iterates
-        safely across all of them
+        safely across all of them.
         """
         # MAX and MIN values may change in the future
         return self.after(DATE_MIN_DT)
@@ -132,13 +155,35 @@ class CalendarQuery:
     def at(self, date: DateArgument):
         """Return all events within the next 24 hours of starting at the given day.
 
-        - date can be a year like (2019,) or 2099
-        - a month like (2019, 1) for January of 2019
-        - a day like (2019, 1, 1) for the first of January 2019
-        - a day with hours, (2019, 1, 1, 1)
-        - a day with minutes, (2019, 1, 1, 1, 1)
-        - a day with seconds, (2019, 1, 1, 1, 1, 1)
-        """
+        Arguments:
+            date: A date specification, see :meth:`to_datetime`.
+
+        This is translated to :meth:`between` in the following way:
+
+        - A year returns all occurrences within that year.
+            Example: ``(2019,)``, ``2019``
+        - A month returns all occurrences within that month.
+            Example: ``(2019, 1)``
+        - A day returns all occurrences within that day.
+            Examples:
+
+            - ``(2019, 1, 19)``
+            - ``datetime.date(2019, 1, 19)``
+            - ``"20190101"``
+
+        - An hour returns all occurrences within that hour.
+            Example: ``(2019, 1, 19, 1)``
+        - A minute returns all occurrences within that minute.
+            Example: ``(2019, 1, 19, 13, 30 )``
+        - A second returns all occurrences at that exact second.
+            Examples:
+
+            - ``(2019, 1, 19, 13, 30, 59)``
+            - ``datetime.datetime(2019, 1, 19, 13, 30, 59)``
+            - ``datetime.datetime(2019, 1, 19, tzinfo=datetime.timezone.utc)``,
+            - ``datetime.datetime(2019, 1, 19, 13, 30, 59, tzinfo=ZoneInfo('Europe/London'))``
+            - ``"20190119T133059Z"``
+        """  # noqa: E501
         if isinstance(date, int):
             date = (date,)
         if isinstance(date, str):
@@ -160,7 +205,19 @@ class CalendarQuery:
         return self._between(dt, dt + self._DELTAS[len(date) - 3])
 
     def between(self, start: DateArgument, stop: DateArgument | datetime.timedelta):
-        """Return events at a time between start (inclusive) and end (inclusive)"""
+        """Return events at a time between start (inclusive) and end (inclusive)
+
+        Arguments:
+            start: A date specification. See :meth:`to_datetime`.
+            stop: A date specification or a :class:`datetime.timedelta`
+                relative to start.
+
+        .. warning::
+
+            If you pass a :class:`datetime.datetime` to both ``start`` and
+            ``stop``, make sure the :attr:`datetime.datetime.tzinfo` is
+            the same.
+        """
         start = self.to_datetime(start)
         stop = (
             start + stop
@@ -191,7 +248,13 @@ class CalendarQuery:
         return occurrences
 
     def after(self, earliest_end: DateArgument) -> Generator[Component]:
-        """Iterate over components happening during or after earliest_end."""
+        """Iterate over components happening during or after earliest_end.
+
+        Arguments:
+            earliest_end: A date specification. See :meth:`to_datetime`.
+                Anything happening during or after earliest_end is returned
+                in the order of start time.
+        """
         earliest_end = self.to_datetime(earliest_end)
         for occurrence in self._after(earliest_end):
             yield occurrence.as_component(self.keep_recurrence_attributes)
@@ -226,7 +289,12 @@ class CalendarQuery:
             earliest_end = next_end
 
     def count(self) -> int:
-        """Return the amount of recurring components in this calendar."""
+        """Return the amount of recurring components in this calendar.
+
+        .. warning::
+
+            Do not use this in production as it generates all occurrences.
+        """
         i = 0
         for _ in self.all():
             i += 1
@@ -236,7 +304,11 @@ class CalendarQuery:
     def first(self) -> Component:
         """Return the first recurring component in this calendar.
 
-        If there is no recurring component, an IndexError is raised.
+        Returns:
+            The first recurring component in this calendar.
+
+        Raises:
+            IndexError: if the calendar is empty
         """
         for component in self.all():
             return component
@@ -255,9 +327,13 @@ class CalendarQuery:
             page_size: the number of components per page
             earliest_end: the start of the first page
                 All components occur after this date.
+                See :meth:`to_datetime` for possible values.
             latest_start: the end of the last page
                 All components occur before this date.
+                See :meth:`to_datetime` for possible values.
             next_page_id: The id of the next page.
+                This is optional for the first page.
+                These are safe to pass outside of the application and back in.
         """
         latest_start = None if latest_start is None else self.to_datetime(latest_start)
         earliest_end = (
