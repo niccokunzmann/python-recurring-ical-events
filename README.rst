@@ -17,10 +17,14 @@ Recurring ICal events for Python
    :target: https://polar.sh/niccokunzmann/python-recurring-ical-events
    :alt: issues seek funding
 
+ICal has some complexity to it:
+Events, TODOs, Journal entries and Alarms can be repeated, removed from the feed and edited later on.
+This tool takes care of these complexities.
+
 Please have a look here:
 
 - `Documentation`_
-- `Changelog`
+- `Changelog`_
 - `PyPI package`_
 - `GitHub repository`_
 
