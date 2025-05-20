@@ -17,7 +17,9 @@ Information about usage.
 :maxdepth: 2
 
 user-guide/index
+user-guide/examples
 ```
+
 
 ## Community
 
@@ -34,20 +36,7 @@ community/maintenance
 ```{toctree}
 :maxdepth: 1
 
-changelog
 security_policy
-```
-
-## Code Examples
-
-Several example pages to demonstrate the functionality of this library when used with the `icalendar` library.
-
-```{toctree}
-:maxdepth: 2
-
-examples/index
-examples/performance
-examples/difficult-data
 ```
 
 ## Reference
@@ -58,9 +47,15 @@ This is reference material for information.
 :maxdepth: 2
 
 reference/api
+reference/architecture
 reference/dependencies
 reference/related-projects
 reference/research
 
+```
 
+```{toctree}
+:maxdepth: 1
+
+changelog
 ```

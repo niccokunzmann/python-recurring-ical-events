@@ -5,7 +5,7 @@ myst:
       Documentation for contributors who wish to improve this library.
 ---
 
-# Contributors' guide
+# Contribute
 
 There are various ways in which you can contribute to this library.
 
@@ -31,9 +31,8 @@ Please install [pre-commit]_before git commit.
 It will ensure that the code is formatted and linted as expected using [ruff].
 
 ```sh
-
-   pre-commit install
-
+pre-commit install
+```
 
 [pre-commit]: https://pre-commit.com/
 [ruff]: https://docs.astral.sh/ruff/

@@ -96,9 +96,16 @@ These are the pages returned by the query.
 .. automodule:: recurring_ical_events
     :show-inheritance:
     :members:
-    :exclude-members: CalendarQuery, of
+    :exclude-members: CalendarQuery, of, OccurrenceID
 
 .. automodule:: recurring_ical_events.types
     :members:
+
+.. autoclass:: recurring_ical_events.OccurrenceID
+  :noindex:
+
+  .. automethod:: to_string
+  .. automethod:: from_string
+  .. automethod:: from_occurrence
 
 ```

@@ -1,6 +1,6 @@
 
-Maintenance Guide
-=================
+Maintenance
+===========
 
 This sets you up for maintenance.
 

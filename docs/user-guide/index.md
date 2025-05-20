@@ -47,7 +47,6 @@ This section gets you started using this library.
 
 ```
 
-
 If not listed, this library is available as a package on the following platforms:
 
 [![Packaging status](https://repology.org/badge/vertical-allrepos/python%3Arecurring-ical-events.svg?columns=3)](https://repology.org/project/python%3Arecurring-ical-events/versions)
@@ -55,7 +54,7 @@ If not listed, this library is available as a package on the following platforms
 ## Usage
 
 The [icalendar] module is responsible for parsing files with a calendar specification in it.
-This library takes such a {py:class}:`icalendar.Calendar` and computes the occurrences.
+This library takes such a {py:class}`icalendar.cal.Calendar` and computes the occurrences.
 
 To import this module, write
 
@@ -67,4 +66,4 @@ If you like to go deeper, have a look at the [API documentation](../reference/ap
 We have a comprehensive list of **[examples]** to get you started.
 
 [icalendar]: https://icalendar.readthedocs.io
-[examples]: ../examples/index.rst
+[examples]: examples.rst

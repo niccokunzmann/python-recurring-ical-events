@@ -153,6 +153,8 @@ nitpick_ignore = [
     ("py:class", "UID"),
     ("py:class", "RecurrenceID"),
     ("py:class", "TypeAliasForwardRef"),
+    # /home/nicco/recurring-ical-events/recurring_ical_events/__init__.py:docstring of recurring_ical_events.OccurrenceID.uid:1: WARNING: duplicate object description of recurring_ical_events.OccurrenceID.uid, other instance in reference/api, use :no-index: for one of them
+    ("py:obj", "recurring_ical_events.OccurrenceID.uid"),
 ]
 
 # make title smaller
@@ -164,3 +166,4 @@ html_short_title = project
 # see https://github.com/sphinx-doc/sphinx/issues/4317#issuecomment-353793061
 HERE = Path(__file__).parent
 sys.path.insert(0, str(Path(HERE).parent))
+
