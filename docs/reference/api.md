@@ -102,7 +102,6 @@ These are the pages returned by the query.
     :members:
 
 .. autoclass:: recurring_ical_events.OccurrenceID
-  :noindex:
 
   .. automethod:: to_string
   .. automethod:: from_string
