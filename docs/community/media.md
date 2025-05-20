@@ -9,13 +9,14 @@ myst:
 
 Additional to this documentation, there are other sources of information.
 
+## News
+
+You can view current news about this library on [Mastodon](https://toot.wales/tags/RecurringIcalEvents).
+
 ## Videos
 
 There are a few videos that cover using this library on [Youtube](https://www.youtube.com/watch?v=nwpS2dCk_Rk&list=PLxMGFFiBKgdb3L550U5EAiCvft2IK08xK).
 
-## Mastodon
-
-You can view current news about this library on [Mastodon](https://toot.wales/tags/RecurringIcalEvents).
 
 ## Conferences
 

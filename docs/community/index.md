@@ -21,7 +21,7 @@ Please support the development and upkeep in one of these ways:
 We accept donations to sustain our work, once or regular.
 Consider donating money to open-source as everyone benefits.
 
-## Development
+## Setup to develop
 
 This section informs you how to work on this project.
 

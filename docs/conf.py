@@ -70,6 +70,17 @@ html_theme_options = {
                 "rel": "noopener me",
                 "class": "nav-link custom-fancy-css"
             }
+        },
+        {
+            "name": "Youtube",
+            "url": "https://www.youtube.com/watch?v=nwpS2dCk_Rk&list=PLxMGFFiBKgdb3L550U5EAiCvft2IK08xK",
+            "icon": "fa-brands fa-youtube",
+            "type": "fontawesome",
+            "attributes": {
+                "target": "_blank",
+                "rel": "noopener me",
+                "class": "nav-link custom-fancy-css"
+            }
         }
     ],
     "navigation_with_keys": True,
