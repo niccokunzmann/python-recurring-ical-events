@@ -37,7 +37,8 @@ def test_docstring_of_python_file(module_name):
 
 
 # This collection needs to exclude .tox and other subdirectories
-DOCUMENT_PATHS = [PROJECT_PATH / "README.rst"]
+DOCS = PROJECT_PATH / "docs"
+DOCUMENT_PATHS = [PROJECT_PATH / "README.rst", *list(DOCS.glob("*/*.rst")), *list(DOCS.glob("*.rst")), *list(DOCS.glob("*/*.md")), *list(DOCS.glob("*/*.md"))]
 
 
 @pytest.mark.parametrize("document", DOCUMENT_PATHS)
