@@ -61,7 +61,7 @@ test = [
 
 [tool.hatch.metadata.hooks.vcs.urls]
 #[project.urls]
-Homepage = "https://github.com/niccokunzmann/python-recurring-ical-events"
+Homepage = "https://recurring-ical-events.readthedocs.io/"
 Repository = "https://github.com/niccokunzmann/python-recurring-ical-events"
 "Source Archive" = "https://github.com/niccokunzmann/python-recurring-ical-events/archive/{commit_hash}.zip"
 Issues = "https://github.com/niccokunzmann/python-recurring-ical-events/issues"
