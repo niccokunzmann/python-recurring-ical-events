@@ -114,10 +114,10 @@ class CalendarQuery:
         
         - a year like ``(2019,)`` or ``2019`` (:class:`int`)
         - a month like ``(2019, 1)`` for January of 2019
-        - a day like ``(2019, 1, 1)`` for the first of January 2019
-        - a day with hours, ``(2019, 1, 1, 1)``
-        - a day with minutes, ``(2019, 1, 1, 1, 1)``
-        - a day with seconds, ``(2019, 1, 1, 1, 1, 1)``
+        - a day like ``(2019, 1, 19)`` for the first of January 2019
+        - a day with hours, ``(2019, 1, 19, 1)``
+        - a day with minutes, ``(2019, 1, 19, 13, 30 )``
+        - a day with seconds, ``(2019, 1, 19, 13, 30, 59)``
         - a :class:`datetime.datetime` or :class:`datetime.date`
         - a :class:`str` in the format ``yyyymmdd``
         - a :class:`str` in the format ``yyyymmddThhmmssZ``
@@ -157,7 +157,33 @@ class CalendarQuery:
 
         Arguments:
             date: A date specification, see :meth:`to_datetime`.
-        """
+
+        This is translated to :meth:`between` in the following way:
+
+        - A year returns all occurrences within that year.
+            Example: ``(2019,)``, ``2019``
+        - A month returns all occurrences within that month.
+            Example: ``(2019, 1)``
+        - A day returns all occurrences within that day.
+            Examples:
+
+            - ``(2019, 1, 19)``
+            - ``datetime.date(2019, 1, 19)``
+            - ``"20190101"``
+
+        - An hour returns all occurrences within that hour.
+            Example: ``(2019, 1, 19, 1)``
+        - A minute returns all occurrences within that minute.
+            Example: ``(2019, 1, 19, 13, 30 )``
+        - A second returns all occurrences at that exact second.
+            Examples:
+
+            - ``(2019, 1, 19, 13, 30, 59)``
+            - ``datetime.datetime(2019, 1, 19, 13, 30, 59)``
+            - ``datetime.datetime(2019, 1, 19, tzinfo=datetime.timezone.utc)``,
+            - ``datetime.datetime(2019, 1, 19, 13, 30, 59, tzinfo=ZoneInfo('Europe/London'))``
+            - ``"20190119T133059Z"``
+        """  # noqa: E501
         if isinstance(date, int):
             date = (date,)
         if isinstance(date, str):
@@ -185,6 +211,12 @@ class CalendarQuery:
             start: A date specification. See :meth:`to_datetime`.
             stop: A date specification or a :class:`datetime.timedelta`
                 relative to start.
+
+        .. warning::
+
+            If you pass a :class:`datetime.datetime` to both ``start`` and
+            ``stop``, make sure the :attr:`datetime.datetime.tzinfo` is
+            the same.
         """
         start = self.to_datetime(start)
         stop = (

@@ -47,7 +47,7 @@ Several example pages to demonstrate the functionality of this library when used
 examples/index
 ```
 
-## API
+## Reference
 
 The content of the exposed `pydata_sphinx_theme` API.
 
