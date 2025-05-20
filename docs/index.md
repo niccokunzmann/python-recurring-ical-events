@@ -48,6 +48,7 @@ This is reference material for information.
 
 reference/api
 reference/architecture
+reference/compatibility
 reference/dependencies
 reference/related-projects
 reference/research
