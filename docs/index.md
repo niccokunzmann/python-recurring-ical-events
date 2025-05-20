@@ -34,6 +34,7 @@ community/index
 :maxdepth: 1
 
 changelog.md
+security_policy.md
 ```
 
 ## Code Examples
