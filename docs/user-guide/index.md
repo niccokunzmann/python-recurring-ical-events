@@ -60,6 +60,7 @@ To import this module, write
 
 ```python
 >>> import recurring_ical_events
+
 ```
 
 If you like to go deeper, have a look at the [API documentation](../reference/api) at this point.
