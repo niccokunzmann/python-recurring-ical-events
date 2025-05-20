@@ -2,6 +2,12 @@
 Examples
 ========
 
+Additionally to the examples listed here, you can have a look the 
+`API documentation`_.
+In the `Media Section`_, you can videos and useful information on social media.
+
+.. _`API documentation`: ../reference/api.html
+.. _`Media Section`: ../community/media.html
 
 Read a file and print events
 ----------------------------
@@ -206,8 +212,8 @@ It is tested against malicious modification and can safely be passed from a thir
 Additionally to the page size, you can also pass a ``start`` and an ``end`` to the pages so that
 all components are visible within that time.
 
-Different Components, not just Events
--------------------------------------
+Todos and Journal entries
+-------------------------
 
 By default the ``recurring_ical_events`` only selects events as the name already implies.
 However, there are different `components <https://icalendar.readthedocs.io/en/latest/api.html#icalendar.cal.Component>`_ available in a `calendar <https://icalendar.readthedocs.io/en/latest/api.html#icalendar.cal.Calendar>`_.
@@ -285,3 +291,38 @@ In this example, we get an event and find that it has several alarms in it.
     # The event a week later has more than one alarm.
     >>> len(event.walk("VALARM"))
     2
+
+
+Edit one event of an existing series
+------------------------------------
+
+Editing one event of a series is necessary for calendar invites e.g. via email.
+
+Below, you see how to edit an event that occurs in a series.
+It is important that you increase the `sequence number <https://www.rfc-editor.org/rfc/rfc5545#section-3.8.7.4>`_
+of the event to indicate the new version.
+
+.. code-block:: python
+
+    >>> calendar = recurring_ical_events.example_calendar("recurring_events_moved")
+    >>> event = recurring_ical_events.of(calendar).at("20190309")[0]
+
+    # This event happens on 2019-03-09.
+    >>> print(event["SUMMARY"])
+    New Event
+
+    # The event can be modified.
+    >>> event["SUMMARY"] = "Modified Again!"
+
+    # Make sure to increase the sequence number!
+    # If you do not do that, the modification will not appear.
+    >>> event["SEQUENCE"] = event.get("SEQUENCE", 0) + 1
+
+    # Add the modified event to the calendar to replace the original.
+    >>> calendar.add_component(event)
+
+    # Get the day again and see the modified event.
+    >>> event = recurring_ical_events.of(calendar).at("20190309")[0]
+    >>> print(event["SUMMARY"])
+    Modified Again!
+

@@ -46,6 +46,8 @@ Several example pages to demonstrate the functionality of this library when used
 :maxdepth: 2
 
 examples/index
+examples/performance
+examples/difficult-data
 ```
 
 ## Reference
