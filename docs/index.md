@@ -17,10 +17,9 @@ Information about usage.
 :maxdepth: 2
 
 user-guide/index
-user-guide/related-projects
 ```
 
-## Community and contribution guide
+## Community
 
 Information about contributing.
 
@@ -28,13 +27,15 @@ Information about contributing.
 :maxdepth: 2
 
 community/index
+community/media
+community/maintenance
 ```
 
 ```{toctree}
 :maxdepth: 1
 
-changelog.md
-security_policy.md
+changelog
+security_policy
 ```
 
 ## Code Examples
@@ -49,10 +50,15 @@ examples/index
 
 ## Reference
 
-The content of the exposed `pydata_sphinx_theme` API.
+This is reference material for information.
 
 ```{toctree}
 :maxdepth: 2
 
-API <api/index>
+reference/api
+reference/dependencies
+reference/related-projects
+reference/research
+
+
 ```

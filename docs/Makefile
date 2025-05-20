@@ -96,7 +96,6 @@ livehtml: venv
 	$(SPHINXAUTOBUILD) \
 	--watch .. \
 	--port 8050 \
-	--fresh-env \
 	-b html . "$(BUILDDIR)/html" $(SPHINXOPTS) $(O)
 
 rtd-pr-preview: venv ## Build pull request preview on Read the Docs

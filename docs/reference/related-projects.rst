@@ -19,3 +19,9 @@ Related Projects
 .. _`plann`: https://github.com/tobixen/plann
 .. _`ics_calendar`: https://github.com/franc6/ics_calendar/
 .. _`Home Assistant`: https://www.home-assistant.io/
+
+Command line interface
+----------------------
+
+If you would like to use this functionality on the command line or in the shell, you can use
+`ics-query`_.
