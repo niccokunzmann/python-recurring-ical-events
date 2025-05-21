@@ -9,13 +9,13 @@ myst:
 
 ## RFC Specifications
 
-### RFC 2445
+### RFC 2445 - iCalendar
 
 ![RFC 2445 is deprecated](https://img.shields.io/badge/RFC_2445-deprecated-red)
 
 {rfc}`2445` is deprecated and has been replaced by {rfc}`5545` and {rfc}`7529`.
 
-### RFC 5545
+### RFC 5545 - iCalendar
 
 ![RFC 5545 is supported](https://img.shields.io/badge/RFC_5545-supported-green)
 
