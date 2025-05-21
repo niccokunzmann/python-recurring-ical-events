@@ -74,6 +74,7 @@ reference/api
 reference/architecture
 reference/compatibility
 reference/dependencies
+reference/documentation
 reference/related-projects
 reference/research
 

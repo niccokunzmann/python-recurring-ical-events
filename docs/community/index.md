@@ -9,7 +9,7 @@ myst:
 
 There are various ways in which you can contribute to this library.
 
-## Support
+## Support this library
 
 Please support the development and upkeep in one of these ways:
 
@@ -21,13 +21,24 @@ Please support the development and upkeep in one of these ways:
 We accept donations to sustain our work, once or regular.
 Consider donating money to open-source as everyone benefits.
 
+## Improve the documentation
+
+Your help with this documentation is very welcome!
+Please feel free to edit the pages with the "Edit on GitHub" button on the side.
+With a GitHub account, your contribution will be guided towards a [pull request]
+and we can have a look and use your suggestions.
+
+For style and formatting, please consult the [documentation reference section].
+
+[documentation reference section]: ../reference/documentation
+
 ## Setup to develop
 
 This section informs you how to work on this project.
 
 ### Code style
 
-Please install [pre-commit]_before git commit.
+Please install [pre-commit] before git commit.
 It will ensure that the code is formatted and linted as expected using [ruff].
 
 ```sh
@@ -52,7 +63,6 @@ folder and write tests for what you expect.
 If you like, open an [issue] first, e.g. to discuss the changes and
 how to go about it.
 
-
 To run the tests, we use `tox`.
 `tox` tests all different Python versions which we want to  be compatible to.
 
@@ -60,7 +70,25 @@ To run the tests, we use `tox`.
 pip3 install tox
 ```
 
-To run all the tests:
+After installing `tox`, run the tests with your current Python version:
+
+```sh
+tox -e py
+```
+
+.. info::
+
+  With this, you have all the tools to develop and improve this project.
+  Please open an [pull request] as soon as you made a change.
+  This is not about being perfect, only about doing your part of the communication.
+  Your are welcome!
+
+[pull request]: https://github.com/niccokunzmann/python-recurring-ical-events/pull
+
+#### Extended Testing
+
+When you create a pull request, we will run the tests in all Python versions.
+You can do that, too.
 
 ```sh
 tox
@@ -70,6 +98,31 @@ To run the tests in a specific Python version:
 
 ```sh
 tox -e py39
+```
+
+### Building the documentation
+
+You can build the documentation locally to see your changes.
+To view the documentation in a web page and have it update with every edit,
+run the following commands:
+
+```sh
+cd docs
+make livehtml
+```
+
+To clean the build folder, run:
+
+```sh
+make clean
+```
+
+Commits are tested online to check if the documentation does not contain any
+errors or warnings.
+To run these checks and see if you can publish the changes, run:
+
+```sh
+tox -e docs
 ```
 
 [test folder]: https://github.com/niccokunzmann/python-recurring-ical-events/tree/master/test
