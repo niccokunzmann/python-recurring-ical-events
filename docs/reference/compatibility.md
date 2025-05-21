@@ -21,13 +21,13 @@ myst:
 
 {rfc}`5545` is fully supported.
 
-### RFC 7529
+### RFC 7529 - Non-Gregorian Recurrence Rules
 
 ![RFC 7529 is not implemented](https://img.shields.io/badge/RFC_7529-todo-red)
 
 {rfc}`7529` is not implemented.
 
-### RFC 7953
+### RFC 7953 - Calendar Availability
 
 ![RFC 7953 is not implemented](https://img.shields.io/badge/RFC_7953-todo-red)
 
