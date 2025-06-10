@@ -25,4 +25,5 @@ To release new versions,
        git tag v3.5.1
        git push origin v3.5.1
 
-5. Notify the issues about their release.
+5. Wait for the tag to build. @niccokunzmann or another maintainer needs to approve the push to PyPI.
+6. Notify the issues about their release.
