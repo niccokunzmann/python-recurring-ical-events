@@ -15,6 +15,10 @@ We use [Semantic Versioning](https://semver.org)
 
 To avoid breaking changes breaking your code, install this library fixed to a specific version.
 
+## v3.7.1
+
+- Fix: RECURENCE-ID is now not identical to DTSTART. See [Issue 243](https://github.com/niccokunzmann/python-recurring-ical-events/issues/243).
+
 ## v3.7.0
 
 - Set `SEQUENCE` to highest version of any used event in a series. See [Issue 223](https://github.com/niccokunzmann/python-recurring-ical-events/issues/223)
