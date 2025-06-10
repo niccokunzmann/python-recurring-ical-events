@@ -15,6 +15,10 @@ We use [Semantic Versioning](https://semver.org)
 
 To avoid breaking changes breaking your code, install this library fixed to a specific version.
 
+## v3.8.0
+
+- Fix: Invalid events and todos that swapped start and end are now calculated with start before end. See [Issue 132](https://github.com/niccokunzmann/python-recurring-ical-events/issues/132).
+
 ## v3.7.1
 
 - Fix: RECURENCE-ID is now not identical to DTSTART. See [Issue 243](https://github.com/niccokunzmann/python-recurring-ical-events/issues/243).

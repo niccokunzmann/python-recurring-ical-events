@@ -125,7 +125,7 @@ def tzp(request):
 
 
 # for parametrizing fixtures, see https://docs.pytest.org/en/latest/fixture.html#parametrizing-fixtures
-@pytest.fixture(params=[Calendars, ReversedCalendars], scope="module")
+@pytest.fixture(params=[Calendars, ReversedCalendars])
 def calendars(request, tzp) -> ICSCalendars:
     """The calendars we can use in the tests."""
     return request.param(tzp)
