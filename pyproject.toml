@@ -128,6 +128,7 @@ extend-safe-fixes = [
     "PT012",  # pytest.raises() block should contain a single simple statement
     "PT015",  # Assertion always fails, replace with pytest.fail()
     "T201",   # print found
+    "N803",   # ZoneInfo should be lowercase
 ]
 "example.py" = [
     "T201", # print found
