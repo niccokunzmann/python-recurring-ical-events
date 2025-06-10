@@ -60,7 +60,10 @@ class ComponentAdapter(ABC):
     @cached_property
     def span(self):
         """Return (start, end)."""
-        return make_comparable((self.raw_start, self.raw_end))
+        start, end = make_comparable((self.raw_start, self.raw_end))
+        if start > end:
+            return end, start
+        return start, end
 
     @property
     @abstractmethod
