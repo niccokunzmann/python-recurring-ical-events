@@ -17,3 +17,9 @@ def test_todo_case(calendars):
     print(todo)
     assert todo.start.replace(tzinfo=None) == datetime(2023, 12, 18, 23, 30)
     assert todo.end.replace(tzinfo=None) == datetime(2023, 12, 18, 23, 45)
+
+
+def test_old_example_works_now(calendars):
+    """The old tests works now."""
+    events = calendars.end_before_start_event.at(2019)
+    assert len(events) == 1
