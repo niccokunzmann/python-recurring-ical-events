@@ -153,7 +153,7 @@ To avoid breaking changes breaking your code, install this library fixed to a sp
 
 - Fixed crasher with duplicate RRULE. See [Pull Request 104](https://github.com/niccokunzmann/python-recurring-ical-events/pull/104)
 
-## v2.0.0b
+## v2.0.0
 
 - Only return `VEVENT` by default. Add `of(... ,components=...)` parameter to select which kinds of components should be returned. See [Issue 101](https://github.com/niccokunzmann/python-recurring-ical-events/issues/101).
 - Remove `beta` indicator. This library works okay: Feature requests come in, not so much bug reports.
