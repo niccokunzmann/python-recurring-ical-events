@@ -42,7 +42,7 @@ This section gets you started using this library.
 
       .. code-block:: bash
 
-        ???
+        sudo pacman -S python-recurring-ical-events
 
 
 ```
