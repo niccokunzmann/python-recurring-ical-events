@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "recurring-ical-events"
-license = "GPL-3.0-or-later"
+license = "LGPL-3.0-or-later"
 license-files = ["LICENSE"]
 keywords = ["icalendar", "calendar", "ics", "rfc5545", "scheduling", "events", "todo", "journal", "alarm"]
 dynamic = ["urls", "version"]
