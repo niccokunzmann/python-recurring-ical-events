@@ -146,7 +146,7 @@ class ComponentAdapter(ABC):
         """Whether the adapter is a modification."""
         return bool(self.recurrence_ids)
 
-    def is_core(self):
+    def has_recurrence_rules(self):
         """Whether this has generation rules present."""
         return (
             "RRULE" in self._component
@@ -258,6 +258,11 @@ class ComponentAdapter(ABC):
             start, recurrence_id = make_comparable((self.start, recurrence_id_prop.dt))
             return start - recurrence_id
         return datetime.timedelta(0)
+
+    def is_copy_of(self, other: ComponentAdapter) -> bool:
+        return (
+            isinstance(other, ComponentAdapter) and self._component == other._component
+        )
 
 
 __all__ = ["ComponentAdapter"]

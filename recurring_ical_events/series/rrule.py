@@ -325,6 +325,7 @@ class Series:
         self.this_and_future = []  # sorted, earliest first
         self._uid = components[0].uid
         core: ComponentAdapter | None = None
+        cores = []
         for component in components:
             if component.is_modification():
                 recurrence_ids = component.recurrence_ids
@@ -337,8 +338,21 @@ class Series:
                     )
                 if component.this_and_future:
                     self.this_and_future.append(recurrence_ids[0])
-            else:
+            if component.has_recurrence_rules() or not component.is_modification():
+                # else:
                 core = with_highest_sequence(core, component)
+                cores.append(component)
+        # collect all modifications but exclude old core modifications
+        for old_core in cores:
+            # old cores are replaced even if they do not have the right RECURRENCE-ID
+            # and must be removed.
+            if old_core is core:
+                continue
+            recurrence_ids = old_core.recurrence_ids
+            for recurrence_id in recurrence_ids:
+                modification = self.recurrence_id_to_modification.get(recurrence_id)
+                if modification is not None and not modification.is_copy_of(core):
+                    del self.recurrence_id_to_modification[recurrence_id]
         self.modifications: set[ComponentAdapter] = set(
             self.recurrence_id_to_modification.values()
         )
@@ -474,7 +488,7 @@ class Series:
                 modification in returned_modifications
                 or self.recurrence.check_exdates_datetime
                 & set(modification.recurrence_ids)
-                or modification.is_core()
+                or modification.has_recurrence_rules()
             ):
                 continue
             if modification.is_in_span(span_start, span_stop):

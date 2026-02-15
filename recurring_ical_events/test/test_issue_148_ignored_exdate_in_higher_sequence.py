@@ -107,9 +107,10 @@ def test_edge_case_2(calendars):
     This edge case shows that we have a modified event.
     See https://github.com/niccokunzmann/python-recurring-ical-events/issues/163#issuecomment-2301748873
     """
-    events = list(calendars["issue_148_edge_case_2"].all())
+    events = list(calendars["issue_148_edge_case_2"].at((2024, 7)))
     assert len(events) == 3
+    events.sort(key=lambda event: event["DTSTART"].dt)
     starts = [event["DTSTART"].dt for event in events]
-    assert date(2024, 7, 2) in starts
-    assert date(2024, 7, 1) in starts
-    assert date(2024, 7, 29) in starts
+    assert date(2024, 7, 1) == starts[0]
+    assert date(2024, 7, 2) == starts[1]
+    assert date(2024, 7, 29) == starts[2]

@@ -3,6 +3,8 @@
 See https://github.com/niccokunzmann/python-recurring-ical-events/issues/164
 """
 
+from datetime import date
+
 
 def test_event_is_only_returned_once(calendars):
     """We should not see the same event twice!"""
@@ -13,3 +15,6 @@ def test_event_is_only_returned_once(calendars):
         print(f"start {start} duration {duration}")
         print(event.to_ical().decode())
     assert len(events) == 2
+    events.sort(key=lambda event: event["DTSTART"].dt)
+    assert events[0].start == date(2024, 8, 5)
+    assert events[1].start == date(2024, 8, 26)
