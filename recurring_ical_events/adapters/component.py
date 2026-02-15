@@ -127,6 +127,13 @@ class ComponentAdapter(ABC):
     @cached_property
     def recurrence_ids(self) -> RecurrenceIDs:
         """The recurrence ids of the component that might be used to identify it."""
+        if (
+            "RRULE" in self._component
+            or "RDATE" in self._component
+            or "EXDATE" in self._component
+        ):
+            # This is a core component. It appears in its series anyway.
+            return ()
         recurrence_id = self._component.get("RECURRENCE-ID")
         if recurrence_id is None:
             return ()
