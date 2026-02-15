@@ -15,6 +15,10 @@ We use [Semantic Versioning](https://semver.org)
 
 To avoid breaking changes breaking your code, install this library fixed to a specific version.
 
+## v3.8.1
+
+- Fix: License identifier in pyproject.toml
+
 ## v3.8.0
 
 - Fix: Invalid events and todos that swapped start and end are now calculated with start before end. See [Issue 132](https://github.com/niccokunzmann/python-recurring-ical-events/issues/132).
