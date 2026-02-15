@@ -146,6 +146,14 @@ class ComponentAdapter(ABC):
         """Whether the adapter is a modification."""
         return bool(self.recurrence_ids)
 
+    def is_core(self):
+        """Whether this has generation rules present."""
+        return (
+            "RRULE" in self._component
+            or "RDATE" in self._component
+            or "EXDATE" in self._component
+        )
+
     @cached_property
     def sequence(self) -> int:
         """The sequence in the history of modification.

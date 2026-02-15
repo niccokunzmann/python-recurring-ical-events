@@ -322,7 +322,7 @@ class Series:
         self.recurrence_id_to_modification: dict[
             RecurrenceID, ComponentAdapter
         ] = {}  # RECURRENCE-ID -> adapter
-        self.this_and_future = []
+        self.this_and_future = []  # sorted, earliest first
         self._uid = components[0].uid
         core: ComponentAdapter | None = None
         for component in components:
@@ -351,7 +351,16 @@ class Series:
         self.compute_span_extension()
 
     def compute_span_extension(self):
-        """Compute how much to extend the span for the rrule to cover all events."""
+        """Compute how much to extend the span for the rrule to cover all events.
+
+        THISANDFUTURE can cause events to move.
+        This takes care of it by extending the query to make sure we capture such
+        occurrences.
+
+        This can be quite inefficient if events move a lot.
+        So, this algorithm should be sped up e.g. by remembering
+        how much these events moved.
+        """
         self._subtract_from_start, self._add_to_stop = (
             self.recurrence.extend_query_span_by
         )
@@ -453,11 +462,19 @@ class Series:
             if occurrence.is_in_span(span_start, span_stop):
                 yield occurrence
         for modification in self.modifications:
-            # we assume that the modifications are actually included
+            # we assume that modifications are actually included
+            # even if they are not mentioned by the core.
+            # However, we exclude some:
+            # - if they were returned already
+            # - if an EXDATE excludes them
+            # - if they are a core
+            #   because they are expected to be included in the RRULE or RDATE
+            #   See https://github.com/niccokunzmann/python-recurring-ical-events/issues/253
             if (
                 modification in returned_modifications
                 or self.recurrence.check_exdates_datetime
                 & set(modification.recurrence_ids)
+                or modification.is_core()
             ):
                 continue
             if modification.is_in_span(span_start, span_stop):
