@@ -16,7 +16,7 @@ cssutils==2.11.1
 dict2css==0.3.0.post1
 docutils==0.21.2
 domdf-python-tools==3.10.0
-filelock==3.20.1
+filelock==3.20.3
 h11==0.16.0
 html5lib==1.1
 idna==3.11

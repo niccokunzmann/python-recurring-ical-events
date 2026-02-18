@@ -19,6 +19,10 @@ To avoid breaking changes breaking your code, install this library fixed to a sp
 
 - Fix: License identifier in pyproject.toml
 - Mark as compatible with `icalendar` versions `6.*` and `7.*`. See [Issue 257](https://github.com/niccokunzmann/python-recurring-ical-events/issues/257).
+- Test compatibility to Python 3.14.
+- Documentation:
+  - Fix documentation build dependencies.
+  - Build documentation with Python 3.14 and icalendar>=7.0.0.
 
 ## v3.8.0
 
