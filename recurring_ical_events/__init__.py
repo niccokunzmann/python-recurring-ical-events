@@ -65,8 +65,8 @@ def of(
     times according to ``X-WR-TIMEZONE``.
 
     Arguments:
-        a_calendar: an :class:`icalendar.cal.Calendar` component like
-            :class:`icalendar.cal.Calendar`.
+        a_calendar: an :class:`icalendar.cal.calendar.Calendar` component like
+            :class:`icalendar.cal.calendar.Calendar`.
         keep_recurrence_attributes: Whether to keep attributes that are only used
             to calculate the recurrence (``RDATE``, ``EXDATE``, ``RRULE``).
         components: A list of component type names of which the recurrences
