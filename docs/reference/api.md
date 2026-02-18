@@ -34,8 +34,8 @@ For the most common cases, you do not need to look any further.
 ### list from `at()` and `between()`
 
 The result of both {py:meth}`recurring_ical_events.CalendarQuery.between` and
-{py:meth}`recurring_ical_events.CalendarQuery.at` is a list of {py:class}`icalendar.cal.Component`
-objects like {py:class}`icalendar.cal.Event`.
+{py:meth}`recurring_ical_events.CalendarQuery.at` is a list of {py:class}`icalendar.cal.component.Component`
+objects like {py:class}`icalendar.cal.event.Event`.
 By default, all attributes of the event with repetitions are copied, like ``UID`` and ``SUMMARY``.
 However, these attributes may differ from the source event:
 
@@ -75,7 +75,7 @@ Examples:
   you query that day it will appear regardless of the timezone of the query.
   Which is at different times in different timezones.
 
-* {py:class}`icalendar.cal.Alarm` has a `TRIGGER` which is in UTC.
+* {py:class}`icalendar.cal.alarm.Alarm` has a `TRIGGER` which is in UTC.
   The timezone to compute that for alarms relative to floating events will be taken
   from the start and stop arguments.
 

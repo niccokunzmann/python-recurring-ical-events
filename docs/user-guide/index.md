@@ -54,7 +54,7 @@ If not listed, this library is available as a package on the following platforms
 ## Usage
 
 The [icalendar] module is responsible for parsing files with a calendar specification in it.
-This library takes such a {py:class}`icalendar.cal.Calendar` and computes the occurrences.
+This library takes such a {py:class}`icalendar.cal.calendar.Calendar` and computes the occurrences.
 
 To import this module, write
 
