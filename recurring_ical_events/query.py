@@ -28,7 +28,7 @@ from recurring_ical_events.selection.base import SelectComponents
 from recurring_ical_events.util import compare_greater
 
 if TYPE_CHECKING:
-    from icalendar.cal import Component
+    from icalendar import Component
 
     from recurring_ical_events.occurrence import Occurrence
     from recurring_ical_events.series import Series
@@ -38,10 +38,10 @@ if TYPE_CHECKING:
     )
 
 if sys.version_info >= (3, 10):
-    T_COMPONENTS : TypeAlias = Sequence[str | type[ComponentAdapter] | SelectComponents]
+    T_COMPONENTS: TypeAlias = Sequence[str | type[ComponentAdapter] | SelectComponents]
 else:
     # see https://github.com/python/cpython/issues/86399#issuecomment-1093889925
-    T_COMPONENTS : TypeAlias = Sequence[str]
+    T_COMPONENTS: TypeAlias = Sequence[str]
 
 
 class CalendarQuery:
@@ -58,7 +58,7 @@ class CalendarQuery:
             skip_bad_series is True
     """
 
-    suppressed_errors : ClassVar[type[Exception]] = [
+    suppressed_errors: ClassVar[type[Exception]] = [
         BadRuleStringFormat,
         PeriodEndBeforeStart,
         icalendar.InvalidCalendar,
@@ -111,7 +111,7 @@ class CalendarQuery:
             date: A date specification.
 
         Date Specification:
-        
+
         - a year like ``(2019,)`` or ``2019`` (:class:`int`)
         - a month like ``(2019, 1)`` for January of 2019
         - a day like ``(2019, 1, 19)`` for the first of January 2019
