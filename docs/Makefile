@@ -22,7 +22,7 @@ venv:
 	pwd
 	git fetch --tags
 	python -m venv venv
-	venv/bin/pip install -r requirements.txt
+	venv/bin/pip install -r requirements.txt -e ..
 
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
