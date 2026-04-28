@@ -105,6 +105,18 @@ class Occurrence:
         self.end = adapter.end if end is None else end
         self.sequence = sequence
 
+    def __repr__(self) -> str:
+        """The string representation."""
+        return (
+            f"<{self.__class__.__name__} "
+            f"adapter={self._adapter.__class__.__name__} "
+            f"UID={self.uid} "
+            f"start={self.start} "
+            f"sequence={self.sequence} "
+            f"component.sequence={self._adapter.sequence} "
+            ">"
+        )
+
     def as_component(self, keep_recurrence_attributes: bool) -> Component:  # noqa: FBT001
         """Create a shallow copy of the source component and modify some attributes."""
         component = self._adapter.as_component(

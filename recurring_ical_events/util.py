@@ -78,6 +78,16 @@ def convert_to_datetime(
     return date
 
 
+def convert_to_date_range(dt: Time) -> tuple[datetime.datetime, datetime.datetime]:
+    """Convert the datetime to a start and end date in between it occurs.
+
+    Returns:
+        (start, end) where start <= dt < end
+    """
+    start = dt if is_date(dt) else dt.replace(hour=0, microsecond=0, minute=0, second=0)
+    return start, start + datetime.timedelta(days=1)
+
+
 def make_comparable(dates: Sequence[Time]) -> list[Time]:
     """Make an list or tuple of dates comparable.
 
@@ -236,6 +246,7 @@ def get_any(dictionary: dict, keys: Sequence[object], default: object = None):
 __all__ = [
     "PeriodEndBeforeStart",
     "cmp",
+    "convert_to_date_range",
     "convert_to_datetime",
     "get_any",
     "has_timezone",

@@ -14,6 +14,7 @@ from recurring_ical_events.occurrence import Occurrence
 from recurring_ical_events.util import (
     compare_greater,
     convert_to_date,
+    convert_to_date_range,
     convert_to_datetime,
     get_any,
     is_date,
@@ -409,6 +410,7 @@ class Series:
 
         The result does not need to be ordered.
         """
+        print("between", span_start, span_stop)
         returned_starts: set[Time] = set()
         returned_modifications: set[ComponentAdapter] = set()
         # NOTE: If in the following line, we get an error, datetime and date
@@ -451,6 +453,7 @@ class Series:
                 returned_modifications.add(adapter)
                 occurrence = self.occurrence(adapter)
             if occurrence.is_in_span(span_start, span_stop):
+                print("yield", occurrence)
                 yield occurrence
         for modification in self.modifications:
             # we assume that the modifications are actually included
@@ -458,11 +461,45 @@ class Series:
                 modification in returned_modifications
                 or self.recurrence.check_exdates_datetime
                 & set(modification.recurrence_ids)
+                or self.skip_core_modification(modification)
             ):
                 continue
             if modification.is_in_span(span_start, span_stop):
                 returned_modifications.add(modification)
                 yield self.occurrence(modification)
+
+    def skip_core_modification(self, modification: ComponentAdapter) -> bool:
+        """Wether to skip this occurrence.
+
+        See Issues:
+        - https://github.com/niccokunzmann/python-recurring-ical-events/issues/253
+        - https://github.com/niccokunzmann/python-recurring-ical-events/issues/148
+        - https://github.com/niccokunzmann/python-recurring-ical-events/issues/164
+        """
+        if modification.has_recurrence_rules() and modification.is_modification():
+            if modification.sequence < self.recurrence.sequence:
+                return self.has_recurrence_id_in_rrule(modification)
+            return False
+        return False
+
+    def has_recurrence_id_in_rrule(self, modification: ComponentAdapter) -> bool:
+        """Wether this occurrence ID is part of the RRULE."""
+        modification_recurrence_ids = modification.recurrence_ids
+        if not modification_recurrence_ids:
+            return False
+        span_start, span_stop = convert_to_date_range(modification_recurrence_ids[0])
+        print("STRAY CORE modification", modification)
+        for start in self.rrule_between(span_start, span_stop):
+            start_recurrence_ids = to_recurrence_ids(start)
+            if (
+                convert_to_date(start) in self.recurrence.check_exdates_date
+                or self.recurrence.check_exdates_datetime & set(start_recurrence_ids)
+            ):
+                continue
+            if set(start_recurrence_ids) & set(modification_recurrence_ids):
+                print("CHECKPOT", modification)
+                return False
+        return True
 
     @property
     def uid(self):

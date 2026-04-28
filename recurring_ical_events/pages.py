@@ -26,9 +26,9 @@ class Page:
 
             if page:
                 print(f"We have {len(page)} components.")
-        
+
         Go though the components:
-        
+
         .. code-block:: python
 
             for component in page:

@@ -1,9 +1,8 @@
 # icalendar documentation build configuration file
-import importlib.metadata
 import datetime
-import os
-from pathlib import Path
+import importlib.metadata
 import sys
+from pathlib import Path
 
 extensions = [
     "sphinx.ext.autodoc",
@@ -46,8 +45,8 @@ html_theme_options = {
             "attributes": {
                 "target": "_blank",
                 "rel": "noopener me",
-                "class": "nav-link custom-fancy-css"
-            }
+                "class": "nav-link custom-fancy-css",
+            },
         },
         {
             "name": "PyPI",
@@ -57,8 +56,8 @@ html_theme_options = {
             "attributes": {
                 "target": "_blank",
                 "rel": "noopener me",
-                "class": "nav-link custom-fancy-css"
-            }
+                "class": "nav-link custom-fancy-css",
+            },
         },
         {
             "name": "Mastodon",
@@ -68,8 +67,8 @@ html_theme_options = {
             "attributes": {
                 "target": "_blank",
                 "rel": "noopener me",
-                "class": "nav-link custom-fancy-css"
-            }
+                "class": "nav-link custom-fancy-css",
+            },
         },
         {
             "name": "Youtube",
@@ -79,9 +78,9 @@ html_theme_options = {
             "attributes": {
                 "target": "_blank",
                 "rel": "noopener me",
-                "class": "nav-link custom-fancy-css"
-            }
-        }
+                "class": "nav-link custom-fancy-css",
+            },
+        },
     ],
     "navigation_with_keys": True,
     "search_bar_text": "Search",
@@ -90,7 +89,7 @@ html_theme_options = {
     "use_edit_page_button": True,
 }
 html_context = {
-#     "github_url": "https://github.com", # or your GitHub Enterprise site
+    #     "github_url": "https://github.com", # or your GitHub Enterprise site
     "github_user": "niccokunzmann",
     "github_repo": "python-recurring-ical-events",
     "github_version": "main",
@@ -118,11 +117,17 @@ intersphinx_mapping = {
 }
 
 
-man_pages = [("index", "recurring_ical_events", "recurring_ical_events Documentation", ["Nicco Kunzmann"], 1)]
-
-exclude_patterns = [
-    "venv"
+man_pages = [
+    (
+        "index",
+        "recurring_ical_events",
+        "recurring_ical_events Documentation",
+        ["Nicco Kunzmann"],
+        1,
+    )
 ]
+
+exclude_patterns = ["venv"]
 
 # we have had issues with linkcheck timing and retries on www.gnu.org
 linkcheck_retries = 1
@@ -177,4 +182,3 @@ html_short_title = project
 # see https://github.com/sphinx-doc/sphinx/issues/4317#issuecomment-353793061
 HERE = Path(__file__).parent
 sys.path.insert(0, str(Path(HERE).parent))
-

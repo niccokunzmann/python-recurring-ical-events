@@ -251,5 +251,13 @@ class ComponentAdapter(ABC):
             return start - recurrence_id
         return datetime.timedelta(0)
 
+    def has_recurrence_rules(self):
+        """Whether this has generation rules present."""
+        return (
+            "RRULE" in self._component
+            or "RDATE" in self._component
+            or "EXDATE" in self._component
+        )
+
 
 __all__ = ["ComponentAdapter"]
