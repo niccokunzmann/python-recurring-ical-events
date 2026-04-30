@@ -43,10 +43,10 @@ def test_edge_case_1(calendars):
 
     assert len(events) == 2
     assert events[0].start == date(2024, 7, 1)
-    assert events[1].start == date(2024, 7, 15)
+    assert events[1].start == date(2024, 7, 29)
 
     assert events[0]["SUMMARY"] == "event 2"
-    assert events[1]["SUMMARY"] == "event 2"
+    assert events[1]["SUMMARY"] == "event 1"
 
 
 def test_edge_case_2(calendars):

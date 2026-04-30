@@ -410,7 +410,6 @@ class Series:
 
         The result does not need to be ordered.
         """
-        print("between", span_start, span_stop)
         returned_starts: set[Time] = set()
         returned_modifications: set[ComponentAdapter] = set()
         # NOTE: If in the following line, we get an error, datetime and date
@@ -453,7 +452,6 @@ class Series:
                 returned_modifications.add(adapter)
                 occurrence = self.occurrence(adapter)
             if occurrence.is_in_span(span_start, span_stop):
-                print("yield", occurrence)
                 yield occurrence
         for modification in self.modifications:
             # we assume that the modifications are actually included
@@ -488,7 +486,6 @@ class Series:
         if not modification_recurrence_ids:
             return False
         span_start, span_stop = convert_to_date_range(modification_recurrence_ids[0])
-        print("STRAY CORE modification", modification)
         for start in self.rrule_between(span_start, span_stop):
             start_recurrence_ids = to_recurrence_ids(start)
             if (
@@ -497,7 +494,6 @@ class Series:
             ):
                 continue
             if set(start_recurrence_ids) & set(modification_recurrence_ids):
-                print("CHECKPOT", modification)
                 return False
         return True
 
