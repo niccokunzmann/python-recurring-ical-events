@@ -14,7 +14,7 @@ import recurring_ical_events
 import recurring_ical_events.util
 
 
-def test_zoneinfo_example_yields_events(ZoneInfo):  # noqa: N803
+def test_zoneinfo_example_yields_events(ZoneInfo):
     """Test that there is no error.
 
     Source code is taken from Issue 57.
@@ -83,7 +83,7 @@ ATTRS = ["year", "month", "day", "hour", "minute", "second"]
         (datetime(2019, 2, 22, 4, 30), "UTC", (2019, 2, 22, 4, 30)),
     ],
 )
-def test_convert_to_date(dt, tz, times, ZoneInfo):  # noqa: N803
+def test_convert_to_date(dt, tz, times, ZoneInfo):
     """Check that a datetime conversion takes place properly."""
     new = recurring_ical_events.util.convert_to_datetime(dt, ZoneInfo(tz))
     converted = ()
