@@ -15,6 +15,10 @@ We use [Semantic Versioning](https://semver.org)
 
 To avoid breaking changes breaking your code, install this library fixed to a specific version.
 
+## v3.8.2
+
+- Fix: Prevent additional events when replaced event with lower SEQUENCE has RRULE. See [Issue 253](https://github.com/niccokunzmann/python-recurring-ical-events/issues/253).
+
 ## v3.8.1
 
 - Fix: License identifier in pyproject.toml
