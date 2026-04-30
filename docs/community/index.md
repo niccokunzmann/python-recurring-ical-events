@@ -14,7 +14,6 @@ There are various ways in which you can contribute to this library.
 Please support the development and upkeep in one of these ways:
 
 - [Support using GitHub Sponsors](https://github.com/sponsors/niccokunzmann)
-- [Fund specific issues using Polar](https://polar.sh/niccokunzmann/python-recurring-ical-events)
 - [Support using Open Collective](https://opencollective.com/open-web-calendar/)
 - [Support using thanks.dev](https://thanks.dev)
 
