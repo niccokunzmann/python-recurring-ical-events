@@ -14,6 +14,13 @@ from recurring_ical_events.types import Time
 from recurring_ical_events.util import convert_to_datetime
 
 
+def _as_datetime(value: Time) -> datetime.datetime:
+    """Return date values as midnight datetimes for alarm arithmetic."""
+    if isinstance(value, datetime.datetime):
+        return value
+    return datetime.datetime.combine(value, datetime.time())
+
+
 class AbsoluteAlarmSeries:
     """A series of absolute alarms."""
 
@@ -96,7 +103,7 @@ class AlarmSeriesRelativeToStart:
         self, offset: datetime.timedelta, alarm: Alarm, parent: Occurrence
     ) -> Occurrence:
         """Create a new occurrence."""
-        return AlarmOccurrence(offset + parent.start, alarm, parent)
+        return AlarmOccurrence(_as_datetime(parent.start) + offset, alarm, parent)
 
     def __repr__(self) -> str:
         """repr()"""
@@ -122,7 +129,7 @@ class AlarmSeriesRelativeToEnd(AlarmSeriesRelativeToStart):
         self, offset: datetime.timedelta, alarm: Alarm, parent: Occurrence
     ) -> Occurrence:
         """Create a new occurrence."""
-        return AlarmOccurrence(offset + parent.end, alarm, parent)
+        return AlarmOccurrence(_as_datetime(parent.end) + offset, alarm, parent)
 
 
 __all__ = [

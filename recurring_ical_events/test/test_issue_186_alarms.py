@@ -9,6 +9,8 @@ from datetime import datetime, timedelta, timezone
 import icalendar
 import pytest
 
+import recurring_ical_events
+
 
 @pytest.mark.parametrize(
     ("when", "count"),
@@ -213,6 +215,54 @@ def test_alarm_without_trigger_is_ignored_as_invalid(alarms):
         description = a.alarms.times[0].alarm["DESCRIPTION"]
         assert description in ("correct trigger", "absolute trigger")
     assert len(e) == 2
+
+
+def test_relative_alarm_before_date_start():
+    """Relative alarms for all-day events keep their time of day."""
+    calendar = icalendar.Calendar.from_ical(
+        b"""BEGIN:VCALENDAR
+BEGIN:VEVENT
+UID:date-start-alarm
+DTSTART;VALUE=DATE:20240729
+DTEND;VALUE=DATE:20240730
+SUMMARY:all-day event
+BEGIN:VALARM
+ACTION:DISPLAY
+TRIGGER:-PT10M
+END:VALARM
+END:VEVENT
+END:VCALENDAR
+"""
+    )
+
+    events = list(recurring_ical_events.of(calendar, components=["VALARM"]).all())
+
+    assert len(events) == 1
+    assert events[0].alarms.times[0].trigger == datetime(2024, 7, 28, 23, 50)
+
+
+def test_relative_alarm_after_date_end():
+    """Relative alarms from all-day event ends are datetimes."""
+    calendar = icalendar.Calendar.from_ical(
+        b"""BEGIN:VCALENDAR
+BEGIN:VEVENT
+UID:date-end-alarm
+DTSTART;VALUE=DATE:20240729
+DTEND;VALUE=DATE:20240730
+SUMMARY:all-day event
+BEGIN:VALARM
+ACTION:DISPLAY
+TRIGGER;RELATED=END:PT15M
+END:VALARM
+END:VEVENT
+END:VCALENDAR
+"""
+    )
+
+    events = list(recurring_ical_events.of(calendar, components=["VALARM"]).all())
+
+    assert len(events) == 1
+    assert events[0].alarms.times[0].trigger == datetime(2024, 7, 30, 0, 15)
 
 
 def test_event_is_not_modified_with_2_alarms(alarms):
