@@ -68,3 +68,12 @@ We have a comprehensive list of **[examples]** to get you started.
 
 [icalendar]: https://icalendar.readthedocs.io
 [examples]: examples.rst
+
+## User guide navigation
+
+```{toctree}
+:maxdepth: 1
+:caption: User guide
+
+examples
+```
