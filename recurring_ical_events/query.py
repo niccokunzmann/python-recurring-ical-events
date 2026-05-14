@@ -6,7 +6,7 @@ import contextlib
 import datetime
 import itertools
 import sys
-from typing import TYPE_CHECKING, ClassVar, Generator, Optional, Sequence
+from typing import TYPE_CHECKING, ClassVar, Generator, Iterator, Optional, Sequence
 
 try:
     from typing import TypeAlias
@@ -23,7 +23,7 @@ from recurring_ical_events.errors import (
     PeriodEndBeforeStart,
 )
 from recurring_ical_events.occurrence import OccurrenceID
-from recurring_ical_events.pages import Pages
+from recurring_ical_events.pages import OccurrencePages, Pages
 from recurring_ical_events.selection.base import SelectComponents
 from recurring_ical_events.util import compare_greater
 
@@ -145,6 +145,11 @@ class CalendarQuery:
         # MAX and MIN values may change in the future
         return self.after(DATE_MIN_DT)
 
+    def occurrences_all(self) -> Generator[Occurrence]:
+        """Yield every :class:`Occurrence` in the calendar, ordered by start time."""
+        # MAX and MIN values may change in the future
+        return self.occurrences_after(DATE_MIN_DT)
+
     _DELTAS = [
         datetime.timedelta(days=1),
         datetime.timedelta(hours=1),
@@ -184,6 +189,22 @@ class CalendarQuery:
             - ``datetime.datetime(2019, 1, 19, 13, 30, 59, tzinfo=ZoneInfo('Europe/London'))``
             - ``"20190119T133059Z"``
         """  # noqa: E501
+        start, stop = self._at_span(date)
+        return self._between(start, stop)
+
+    def occurrences_at(self, date: DateArgument) -> list[Occurrence]:
+        """Return the :class:`Occurrence` objects covered by ``date``.
+
+        ``date`` is interpreted the same way as in :meth:`at`.
+
+        Arguments:
+            date: A date specification, see :meth:`to_datetime`.
+        """
+        start, stop = self._at_span(date)
+        return self._occurrences_between(start, stop)
+
+    def _at_span(self, date: DateArgument) -> tuple[Time, Time]:
+        """Translate an :meth:`at` date specification into a (start, stop) span."""
         if isinstance(date, int):
             date = (date,)
         if isinstance(date, str):
@@ -191,18 +212,27 @@ class CalendarQuery:
                 raise ValueError(f"Format yyyymmdd expected for {date!r}.")
             date = (int(date[:4], 10), int(date[4:6], 10), int(date[6:]))
         if isinstance(date, datetime.datetime):
-            return self.between(date, date)
+            return date, date
         if isinstance(date, datetime.date):
-            return self.between(date, date + datetime.timedelta(days=1))
+            return date, date + datetime.timedelta(days=1)
         if len(date) == 1:
-            return self.between((date[0], 1, 1), (date[0] + 1, 1, 1))
+            return (
+                self.to_datetime((date[0], 1, 1)),
+                self.to_datetime((date[0] + 1, 1, 1)),
+            )
         if len(date) == 2:
             year, month = date
             if month == 12:
-                return self.between((year, 12, 1), (year + 1, 1, 1))
-            return self.between((year, month, 1), (year, month + 1, 1))
+                return (
+                    self.to_datetime((year, 12, 1)),
+                    self.to_datetime((year + 1, 1, 1)),
+                )
+            return (
+                self.to_datetime((year, month, 1)),
+                self.to_datetime((year, month + 1, 1)),
+            )
         dt = self.to_datetime(date)
-        return self._between(dt, dt + self._DELTAS[len(date) - 3])
+        return dt, dt + self._DELTAS[len(date) - 3]
 
     def between(self, start: DateArgument, stop: DateArgument | datetime.timedelta):
         """Return events at a time between start (inclusive) and end (inclusive)
@@ -218,13 +248,41 @@ class CalendarQuery:
             ``stop``, make sure the :attr:`datetime.datetime.tzinfo` is
             the same.
         """
+        start, stop = self._between_span(start, stop)
+        return self._between(start, stop)
+
+    def occurrences_between(
+        self, start: DateArgument, stop: DateArgument | datetime.timedelta
+    ) -> list[Occurrence]:
+        """Return the :class:`Occurrence` objects in ``[start, stop]``.
+
+        The :class:`Occurrence`-returning sibling of :meth:`between`.
+
+        Arguments:
+            start: A date specification. See :meth:`to_datetime`.
+            stop: A date specification or a :class:`datetime.timedelta`
+                relative to start.
+
+        .. warning::
+
+            If you pass a :class:`datetime.datetime` to both ``start`` and
+            ``stop``, make sure the :attr:`datetime.datetime.tzinfo` is
+            the same.
+        """
+        start, stop = self._between_span(start, stop)
+        return self._occurrences_between(start, stop)
+
+    def _between_span(
+        self, start: DateArgument, stop: DateArgument | datetime.timedelta
+    ) -> tuple[Time, Time]:
+        """Normalize the (start, stop) arguments of :meth:`between`."""
         start = self.to_datetime(start)
         stop = (
             start + stop
             if isinstance(stop, datetime.timedelta)
             else self.to_datetime(stop)
         )
-        return self._between(start, stop)
+        return start, stop
 
     def _occurrences_to_components(
         self, occurrences: list[Occurrence]
@@ -258,6 +316,17 @@ class CalendarQuery:
         earliest_end = self.to_datetime(earliest_end)
         for occurrence in self._after(earliest_end):
             yield occurrence.as_component(self.keep_recurrence_attributes)
+
+    def occurrences_after(self, earliest_end: DateArgument) -> Generator[Occurrence]:
+        """Iterate over :class:`Occurrence` objects happening during or after ``earliest_end``.
+
+        Arguments:
+            earliest_end: A date specification. See :meth:`to_datetime`.
+                Anything happening during or after earliest_end is returned
+                in the order of start time.
+        """  # noqa: E501
+        earliest_end = self.to_datetime(earliest_end)
+        yield from self._after(earliest_end)
 
     def _after(self, earliest_end: Time) -> Generator[Occurrence]:
         """Iterate over occurrences happening during or after earliest_end."""
@@ -295,10 +364,16 @@ class CalendarQuery:
 
             Do not use this in production as it generates all occurrences.
         """
-        i = 0
-        for _ in self.all():
-            i += 1
-        return i
+        return sum(1 for _ in self.all())
+
+    def occurrences_count(self) -> int:
+        """Return the amount of recurring occurrences in this calendar.
+
+        .. warning::
+
+            Do not use this in production as it generates all occurrences.
+        """
+        return sum(1 for _ in self.occurrences_all())
 
     @property
     def first(self) -> Component:
@@ -310,9 +385,26 @@ class CalendarQuery:
         Raises:
             IndexError: if the calendar is empty
         """
-        for component in self.all():
-            return component
-        raise IndexError("No components found.")
+        return self._first(self.all(), "No components found.")
+
+    @property
+    def first_occurrence(self) -> Occurrence:
+        """Return the first recurring occurrence in this calendar.
+
+        Returns:
+            The first recurring occurrence in this calendar.
+
+        Raises:
+            IndexError: if the calendar is empty
+        """
+        return self._first(self.occurrences_all(), "No occurrences found.")
+
+    @staticmethod
+    def _first(iterator: Iterator, not_found_message: str):
+        """Return the first item of an iterator, or raise :class:`IndexError`."""
+        for item in iterator:
+            return item
+        raise IndexError(not_found_message)
 
     def paginate(
         self,
@@ -336,6 +428,52 @@ class CalendarQuery:
                 These are safe to pass outside of the application and back in.
         """
         latest_start = None if latest_start is None else self.to_datetime(latest_start)
+        iterator = self._paginate_iterator(earliest_end, next_page_id)
+        return Pages(
+            occurrence_iterator=iterator,
+            size=page_size,
+            stop=latest_start,
+            keep_recurrence_attributes=self.keep_recurrence_attributes,
+        )
+
+    def occurrences_paginate(
+        self,
+        page_size: int,
+        earliest_end: Optional[DateArgument] = None,
+        latest_start: Optional[DateArgument] = None,
+        next_page_id: str = "",
+    ) -> OccurrencePages:
+        """Return pages of :class:`Occurrence` objects.
+
+        Same shape as :meth:`paginate`, but each page holds occurrences
+        rather than components.
+
+        Args:
+            page_size: the number of occurrences per page
+            earliest_end: the start of the first page.
+                All occurrences happen after this date.
+                See :meth:`to_datetime` for possible values.
+            latest_start: the end of the last page.
+                All occurrences happen before this date.
+                See :meth:`to_datetime` for possible values.
+            next_page_id: The id of the next page.
+                This is optional for the first page.
+                These are safe to pass outside of the application and back in.
+        """
+        latest_start = None if latest_start is None else self.to_datetime(latest_start)
+        iterator = self._paginate_iterator(earliest_end, next_page_id)
+        return OccurrencePages(
+            occurrence_iterator=iterator,
+            size=page_size,
+            stop=latest_start,
+        )
+
+    def _paginate_iterator(
+        self,
+        earliest_end: Optional[DateArgument],
+        next_page_id: str,
+    ) -> Iterator[Occurrence]:
+        """Build the occurrence iterator used by paginated queries."""
         earliest_end = (
             DATE_MIN_DT if earliest_end is None else self.to_datetime(earliest_end)
         )
@@ -343,26 +481,16 @@ class CalendarQuery:
             first_occurrence_id = OccurrenceID.from_string(next_page_id)
             if not compare_greater(earliest_end, first_occurrence_id.start):
                 iterator = self._after(first_occurrence_id.start)
-                lost_occurrences = []  # in case we do not find the event
+                lost_occurrences = []  # in case the resume id isn't found
                 for occurrence in iterator:
                     lost_occurrences.append(occurrence)
                     oid = occurrence.id
                     if oid == first_occurrence_id:
-                        iterator = itertools.chain([occurrence], iterator)
-                        break
+                        return itertools.chain([occurrence], iterator)
                     if compare_greater(oid.start, first_occurrence_id.start):
-                        iterator = itertools.chain(lost_occurrences, iterator)
-                        break
-            else:
-                iterator = self._after(earliest_end)
-        else:
-            iterator = self._after(earliest_end)
-        return Pages(
-            occurrence_iterator=iterator,
-            size=page_size,
-            stop=latest_start,
-            keep_recurrence_attributes=self.keep_recurrence_attributes,
-        )
+                        return itertools.chain(lost_occurrences, iterator)
+                return iterator
+        return self._after(earliest_end)
 
 
 __all__ = ["T_COMPONENTS", "CalendarQuery"]
