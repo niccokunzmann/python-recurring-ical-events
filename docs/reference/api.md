@@ -58,6 +58,22 @@ for event in recurring_ical_events.of(an_icalendar_object).after(datetime.dateti
     print(event["DTSTART"]) # The start is ordered
 ```
 
+### Occurrence-returning queries
+
+Every component-returning method has a counterpart that returns
+{py:class}`recurring_ical_events.Occurrence` objects instead:
+{py:meth}`~recurring_ical_events.CalendarQuery.occurrences_at`,
+{py:meth}`~recurring_ical_events.CalendarQuery.occurrences_between`,
+{py:meth}`~recurring_ical_events.CalendarQuery.occurrences_after`,
+{py:meth}`~recurring_ical_events.CalendarQuery.occurrences_all`,
+{py:meth}`~recurring_ical_events.CalendarQuery.occurrences_count`,
+{py:attr}`~recurring_ical_events.CalendarQuery.first_occurrence`, and
+{py:meth}`~recurring_ical_events.CalendarQuery.occurrences_paginate`.
+
+An :class:`~recurring_ical_events.Occurrence` carries an
+:attr:`~recurring_ical_events.Occurrence.id` you can persist, and only converts
+to a component when you call :meth:`~recurring_ical_events.Occurrence.as_component`.
+
 ## Timezones and floating time
 
 This library makes a distinction between floating time and times with timezones.

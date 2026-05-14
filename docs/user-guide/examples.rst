@@ -212,6 +212,61 @@ It is tested against malicious modification and can safely be passed from a thir
 Additionally to the page size, you can also pass a ``start`` and an ``end`` to the pages so that
 all components are visible within that time.
 
+Work with occurrences directly
+------------------------------
+
+By default a query gives you :class:`icalendar.cal.Event` components.
+When you want occurrences instead, every query method has an ``occurrences_*`` counterpart.
+Use them when you need to identify occurrences across runs, build custom components yourself,
+or hand occurrences to another library.
+
+================================  =====================================
+Component-returning               Occurrence-returning
+================================  =====================================
+``at(date)``                      ``occurrences_at(date)``
+``between(start, stop)``          ``occurrences_between(start, stop)``
+``after(earliest_end)``           ``occurrences_after(earliest_end)``
+``all()``                         ``occurrences_all()``
+``count()``                       ``occurrences_count()``
+``first``                         ``first_occurrence``
+``paginate(...)``                 ``occurrences_paginate(...)``
+================================  =====================================
+
+Every :class:`~recurring_ical_events.Occurrence` carries an
+:attr:`~recurring_ical_events.Occurrence.id` (an
+:class:`~recurring_ical_events.OccurrenceID`) you can use as a primary key,
+and converts to a component on demand:
+
+.. code-block:: python
+
+    >>> ten_events = recurring_ical_events.example_calendar("event_10_times")
+    >>> ten_query = recurring_ical_events.of(ten_events)
+    >>> first = ten_query.first_occurrence
+    >>> print(first.start)
+    2020-01-13 07:45:00+01:00
+    >>> print(first.id.uid)
+    64374d28-089b-4958-8c95-cdd00e6d8ad3
+    >>> event = first.as_component(keep_recurrence_attributes=False)
+    >>> print(event["SUMMARY"])
+    event 10 times
+
+Pagination has an occurrence-returning counterpart too:
+
+.. code-block:: python
+
+    >>> occurrence_pages = ten_query.occurrences_paginate(2)
+    >>> for i, page in enumerate(occurrence_pages):
+    ...     print(f"page: {i}")
+    ...     for occurrence in page:
+    ...         print(f"->  {occurrence.start}")
+    ...     if i == 1: break
+    page: 0
+    ->  2020-01-13 07:45:00+01:00
+    ->  2020-01-14 07:45:00+01:00
+    page: 1
+    ->  2020-01-15 07:45:00+01:00
+    ->  2020-01-16 07:45:00+01:00
+
 Get Todos and Journal entries
 -----------------------------
 
