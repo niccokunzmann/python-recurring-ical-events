@@ -366,3 +366,13 @@ def test_top_level_reexports_pagination_classes():
     assert recurring_ical_events.Pages is Pages
     assert recurring_ical_events.OccurrencePage is OccurrencePage
     assert recurring_ical_events.OccurrencePages is OccurrencePages
+
+
+def test_paginated_occurrence_can_keep_recurrence_attributes(calendars: ICSCalendars):
+    """The caller controls ``keep_recurrence_attributes`` at materialization time."""
+    pages = calendars.event_10_times.occurrences_paginate(1)
+    occurrence = pages.generate_next_page().occurrences[0]
+    stripped = occurrence.as_component(keep_recurrence_attributes=False)
+    kept = occurrence.as_component(keep_recurrence_attributes=True)
+    assert "RRULE" not in stripped
+    assert "RRULE" in kept
