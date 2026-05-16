@@ -130,7 +130,7 @@ class _PagesBase(Generic[T]):
 
     @property
     def size(self) -> int:
-        """The maximum number of components per page."""
+        """The maximum number of items per page."""
         return self._size
 
     def generate_next_page(self) -> T:
