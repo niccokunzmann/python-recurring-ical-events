@@ -15,6 +15,10 @@ We use [Semantic Versioning](https://semver.org)
 
 To avoid breaking changes breaking your code, install this library fixed to a specific version.
 
+## v3.9.0
+
+- Add: `Occurrence`-returning query methods on `CalendarQuery` (`occurrences_at`, `occurrences_between`, `occurrences_after`, `occurrences_all`, `occurrences_count`, `first_occurrence`, and `occurrences_paginate`), and `OccurrencePage` / `OccurrencePages` to pair with the existing `Page` / `Pages`. See [Issue 217](https://github.com/niccokunzmann/python-recurring-ical-events/issues/217).
+
 ## v3.8.2
 
 - Fix: Prevent additional events when replaced event with lower SEQUENCE has RRULE. See [Issue 253](https://github.com/niccokunzmann/python-recurring-ical-events/issues/253).

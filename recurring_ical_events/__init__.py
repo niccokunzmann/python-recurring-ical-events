@@ -41,6 +41,7 @@ from recurring_ical_events.selection import (
 )
 
 from .occurrence import AlarmOccurrence, Occurrence, OccurrenceID
+from .pages import OccurrencePage, OccurrencePages, Page, Pages
 from .series import (
     AbsoluteAlarmSeries,
     AlarmSeriesRelativeToEnd,
@@ -104,6 +105,10 @@ __all__ = [
     "JournalAdapter",
     "Occurrence",
     "OccurrenceID",
+    "OccurrencePage",
+    "OccurrencePages",
+    "Page",
+    "Pages",
     "PeriodEndBeforeStart",
     "SelectComponents",
     "Series",
