@@ -70,9 +70,9 @@ Every component-returning method has a counterpart that returns
 {py:attr}`~recurring_ical_events.CalendarQuery.first_occurrence`, and
 {py:meth}`~recurring_ical_events.CalendarQuery.occurrences_paginate`.
 
-An :class:`~recurring_ical_events.Occurrence` carries an
-:attr:`~recurring_ical_events.Occurrence.id` you can persist, and only converts
-to a component when you call :meth:`~recurring_ical_events.Occurrence.as_component`.
+An {py:class}`~recurring_ical_events.Occurrence` carries an
+{py:attr}`~recurring_ical_events.Occurrence.id` you can persist, and only converts
+to a component when you call {py:meth}`~recurring_ical_events.Occurrence.as_component`.
 
 ## Timezones and floating time
 
