@@ -31,6 +31,16 @@ For style and formatting, please consult the [documentation reference section].
 
 [documentation reference section]: ../reference/documentation
 
+## Community navigation
+
+```{toctree}
+:maxdepth: 1
+:caption: Community
+
+media
+maintenance
+```
+
 ## Setup to develop
 
 This section informs you how to work on this project.
