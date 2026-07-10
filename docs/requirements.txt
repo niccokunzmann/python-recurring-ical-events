@@ -43,7 +43,7 @@ ruamel-yaml==0.18.17
 ruamel-yaml-clib==0.2.15
 six==1.17.0
 snowballstemmer==3.0.1
-soupsieve==2.8
+soupsieve==2.8.4
 sphinx==8.2.3
 sphinx-autoapi==3.6.1
 sphinx-autobuild==2025.8.25
