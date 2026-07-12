@@ -21,6 +21,8 @@ ICal has some complexity to it:
 Events, TODOs, Journal entries and Alarms can be repeated, removed from the feed and edited later on.
 This tool takes care of these complexities.
 
+NLNet has supported the development of this library.
+
 Please have a look here:
 
 - `Documentation`_

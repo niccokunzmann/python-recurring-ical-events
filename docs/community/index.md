@@ -20,6 +20,8 @@ Please support the development and upkeep in one of these ways:
 We accept donations to sustain our work, once or regular.
 Consider donating money to open-source as everyone benefits.
 
+NLNet has supported the development of this library.
+
 ## Improve the documentation
 
 Your help with this documentation is very welcome!
