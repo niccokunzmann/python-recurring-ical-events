@@ -39,9 +39,9 @@ Information about usage.
 
 ```{toctree}
 :maxdepth: 2
+:caption: User guide
 
 user-guide/index
-user-guide/examples
 ```
 
 
@@ -51,16 +51,9 @@ Information about contributing.
 
 ```{toctree}
 :maxdepth: 2
+:caption: Community
 
 community/index
-community/media
-community/maintenance
-```
-
-```{toctree}
-:maxdepth: 1
-
-security_policy
 ```
 
 ## Reference
@@ -69,20 +62,15 @@ This is reference material for information.
 
 ```{toctree}
 :maxdepth: 2
+:caption: Reference
 
-reference/api
-reference/architecture
-reference/compatibility
-reference/dependencies
-reference/documentation
-reference/related-projects
-reference/research
-
+reference/index
 ```
 
 ```{toctree}
 :maxdepth: 1
+:caption: Project information
 
 changelog
-reference/license
+security_policy
 ```

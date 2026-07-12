@@ -57,7 +57,7 @@ myst:
 * ✅ [RDATE](https://www.kanzaki.com/docs/ical/rdate.html) (DONE)
 * ✅ [DURATION](https://www.kanzaki.com/docs/ical/duration.html) (DONE)
 * ✅ [EXDATE](https://www.kanzaki.com/docs/ical/exdate.html) (DONE)
-* ✅ [X-WR-TIMEZONE] compatibilty (DONE)
+* ✅ [X-WR-TIMEZONE] compatibility (DONE)
 * ✅ RECURRENCE-ID with THISANDFUTURE - modify all future events (DONE)
 
 ## Missing features
