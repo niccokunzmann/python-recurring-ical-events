@@ -116,11 +116,33 @@ These are the pages returned by the query.
 
 .. automodule:: recurring_ical_events.types
     :members:
+```
 
+## Type aliases
+
+```{eval-rst}
+.. autodata:: recurring_ical_events.types.Time
+    :no-value:
+    :no-index:
+
+.. autodata:: recurring_ical_events.types.UID
+    :no-value:
+    :no-index:
+
+.. autodata:: recurring_ical_events.types.RecurrenceIDs
+    :no-value:
+    :no-index:
+```
+
+## Occurrence identifiers
+
+```{eval-rst}
 .. autoclass:: recurring_ical_events.OccurrenceID
+
+  .. autoattribute:: uid
+     :no-index:
 
   .. automethod:: to_string
   .. automethod:: from_string
   .. automethod:: from_occurrence
-
 ```
