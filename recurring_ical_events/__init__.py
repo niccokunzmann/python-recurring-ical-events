@@ -14,7 +14,10 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING
+
+import icalendar
 
 import x_wr_timezone
 
@@ -54,7 +57,7 @@ if TYPE_CHECKING:
 
 
 def of(
-    a_calendar: Component,
+    a_calendar: Component | str | bytes | Path,
     keep_recurrence_attributes=False,
     components: T_COMPONENTS = ("VEVENT",),
     skip_bad_series: bool = False,  # noqa: FBT001
@@ -67,7 +70,10 @@ def of(
 
     Arguments:
         a_calendar: an :class:`icalendar.cal.calendar.Calendar` component like
-            :class:`icalendar.cal.calendar.Calendar`.
+            :class:`icalendar.cal.calendar.Calendar`, or a string/bytes
+            containing iCalendar data which will be parsed with
+            :meth:`icalendar.Calendar.from_ical`. A :class:`pathlib.Path`
+            is also accepted and passed through to ``from_ical``.
         keep_recurrence_attributes: Whether to keep attributes that are only used
             to calculate the recurrence (``RDATE``, ``EXDATE``, ``RRULE``).
         components: A list of component type names of which the recurrences
@@ -78,6 +84,8 @@ def of(
             specify which errors to skip.
         calendar_query: The :class:`CalendarQuery` class to use.
     """
+    if isinstance(a_calendar, (str, bytes, Path)):
+        a_calendar = icalendar.Calendar.from_ical(a_calendar)
     a_calendar = x_wr_timezone.to_standard(a_calendar)
     return calendar_query(
         a_calendar, keep_recurrence_attributes, components, skip_bad_series

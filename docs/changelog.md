@@ -15,6 +15,10 @@ We use [Semantic Versioning](https://semver.org)
 
 To avoid breaking changes breaking your code, install this library fixed to a specific version.
 
+## Unreleased
+
+- Add: `recurring_ical_events.of()` now accepts `str`, `bytes`, and `pathlib.Path` inputs in addition to `Calendar` objects, parsing them with `icalendar.Calendar.from_ical()`. See [Issue 194](https://github.com/niccokunzmann/python-recurring-ical-events/issues/194).
+
 ## v3.9.0
 
 - Add: `Occurrence`-returning query methods on `CalendarQuery` (`occurrences_at`, `occurrences_between`, `occurrences_after`, `occurrences_all`, `occurrences_count`, `first_occurrence`, and `occurrences_paginate`), and `OccurrencePage` / `OccurrencePages` to pair with the existing `Page` / `Pages`. See [Issue 217](https://github.com/niccokunzmann/python-recurring-ical-events/issues/217).
