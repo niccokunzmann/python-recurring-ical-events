@@ -84,7 +84,9 @@ def of(
             specify which errors to skip.
         calendar_query: The :class:`CalendarQuery` class to use.
     """
-    if isinstance(a_calendar, (str, bytes, Path)):
+    if isinstance(a_calendar, Path):
+        a_calendar = icalendar.Calendar.from_ical(a_calendar.read_bytes())
+    elif isinstance(a_calendar, (str, bytes)):
         a_calendar = icalendar.Calendar.from_ical(a_calendar)
     a_calendar = x_wr_timezone.to_standard(a_calendar)
     return calendar_query(
