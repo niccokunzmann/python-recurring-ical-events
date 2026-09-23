@@ -15,6 +15,10 @@ We use [Semantic Versioning](https://semver.org)
 
 To avoid breaking changes breaking your code, install this library fixed to a specific version.
 
+## Unreleased
+
+- Fix: Keep each occurrence's original `RECURRENCE-ID` after a `THISANDFUTURE` move. Expanded events omit `RANGE` unless recurrence attributes are requested. See [Issue 222](https://github.com/niccokunzmann/python-recurring-ical-events/issues/222).
+
 ## v3.9.0
 
 - Add: `Occurrence`-returning query methods on `CalendarQuery` (`occurrences_at`, `occurrences_between`, `occurrences_after`, `occurrences_all`, `occurrences_count`, `first_occurrence`, and `occurrences_paginate`), and `OccurrencePage` / `OccurrencePages` to pair with the existing `Page` / `Pages`. See [Issue 217](https://github.com/niccokunzmann/python-recurring-ical-events/issues/217).
