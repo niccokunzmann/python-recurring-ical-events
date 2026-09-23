@@ -11,6 +11,7 @@ from icalendar.prop import vDDDTypes
 from recurring_ical_events.util import (
     cached_property,
     make_comparable,
+    normalize_pytz,
     time_span_contains_event,
     to_recurrence_ids,
 )
@@ -118,7 +119,15 @@ class ComponentAdapter(ABC):
                     del copied_component[attribute]
         for subcomponent in self._component.subcomponents:
             copied_component.add_component(subcomponent)
-        if "RECURRENCE-ID" not in copied_component:
+        if self.this_and_future:
+            copied_component["RECURRENCE-ID"] = vDDDTypes(
+                normalize_pytz(
+                    copied_component["DTSTART"].dt - self.move_recurrences_by
+                )
+            )
+            if keep_recurrence_attributes:
+                copied_component["RECURRENCE-ID"].params["RANGE"] = "THISANDFUTURE"
+        elif "RECURRENCE-ID" not in copied_component:
             copied_component["RECURRENCE-ID"] = vDDDTypes(
                 copied_component["DTSTART"].dt
             )
