@@ -434,14 +434,18 @@ class Series:
                 component = self.get_component_for_recurrence_id(recurrence_ids[0])
                 occurrence_start = normalize_pytz(start + component.move_recurrences_by)
                 # Consider the RDATE with a PERIOD value
-                occurrence_end = normalize_pytz(
-                    occurrence_start
-                    + get_any(
-                        self.recurrence.replace_ends,
-                        recurrence_ids,
-                        component.duration,
+                try:
+                    occurrence_end = normalize_pytz(
+                        occurrence_start
+                        + get_any(
+                            self.recurrence.replace_ends,
+                            recurrence_ids,
+                            component.duration,
+                        )
                     )
-                )
+                except OverflowError:
+                    # The occurrence ends after the end of the datetime range.
+                    continue
                 occurrence = self.recurrence.as_occurrence(
                     occurrence_start, occurrence_end, self.occurrence, component
                 )
