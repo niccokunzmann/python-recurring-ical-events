@@ -70,3 +70,21 @@ def test_zero_size_event_is_included(calendars):
 def test_zero_size_event_is_excluded_one_second_later(calendars):
     """If a zero size event happens exactly at the earliest_end, then it is included."""
     assert not list(calendars.zero_size_event.after("20190304T080001Z"))
+
+
+@pytest.mark.parametrize(
+    "earliest_end",
+    [
+        "99890101",  # a short search, the window does not overflow
+        "20000101",  # the window overflows around the year 7700
+    ],
+)
+def test_events_far_in_the_future_are_found(calendars, earliest_end):
+    """after() finds events far in the future, however far it has to search.
+
+    The search window grows while nothing is found.
+    It must not give up when the window passes the end of the datetime range.
+    """
+    events = list(calendars.yearly_event_from_year_9990.after(earliest_end))
+    assert events, "The event in year 9990 should be found."
+    assert events[0]["DTSTART"].dt.year == 9990
