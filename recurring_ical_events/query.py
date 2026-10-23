@@ -16,7 +16,7 @@ except ImportError:
 import icalendar
 
 from recurring_ical_events.adapters.component import ComponentAdapter
-from recurring_ical_events.constants import DATE_MAX_DT, DATE_MIN_DT
+from recurring_ical_events.constants import DATE_MIN_DT
 from recurring_ical_events.errors import (
     BadRuleStringFormat,
     InvalidCalendar,
@@ -339,8 +339,10 @@ class CalendarQuery:
             try:
                 next_end = earliest_end + time_span
             except OverflowError:
-                # We ran to the end
-                next_end = DATE_MAX_DT
+                # We ran to the end of the date range.
+                # Stop a year early: the series widen the span they query
+                # by the event duration and time zones.
+                next_end = datetime.date(datetime.MAXYEAR, 1, 1)
                 if compare_greater(earliest_end, next_end):
                     return  # we might run too far
                 done = True

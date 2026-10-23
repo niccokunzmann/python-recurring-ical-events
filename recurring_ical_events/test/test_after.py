@@ -88,3 +88,12 @@ def test_events_far_in_the_future_are_found(calendars, earliest_end):
     events = list(calendars.yearly_event_from_year_9990.after(earliest_end))
     assert events, "The event in year 9990 should be found."
     assert events[0]["DTSTART"].dt.year == 9990
+
+
+def test_occurrences_ending_after_the_datetime_range_are_skipped(calendars):
+    """An occurrence whose end cannot be represented does not stop the search.
+
+    The last occurrences of this event end after the year 9999.
+    """
+    events = list(calendars.yearly_400_day_event_from_year_9990.after("20000101"))
+    assert [event["DTSTART"].dt.year for event in events] == list(range(9990, 9999))
