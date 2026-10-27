@@ -459,6 +459,9 @@ class Series:
                 modification in returned_modifications
                 or self.recurrence.check_exdates_datetime
                 & set(modification.recurrence_ids)
+                # recurrence_ids[-1] is the local time, like start in the rrule loop
+                or convert_to_date(modification.recurrence_ids[-1])
+                in self.recurrence.check_exdates_date
                 or self.skip_core_modification(modification)
             ):
                 continue
