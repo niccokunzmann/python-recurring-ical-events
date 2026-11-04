@@ -1,0 +1,12 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//recurring-ical-events//test//EN
+BEGIN:VEVENT
+UID:yearly-400-day-event-from-year-9990@example.com
+DTSTAMP:20261023T000000Z
+SUMMARY:yearly event lasting more than a year, far in the future
+DTSTART:99900101T000000Z
+DURATION:P400D
+RRULE:FREQ=YEARLY
+END:VEVENT
+END:VCALENDAR
