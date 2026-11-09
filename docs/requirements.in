@@ -3,7 +3,7 @@ pydata-sphinx-theme
 sphinx-autobuild
 sphinx-copybutton
 sphinx-sitemap
-sphinx-autoapi>=3.8.1
+sphinx-autoapi>=3.9.0
 # For examples section
 myst-parser
 sphinx-autodoc-typehints
