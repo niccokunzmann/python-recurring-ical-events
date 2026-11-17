@@ -17,6 +17,7 @@ To avoid breaking changes breaking your code, install this library fixed to a sp
 
 ## Unreleased
 
+- Fix: An `EXDATE` or `RECURRENCE-ID` in another time zone, e.g. UTC, removed or replaced two occurrences: the right one and the one with the same local time. Two date-times with a time zone now match only if they are the same moment. See [Issue 306](https://github.com/niccokunzmann/python-recurring-ical-events/issues/306).
 - Fix: Keep each occurrence's original `RECURRENCE-ID` after a `THISANDFUTURE` move. Expanded events omit `RANGE` unless recurrence attributes are requested. See [Issue 222](https://github.com/niccokunzmann/python-recurring-ical-events/issues/222).
 - Add: `recurring_ical_events.of()` now accepts `str`, `bytes`, and `pathlib.Path` inputs in addition to `Calendar` objects, parsing them with `icalendar.Calendar.from_ical()`. See [Issue 194](https://github.com/niccokunzmann/python-recurring-ical-events/issues/194).
 
