@@ -21,13 +21,15 @@ from recurring_ical_events.util import (
     is_pytz,
     is_pytz_dt,
     normalize_pytz,
+    recurrence_id_keys,
+    recurrence_id_lookup_keys,
     to_recurrence_ids,
     with_highest_sequence,
 )
 
 if TYPE_CHECKING:
     from recurring_ical_events.adapters.component import ComponentAdapter
-    from recurring_ical_events.types import RecurrenceID, Time
+    from recurring_ical_events.types import RecurrenceID, RecurrenceIDKey, Time
 
 
 class Series:
@@ -45,9 +47,9 @@ class Series:
     class NoRecurrence:
         """A strategy to deal with not having a core with rrules."""
 
-        check_exdates_datetime: set[RecurrenceID] = set()
+        check_exdates_datetime: set[RecurrenceIDKey] = set()
         check_exdates_date: set[datetime.date] = set()
-        replace_ends: dict[RecurrenceID, Time] = {}
+        replace_ends: dict[RecurrenceIDKey, Time] = {}
         sequence = -1
 
         def as_occurrence(
@@ -91,23 +93,28 @@ class Series:
             self.start = self.original_start = self.core.start
             self.end = self.original_end = self.core.end
             self.exdates: set[Time] = set()
-            self.check_exdates_datetime: set[RecurrenceID] = set()  # should be in UTC
+            # see recurrence_id_keys()
+            self.check_exdates_datetime: set[RecurrenceIDKey] = set()
             self.check_exdates_date: set[datetime.date] = set()  # should be in UTC
             self.rdates: set[Time] = set()
             self.replace_ends: dict[
-                RecurrenceID, datetime.timedelta
+                RecurrenceIDKey, datetime.timedelta
             ] = {}  # for periods, in UTC
             # fill the attributes
             for exdate in self.core.exdates:
                 self.exdates.add(exdate)
-                self.check_exdates_datetime.update(to_recurrence_ids(exdate))
+                self.check_exdates_datetime.update(
+                    recurrence_id_keys(to_recurrence_ids(exdate))
+                )
                 if is_date(exdate):
                     self.check_exdates_date.add(exdate)
             for rdate in self.core.rdates:
                 if isinstance(rdate, tuple):
                     # we have a period as rdate
                     self.rdates.add(rdate[0])
-                    for recurrence_id in to_recurrence_ids(rdate[0]):
+                    for recurrence_id in recurrence_id_keys(
+                        to_recurrence_ids(rdate[0])
+                    ):
                         self.replace_ends[recurrence_id] = (
                             rdate[1]
                             if isinstance(rdate[1], datetime.timedelta)
@@ -137,7 +144,9 @@ class Series:
                     last_until = rule.until
 
             for exdate in self.exdates:
-                self.check_exdates_datetime.add(exdate)
+                self.check_exdates_datetime.update(
+                    recurrence_id_keys(to_recurrence_ids(exdate))
+                )
             for rdate in self.rdates:
                 rule_set.rdate(rdate)
 
@@ -321,15 +330,15 @@ class Series:
         # should be the same in UTC either way and we want to omit
         # inequality because of timezone implementation mismatches.
         self.recurrence_id_to_modification: dict[
-            RecurrenceID, ComponentAdapter
-        ] = {}  # RECURRENCE-ID -> adapter
+            RecurrenceIDKey, ComponentAdapter
+        ] = {}  # recurrence_id_keys(RECURRENCE-ID) -> adapter
         self.this_and_future = []
         self._uid = components[0].uid
         core: ComponentAdapter | None = None
         for component in components:
             if component.is_modification():
                 recurrence_ids = component.recurrence_ids
-                for recurrence_id in recurrence_ids:
+                for recurrence_id in recurrence_id_keys(recurrence_ids):
                     self.recurrence_id_to_modification[recurrence_id] = (
                         with_highest_sequence(
                             self.recurrence_id_to_modification.get(recurrence_id),
@@ -337,7 +346,9 @@ class Series:
                         )
                     )
                 if component.this_and_future:
-                    self.this_and_future.append(recurrence_ids[0])
+                    self.this_and_future.append(
+                        (recurrence_ids[0], recurrence_id_keys(recurrence_ids)[0])
+                    )
             else:
                 core = with_highest_sequence(core, component)
         self.modifications: set[ComponentAdapter] = set(
@@ -377,8 +388,8 @@ class Series:
         """All components that influence future events."""
         if self.recurrence.has_core:
             yield self.recurrence.core
-        for recurrence_id in self.this_and_future:
-            yield self.recurrence_id_to_modification[recurrence_id]
+        for _, key in self.this_and_future:
+            yield self.recurrence_id_to_modification[key]
 
     def get_component_for_recurrence_id(
         self, recurrence_id: RecurrenceID
@@ -389,9 +400,9 @@ class Series:
         """
         # We assume the the recurrence_id is of the correct timezone.
         component = self.recurrence.core
-        for modification_id in self.this_and_future:
+        for modification_id, key in self.this_and_future:
             if modification_id < recurrence_id:
-                component = self.recurrence_id_to_modification[modification_id]
+                component = self.recurrence_id_to_modification[key]
             else:
                 break
         return component
@@ -416,14 +427,15 @@ class Series:
         # may still be mixed because RDATE, EXDATE, start and rule.
         for start in self.rrule_between(span_start, span_stop):
             recurrence_ids = to_recurrence_ids(start)
+            lookup_keys = recurrence_id_lookup_keys(recurrence_ids)
             if (
                 start in returned_starts
                 or convert_to_date(start) in self.recurrence.check_exdates_date
-                or self.recurrence.check_exdates_datetime & set(recurrence_ids)
+                or self.recurrence.check_exdates_datetime.intersection(lookup_keys)
             ):
                 continue
             adapter: ComponentAdapter = get_any(
-                self.recurrence_id_to_modification, recurrence_ids, self.recurrence.core
+                self.recurrence_id_to_modification, lookup_keys, self.recurrence.core
             )
             if adapter is self.recurrence.core:
                 # We have no modification for this recurrence, so we record the date
@@ -438,7 +450,7 @@ class Series:
                     occurrence_start
                     + get_any(
                         self.recurrence.replace_ends,
-                        recurrence_ids,
+                        lookup_keys,
                         component.duration,
                     )
                 )
@@ -457,8 +469,9 @@ class Series:
             # we assume that the modifications are actually included
             if (
                 modification in returned_modifications
-                or self.recurrence.check_exdates_datetime
-                & set(modification.recurrence_ids)
+                or self.recurrence.check_exdates_datetime.intersection(
+                    recurrence_id_lookup_keys(modification.recurrence_ids)
+                )
                 or self.skip_core_modification(modification)
             ):
                 continue
@@ -487,13 +500,13 @@ class Series:
             return False
         span_start, span_stop = convert_to_date_range(modification_recurrence_ids[0])
         for start in self.rrule_between(span_start, span_stop):
-            start_recurrence_ids = to_recurrence_ids(start)
+            lookup_keys = recurrence_id_lookup_keys(to_recurrence_ids(start))
             if (
                 convert_to_date(start) in self.recurrence.check_exdates_date
-                or self.recurrence.check_exdates_datetime & set(start_recurrence_ids)
+                or self.recurrence.check_exdates_datetime.intersection(lookup_keys)
             ):
                 continue
-            if set(start_recurrence_ids) & set(modification_recurrence_ids):
+            if set(lookup_keys) & set(recurrence_id_keys(modification_recurrence_ids)):
                 return False
         return True
 

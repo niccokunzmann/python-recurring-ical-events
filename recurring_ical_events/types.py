@@ -18,12 +18,14 @@ UID: TypeAlias = str
 Timestamp: TypeAlias = float
 RecurrenceID: TypeAlias = datetime.datetime
 RecurrenceIDs: TypeAlias = Tuple[RecurrenceID]
+RecurrenceIDKey: TypeAlias = Tuple[str, RecurrenceID]
 
 
 __all__ = [
     "UID",
     "DateArgument",
     "RecurrenceID",
+    "RecurrenceIDKey",
     "RecurrenceIDs",
     "Time",
     "Timestamp",

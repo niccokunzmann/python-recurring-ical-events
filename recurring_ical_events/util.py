@@ -10,7 +10,12 @@ from recurring_ical_events.errors import PeriodEndBeforeStart
 
 if TYPE_CHECKING:
     from recurring_ical_events.adapters.component import ComponentAdapter
-    from recurring_ical_events.types import RecurrenceIDs, Time, Timestamp
+    from recurring_ical_events.types import (
+        RecurrenceIDKey,
+        RecurrenceIDs,
+        Time,
+        Timestamp,
+    )
 
 
 def timestamp(dt: datetime.datetime) -> Timestamp:
@@ -224,6 +229,30 @@ def to_recurrence_ids(time: Time) -> RecurrenceIDs:
     )
 
 
+def recurrence_id_keys(recurrence_ids: RecurrenceIDs) -> tuple[RecurrenceIDKey, ...]:
+    """The keys to store recurrence ids under, e.g. for an EXDATE.
+
+    Use recurrence_id_lookup_keys() to find them.
+
+    Two date-times with a time zone match only if they are the same moment.
+    A floating date-time or a date matches the local time of the other value.
+    The UTC value and the local value of a date-time with a time zone
+    are kept apart, so that 09:00 UTC does not match 09:00 in Europe/London.
+    """
+    if len(recurrence_ids) == 1:
+        return (("floating", recurrence_ids[0]),)
+    return (("utc", recurrence_ids[0]), ("local", recurrence_ids[-1]))
+
+
+def recurrence_id_lookup_keys(
+    recurrence_ids: RecurrenceIDs,
+) -> tuple[RecurrenceIDKey, ...]:
+    """The keys to look up recurrence ids stored with recurrence_id_keys()."""
+    if len(recurrence_ids) == 1:
+        return (("local", recurrence_ids[0]), ("floating", recurrence_ids[0]))
+    return (("floating", recurrence_ids[-1]), ("utc", recurrence_ids[0]))
+
+
 def with_highest_sequence(
     adapter1: ComponentAdapter | None, adapter2: ComponentAdapter | None
 ):
@@ -256,6 +285,8 @@ __all__ = [
     "is_pytz_dt",
     "make_comparable",
     "normalize_pytz",
+    "recurrence_id_keys",
+    "recurrence_id_lookup_keys",
     "time_span_contains_event",
     "to_recurrence_ids",
     "with_highest_sequence",

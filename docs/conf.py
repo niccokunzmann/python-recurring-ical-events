@@ -147,6 +147,7 @@ autodoc_type_aliases = {
     "Timestamp": "recurring_ical_events.types.Timestamp",
     "RecurrenceID": "recurring_ical_events.types.RecurrenceID",
     "RecurrenceIDs": "recurring_ical_events.types.RecurrenceIDs",
+    "RecurrenceIDKey": "recurring_ical_events.types.RecurrenceIDKey",
     "Component": "icalendar.cal.Component",
     "Calendar": "icalendar.cal.Calendar",
     "T_COMPONENTS": "recurring_ical_events.query.T_COMPONENTS",
