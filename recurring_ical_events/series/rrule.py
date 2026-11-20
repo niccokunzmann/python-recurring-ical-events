@@ -459,12 +459,29 @@ class Series:
                 modification in returned_modifications
                 or self.recurrence.check_exdates_datetime
                 & set(modification.recurrence_ids)
+                or self.is_on_excluded_date(modification)
                 or self.skip_core_modification(modification)
             ):
                 continue
             if modification.is_in_span(span_start, span_stop):
                 returned_modifications.add(modification)
                 yield self.occurrence(modification)
+
+    def is_on_excluded_date(self, modification: ComponentAdapter) -> bool:
+        """Whether a date EXDATE excludes the day of the RECURRENCE-ID.
+
+        The day is taken in the time zone of the series, like in the rrule loop.
+        """
+        if not self.recurrence.check_exdates_date:
+            return False
+        recurrence_ids = modification.recurrence_ids
+        tzinfo = self.recurrence.tzinfo
+        if len(recurrence_ids) == 2 and tzinfo is not None:
+            utc = recurrence_ids[0].replace(tzinfo=datetime.timezone.utc)
+            day = convert_to_date(utc.astimezone(tzinfo))
+        else:
+            day = convert_to_date(recurrence_ids[-1])
+        return day in self.recurrence.check_exdates_date
 
     def skip_core_modification(self, modification: ComponentAdapter) -> bool:
         """Wether to skip this occurrence.
