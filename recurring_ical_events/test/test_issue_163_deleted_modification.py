@@ -13,6 +13,6 @@ def test_exdate_excludes_modification(calendars):
 def test_date_exdate_excludes_modification_of_datetime_series(calendars):
     """An EXDATE with a date excludes a moved occurrence on that local day."""
     calendar = calendars.issue_163_date_exdate_datetime_series
-    moved = [event["SUMMARY"] for event in calendar.at("20240110")]
-    assert moved == ["new york next day moved"]
-    assert len(list(calendar.all())) == 12
+    moved = sorted(event["SUMMARY"] for event in calendar.at("20240110"))
+    assert moved == ["new york next day moved", "new york utc id next day moved"]
+    assert len(list(calendar.all())) == 20
