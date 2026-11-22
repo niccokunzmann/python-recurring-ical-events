@@ -1,0 +1,22 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//recurring-ical-events//issue 189//EN
+BEGIN:VEVENT
+UID:anniversary-days@issue-189
+DTSTAMP:20200101T000000Z
+DTSTART;VALUE=DATE:20200227
+DURATION:P3D
+RRULE:FREQ=YEARLY;COUNT=4
+SUMMARY:three days
+DESCRIPTION:Anniversary with a dur-day duration that crosses the end of February.
+END:VEVENT
+BEGIN:VEVENT
+UID:anniversary-weeks@issue-189
+DTSTAMP:20200101T000000Z
+DTSTART;VALUE=DATE:20201228
+DURATION:P1W
+RRULE:FREQ=YEARLY;COUNT=3
+SUMMARY:one week
+DESCRIPTION:Anniversary with a dur-week duration that crosses the new year.
+END:VEVENT
+END:VCALENDAR
