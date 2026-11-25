@@ -17,6 +17,7 @@ To avoid breaking changes breaking your code, install this library fixed to a sp
 
 ## Unreleased
 
+- Add: Include the PEP 561 `py.typed` marker and `Typing :: Typed` classifier so type checkers use the package's annotations. See [Issue 293](https://github.com/niccokunzmann/python-recurring-ical-events/issues/293).
 - Fix: Keep each occurrence's original `RECURRENCE-ID` after a `THISANDFUTURE` move. Expanded events omit `RANGE` unless recurrence attributes are requested. See [Issue 222](https://github.com/niccokunzmann/python-recurring-ical-events/issues/222).
 - Add: `recurring_ical_events.of()` now accepts `str`, `bytes`, and `pathlib.Path` inputs in addition to `Calendar` objects, parsing them with `icalendar.Calendar.from_ical()`. See [Issue 194](https://github.com/niccokunzmann/python-recurring-ical-events/issues/194).
 
