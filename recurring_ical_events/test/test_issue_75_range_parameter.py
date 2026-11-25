@@ -20,7 +20,9 @@ from datetime import timedelta as td
 from typing import TYPE_CHECKING
 
 import pytest
+from icalendar import Calendar as ICalendar
 
+import recurring_ical_events
 from recurring_ical_events.adapters.event import EventAdapter
 
 if TYPE_CHECKING:
@@ -247,3 +249,13 @@ def test_move_by_time(calendars, calendar_name, event_index, delta):
 
 # TODO: Test event with DTSTART = DATE - does it occur properly as it is
 #       one day long, I believe. Loot at the RFC 5545.
+
+
+@pytest.mark.parametrize("range_value", [b"thisandfuture", b"ThisAndFuture"])
+def test_range_parameter_is_case_insensitive(calendars, range_value):
+    """RANGE values are case-insensitive, see issue 310."""
+    ics = calendars.raw.issue_75_range_parameter.to_ical().replace(
+        b"RANGE=THISANDFUTURE", b"RANGE=" + range_value
+    )
+    events = recurring_ical_events.of(ICalendar.from_ical(ics)).at("20240917")
+    assert [str(event["SUMMARY"]) for event in events] == ["MODIFIED EVENT"]

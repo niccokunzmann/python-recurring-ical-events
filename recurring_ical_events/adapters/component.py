@@ -148,7 +148,8 @@ class ComponentAdapter(ABC):
         if recurrence_id is None:
             return False
         if "RANGE" in recurrence_id.params:
-            return recurrence_id.params["RANGE"] == "THISANDFUTURE"
+            # Parameter values are case-insensitive (RFC 5545, section 3.2).
+            return str(recurrence_id.params["RANGE"]).upper() == "THISANDFUTURE"
         return False
 
     def is_modification(self) -> bool:
