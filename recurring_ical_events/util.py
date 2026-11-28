@@ -28,8 +28,10 @@ def is_pytz(tzinfo: datetime.tzinfo | Time):
 
     pytz requires these funtions to be used in order to correctly use the
     time zones after operations.
+    Other time zones may offer only localize(), for example
+    dateparser's StaticTzInfo, and need no normalization.
     """
-    return hasattr(tzinfo, "localize")
+    return hasattr(tzinfo, "localize") and hasattr(tzinfo, "normalize")
 
 
 def normalize_pytz(time: Time) -> Time:
